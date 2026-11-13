@@ -117,11 +117,13 @@ arm64(G2)は、手順 2 のあとに `patches/chromium/g2.patch` を当て、`ar
 
 回収できない RAM は、execve で起動するプロセス 1 つにつき約 153MiB 増える(展開したコードを memfd に置くため)。
 
-| 起動フラグ | execve | 起動直後(圧縮前 → UPX) |
-|---|---|---|
-| なし | 4 | 102.1 → 715.4MiB |
-| `--in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2` | 2 | 76.0 → 382.9MiB |
-| `--single-process --no-zygote --enable-low-end-device-mode` | 1 | 56.7 → 210.0MiB |
+| 起動フラグ | execve | 起動直後の PSS 合計(圧縮前 → UPX) | 起動直後の回収できない RAM(圧縮前 → UPX) |
+|---|---|---|---|
+| なし | 4 | 235.3 → 336.5MiB | 102.1 → 715.4MiB |
+| `--in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2` | 2 | 208.8 → 250.7MiB | 76.0 → 382.9MiB |
+| `--single-process --no-zygote --enable-low-end-device-mode` | 1 | 188.5 → 188.5MiB | 56.7 → 210.0MiB |
+
+PSS は触ったページだけを数えるので、展開した memfd の触っていない部分は入らない。
 
 同じ配布物を squashfs(xz、1MiB ブロック)に入れると 60.7MB(RAM は未計測)。図は `scripts/figs_upx2.py` で生成。
 
