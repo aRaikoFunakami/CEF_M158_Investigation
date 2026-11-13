@@ -1,0 +1,438 @@
+{
+ "name": "upx-G2-tv-ni-strip-none",
+ "binary": "/root/fp/builds/G2-tv-ni-strip/cefsimple",
+ "url": "http://127.0.0.1:8000/caps.html",
+ "wait": 30,
+ "cgroup": true,
+ "unit": "MiB",
+ "median": {
+  "procs": 8,
+  "unreclaimable": 102.1,
+  "unreclaimable_smaps": 93.7,
+  "pss_file": 141.4,
+  "with_file": 243.3,
+  "sum_rss": 544.4,
+  "sum_pss": 235.3,
+  "binary_rss": 429.8,
+  "binary_pss": 168.8
+ },
+ "runs": [
+  {
+   "procs": 8,
+   "table": [
+    {
+     "pid": 3060,
+     "ppid": 3056,
+     "type": "browser",
+     "rss": 130.6,
+     "pss": 82.1,
+     "pss_anon": 27.2,
+     "pss_file": 54.3,
+     "pss_shmem": 0.6
+    },
+    {
+     "pid": 3062,
+     "ppid": 3060,
+     "type": "zygote",
+     "rss": 33.4,
+     "pss": 9.2,
+     "pss_anon": 6.0,
+     "pss_file": 3.3,
+     "pss_shmem": 0.0
+    },
+    {
+     "pid": 3063,
+     "ppid": 3060,
+     "type": "zygote",
+     "rss": 33.4,
+     "pss": 6.5,
+     "pss_anon": 3.2,
+     "pss_file": 3.3,
+     "pss_shmem": 0.0
+    },
+    {
+     "pid": 3091,
+     "ppid": 3060,
+     "type": "utility:NetworkService",
+     "rss": 64.3,
+     "pss": 27.3,
+     "pss_anon": 14.1,
+     "pss_file": 13.0,
+     "pss_shmem": 0.2
+    },
+    {
+     "pid": 3110,
+     "ppid": 3063,
+     "type": "utility:StorageService",
+     "rss": 36.9,
+     "pss": 7.9,
+     "pss_anon": 3.8,
+     "pss_file": 4.0,
+     "pss_shmem": 0.1
+    },
+    {
+     "pid": 3130,
+     "ppid": 3063,
+     "type": "renderer",
+     "rss": 59.9,
+     "pss": 19.1,
+     "pss_anon": 7.2,
+     "pss_file": 11.8,
+     "pss_shmem": 0.2
+    },
+    {
+     "pid": 3132,
+     "ppid": 3063,
+     "type": "renderer",
+     "rss": 112.3,
+     "pss": 57.0,
+     "pss_anon": 10.2,
+     "pss_file": 43.8,
+     "pss_shmem": 3.0
+    },
+    {
+     "pid": 3197,
+     "ppid": 3062,
+     "type": "gpu-process",
+     "rss": 70.3,
+     "pss": 25.7,
+     "pss_anon": 7.1,
+     "pss_file": 8.0,
+     "pss_shmem": 10.5
+    }
+   ],
+   "sum_rss": 541.1,
+   "sum_pss": 234.8,
+   "sum_pss_anon": 78.8,
+   "sum_pss_file": 141.5,
+   "sum_pss_shmem": 14.6,
+   "unreclaimable_smaps": 93.4,
+   "cgroup": {
+    "anon": 79.9,
+    "file": 135.1,
+    "kernel": 10.2,
+    "sock": 0.0,
+    "shmem": 22.5,
+    "file_mapped": 29.6,
+    "current": 226.2
+   },
+   "cgroup_base": {
+    "anon": 0.0,
+    "file": 108.5,
+    "kernel": 2.7,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 112.4
+   },
+   "unreclaimable_cgroup": 102.4,
+   "unreclaimable": 102.4,
+   "with_file": 243.9,
+   "binary_maps": {
+    "rss": 427.0,
+    "pss": 168.8,
+    "size": 1430.2,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.9
+     },
+     "r--": {
+      "rss": 78.6,
+      "pss": 39.1,
+      "size": 78.8
+     },
+     "r-x": {
+      "rss": 340.5,
+      "pss": 125.8,
+      "size": 1341.5
+     },
+     "rw-": {
+      "rss": 7.9,
+      "pss": 3.9,
+      "size": 8.9
+     }
+    }
+   }
+  },
+  {
+   "procs": 8,
+   "table": [
+    {
+     "pid": 3214,
+     "ppid": 3056,
+     "type": "browser",
+     "rss": 131.2,
+     "pss": 82.7,
+     "pss_anon": 27.8,
+     "pss_file": 54.2,
+     "pss_shmem": 0.6
+    },
+    {
+     "pid": 3216,
+     "ppid": 3214,
+     "type": "zygote",
+     "rss": 33.8,
+     "pss": 9.3,
+     "pss_anon": 6.0,
+     "pss_file": 3.3,
+     "pss_shmem": 0.0
+    },
+    {
+     "pid": 3217,
+     "ppid": 3214,
+     "type": "zygote",
+     "rss": 33.8,
+     "pss": 6.5,
+     "pss_anon": 3.2,
+     "pss_file": 3.3,
+     "pss_shmem": 0.0
+    },
+    {
+     "pid": 3241,
+     "ppid": 3214,
+     "type": "utility:NetworkService",
+     "rss": 64.6,
+     "pss": 27.5,
+     "pss_anon": 14.4,
+     "pss_file": 12.9,
+     "pss_shmem": 0.2
+    },
+    {
+     "pid": 3263,
+     "ppid": 3217,
+     "type": "utility:StorageService",
+     "rss": 36.9,
+     "pss": 8.0,
+     "pss_anon": 3.8,
+     "pss_file": 4.0,
+     "pss_shmem": 0.1
+    },
+    {
+     "pid": 3284,
+     "ppid": 3217,
+     "type": "renderer",
+     "rss": 61.5,
+     "pss": 19.7,
+     "pss_anon": 7.2,
+     "pss_file": 12.3,
+     "pss_shmem": 0.2
+    },
+    {
+     "pid": 3285,
+     "ppid": 3217,
+     "type": "renderer",
+     "rss": 112.8,
+     "pss": 56.4,
+     "pss_anon": 10.2,
+     "pss_file": 43.2,
+     "pss_shmem": 3.0
+    },
+    {
+     "pid": 3353,
+     "ppid": 3216,
+     "type": "gpu-process",
+     "rss": 70.3,
+     "pss": 25.7,
+     "pss_anon": 7.1,
+     "pss_file": 8.0,
+     "pss_shmem": 10.5
+    }
+   ],
+   "sum_rss": 544.9,
+   "sum_pss": 235.8,
+   "sum_pss_anon": 79.7,
+   "sum_pss_file": 141.2,
+   "sum_pss_shmem": 14.6,
+   "unreclaimable_smaps": 94.3,
+   "cgroup": {
+    "anon": 80.7,
+    "file": 135.1,
+    "kernel": 10.3,
+    "sock": 0.0,
+    "shmem": 22.5,
+    "file_mapped": 29.6,
+    "current": 227.3
+   },
+   "cgroup_base": {
+    "anon": 1.1,
+    "file": 108.5,
+    "kernel": 3.0,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 113.6
+   },
+   "unreclaimable_cgroup": 102.1,
+   "unreclaimable": 102.1,
+   "with_file": 243.3,
+   "binary_maps": {
+    "rss": 429.8,
+    "pss": 168.8,
+    "size": 1430.2,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.9
+     },
+     "r--": {
+      "rss": 78.6,
+      "pss": 39.1,
+      "size": 78.8
+     },
+     "r-x": {
+      "rss": 343.3,
+      "pss": 125.8,
+      "size": 1341.5
+     },
+     "rw-": {
+      "rss": 7.9,
+      "pss": 3.9,
+      "size": 8.9
+     }
+    }
+   }
+  },
+  {
+   "procs": 8,
+   "table": [
+    {
+     "pid": 3367,
+     "ppid": 3056,
+     "type": "browser",
+     "rss": 130.8,
+     "pss": 82.3,
+     "pss_anon": 27.4,
+     "pss_file": 54.3,
+     "pss_shmem": 0.6
+    },
+    {
+     "pid": 3369,
+     "ppid": 3367,
+     "type": "zygote",
+     "rss": 33.8,
+     "pss": 9.3,
+     "pss_anon": 6.0,
+     "pss_file": 3.3,
+     "pss_shmem": 0.0
+    },
+    {
+     "pid": 3370,
+     "ppid": 3367,
+     "type": "zygote",
+     "rss": 33.8,
+     "pss": 6.5,
+     "pss_anon": 3.2,
+     "pss_file": 3.3,
+     "pss_shmem": 0.0
+    },
+    {
+     "pid": 3395,
+     "ppid": 3367,
+     "type": "utility:NetworkService",
+     "rss": 64.4,
+     "pss": 27.4,
+     "pss_anon": 14.2,
+     "pss_file": 12.9,
+     "pss_shmem": 0.2
+    },
+    {
+     "pid": 3415,
+     "ppid": 3370,
+     "type": "utility:StorageService",
+     "rss": 36.9,
+     "pss": 8.0,
+     "pss_anon": 3.8,
+     "pss_file": 4.0,
+     "pss_shmem": 0.1
+    },
+    {
+     "pid": 3436,
+     "ppid": 3370,
+     "type": "renderer",
+     "rss": 61.6,
+     "pss": 19.7,
+     "pss_anon": 7.2,
+     "pss_file": 12.4,
+     "pss_shmem": 0.2
+    },
+    {
+     "pid": 3437,
+     "ppid": 3370,
+     "type": "renderer",
+     "rss": 112.8,
+     "pss": 56.4,
+     "pss_anon": 10.2,
+     "pss_file": 43.2,
+     "pss_shmem": 3.0
+    },
+    {
+     "pid": 3494,
+     "ppid": 3369,
+     "type": "gpu-process",
+     "rss": 70.3,
+     "pss": 25.7,
+     "pss_anon": 7.1,
+     "pss_file": 8.0,
+     "pss_shmem": 10.5
+    }
+   ],
+   "sum_rss": 544.4,
+   "sum_pss": 235.3,
+   "sum_pss_anon": 79.1,
+   "sum_pss_file": 141.4,
+   "sum_pss_shmem": 14.6,
+   "unreclaimable_smaps": 93.7,
+   "cgroup": {
+    "anon": 80.2,
+    "file": 135.1,
+    "kernel": 10.5,
+    "sock": 0.0,
+    "shmem": 22.5,
+    "file_mapped": 29.7,
+    "current": 226.9
+   },
+   "cgroup_base": {
+    "anon": 1.1,
+    "file": 108.6,
+    "kernel": 3.2,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 114.3
+   },
+   "unreclaimable_cgroup": 101.6,
+   "unreclaimable": 101.6,
+   "with_file": 243.0,
+   "binary_maps": {
+    "rss": 430.0,
+    "pss": 168.8,
+    "size": 1430.2,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.9
+     },
+     "r--": {
+      "rss": 78.6,
+      "pss": 39.1,
+      "size": 78.8
+     },
+     "r-x": {
+      "rss": 343.5,
+      "pss": 125.8,
+      "size": 1341.5
+     },
+     "rw-": {
+      "rss": 7.9,
+      "pss": 3.9,
+      "size": 8.9
+     }
+    }
+   }
+  }
+ ]
+}

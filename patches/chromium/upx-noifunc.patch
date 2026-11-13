@@ -1,0 +1,93 @@
+diff --git a/base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_posix.cc b/base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_posix.cc
+index c6d952256a..9b8b00c76c 100644
+--- a/base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_posix.cc
++++ b/base/allocator/partition_allocator/src/partition_alloc/page_allocator_internals_posix.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include <stdint.h>
++#include <sys/auxv.h>
+ #include <sys/mman.h>
+ 
+ #include "partition_alloc/build_config.h"
+@@ -120,7 +121,15 @@ extern "C" GetAccessFlagsInternalFn* ResolveGetAccessFlags(
+ // Resolve the implementation for GetAccessFlags using an iFunc.
+ int GetAccessFlags(PageAccessibilityConfiguration accessibility)
+ #if defined(NEEDS_HANDLING_OF_HW_CAPABILITIES)
+-    __attribute__((ifunc("ResolveGetAccessFlags")));
++{
++  // FP: UPX で圧縮した共有ライブラリでも動くように IFUNC を使わない(初回呼び出し時に選択関数を呼ぶ)。
++  static __ifunc_arg_t* const fp_hw = [] {
++    static __ifunc_arg_t a = {sizeof(__ifunc_arg_t), getauxval(AT_HWCAP), getauxval(AT_HWCAP2)};
++    return &a;
++  }();
++  static auto* const f = ResolveGetAccessFlags(getauxval(AT_HWCAP) | _IFUNC_ARG_HWCAP, fp_hw);
++  return f(accessibility);
++}
+ #else
+ {
+   return GetAccessFlags<false, false>(accessibility);
+diff --git a/base/allocator/partition_allocator/src/partition_alloc/tagging.cc b/base/allocator/partition_allocator/src/partition_alloc/tagging.cc
+index c2b3ad3ce8..99e43743df 100644
+--- a/base/allocator/partition_allocator/src/partition_alloc/tagging.cc
++++ b/base/allocator/partition_allocator/src/partition_alloc/tagging.cc
+@@ -19,6 +19,15 @@
+ #include <asm/hwcap.h>
+ #include <sys/auxv.h>
+ #include <sys/ifunc.h>
++#include <sys/auxv.h>
++// FP: UPX で圧縮した共有ライブラリでも動くように IFUNC を使わない(初回呼び出し時に選択関数を呼ぶ)。
++namespace {
++__ifunc_arg_t* FpIfuncArg() {
++  static __ifunc_arg_t a = {sizeof(__ifunc_arg_t), getauxval(AT_HWCAP), getauxval(AT_HWCAP2)};
++  return &a;
++}
++}  // namespace
++#define FP_IFUNC(R) ([] { static auto* f = R(getauxval(AT_HWCAP) | _IFUNC_ARG_HWCAP, FpIfuncArg()); return f; }())
+ #include <sys/prctl.h>
+ #define PR_SET_TAGGED_ADDR_CTRL 55
+ #define PR_GET_TAGGED_ADDR_CTRL 56
+@@ -89,7 +98,9 @@ ResolveChangeMemoryTaggingModeForCurrentThread(uint64_t hwcap,
+ 
+ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m)
+ #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+-    __attribute__((ifunc("ResolveChangeMemoryTaggingModeForCurrentThread")));
++{
++  FP_IFUNC(ResolveChangeMemoryTaggingModeForCurrentThread)(m);
++}
+ #else
+ {
+   ChangeMemoryTaggingModeForCurrentThreadNoOp(m);
+@@ -241,12 +252,15 @@ extern "C" RemaskPtrInternalFn* ResolveRemaskPointer(uint64_t hwcap,
+   return RemaskVoidPtrNoOp;
+ }
+ 
+-void* TagMemoryRangeIncrementInternal(void* ptr, size_t size)
+-    __attribute__((ifunc("ResolveTagMemoryRangeIncrement")));
+-void* TagMemoryRangeRandomlyInternal(void* ptr, size_t size, uint64_t mask)
+-    __attribute__((ifunc("ResolveTagMemoryRandomly")));
+-void* RemaskPointerInternal(void* ptr)
+-    __attribute__((ifunc("ResolveRemaskPointer")));
++void* TagMemoryRangeIncrementInternal(void* ptr, size_t size) {
++  return FP_IFUNC(ResolveTagMemoryRangeIncrement)(ptr, size);
++}
++void* TagMemoryRangeRandomlyInternal(void* ptr, size_t size, uint64_t mask) {
++  return FP_IFUNC(ResolveTagMemoryRandomly)(ptr, size, mask);
++}
++void* RemaskPointerInternal(void* ptr) {
++  return FP_IFUNC(ResolveRemaskPointer)(ptr);
++}
+ #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+ 
+ TagViolationReportingMode GetMemoryTaggingModeForCurrentThreadNoMte() {
+@@ -281,7 +295,9 @@ ResolveGetMemoryTaggingModeForCurrentThread(uint64_t hwcap,
+ 
+ TagViolationReportingMode GetMemoryTaggingModeForCurrentThread()
+ #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+-    __attribute__((ifunc("ResolveGetMemoryTaggingModeForCurrentThread")));
++{
++  return FP_IFUNC(ResolveGetMemoryTaggingModeForCurrentThread)();
++}
+ #else
+ {
+   return GetMemoryTaggingModeForCurrentThreadNoMte();

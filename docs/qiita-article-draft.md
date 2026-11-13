@@ -5,6 +5,10 @@ tags: CEF Chromium 組み込み メモリ削減 Linux
 
 # はじめに
 
+![削減版の CEF で YouTube を再生している様子](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig0-youtube-playing.gif)
+
+今回作った削減版の CEF(arm64、サンプルアプリ `cefsimple`)で YouTube の動画を再生している画面です。
+
 ## CEF とは
 
 CEF(Chromium Embedded Framework)は、Chrome のもとになっているオープンソースのブラウザ Chromium を、ほかのアプリケーションに組み込むためのフレームワークです。プロジェクトの README は、用途として次を挙げています。
@@ -29,6 +33,8 @@ Chromium のソースは、役割ごとの層に分かれています。この�
 Chromium のブラウザは複数のプロセスで動きます。画面とタブを管理するブラウザプロセス、ページを処理するレンダラプロセス、描画を受け持つ GPU プロセス、ネットワークなどのユーティリティプロセスです。
 
 `content_shell` は、content 層だけで作られた最小のブラウザで、Chromium のソースに含まれています(主にテスト用)。
+
+![プロセスの分かれ方](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig5-processes.png)
 
 ## CEF が大きくなった理由
 
@@ -96,6 +102,8 @@ RAM の値は 2 種類を使っています。詳しくは「計測方法」に�
 | 削減版 | 128.8MiB(−19.8%) | 159.4MiB(−30.3%) |
 | 削減版、SwiftShader なし | 101.8MiB(−36.6%) | 141.0MiB(−38.3%) |
 
+![起動直後の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig6-startup-ram.png)
+
 YouTube の動画を再生している間(全プロセスの PSS、最後まで再生できた 2 回の中央値):
 
 | 動画 | CEF 既定 | CEF 既定 + 起動フラグ | 削減版 | 削減版 + 起動フラグ |
@@ -120,9 +128,24 @@ YouTube の動画を再生している間(全プロセスの PSS、最後まで�
 | H.264 1080p60 | 880MiB で再生できた(780MiB では強制終了) | 640MiB で再生できた |
 | AV1 4K60 | 1,320MiB で再生できた | 980MiB で再生できた |
 
+![メモリの上限をかけて再生できた値](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig7-memory-limit.png)
+
 これは「この上限で再生できた」という確認で、再生できる最小値ではありません。上限はブラウザだけに割り当てた量で、機器の搭載 RAM ではありません。
 
 RAM の値は、動画のデコードも描画も CPU で行う環境での測定です(「計測方法」を参照)。ハードウェアデコーダのある機器では、デコード済みのフレームがドライバ側に置かれるので、ブラウザ側の値はこれより小さくなる見込みです(未計測)。
+
+## UPX で圧縮した場合(arm64)
+
+実行ファイルを圧縮するツール UPX を、削減版(SwiftShader なし)の `libcef.so` と `cefsimple` にかけた結果です。詳しくは「UPX で圧縮する」の節に書きました。
+
+| 項目 | 圧縮前 | UPX |
+|---|---|---|
+| 配布物 | 196.0MB | 95.3MB(−51.4%) |
+| 起動直後の回収できない RAM(起動フラグなし) | 102.1MiB | 715.4MiB |
+| H.264 1080p 再生中の回収できない RAM(起動フラグなし) | 598.3MiB | 1,366.2MiB |
+| H.264 1080p 再生中の回収できない RAM(起動フラグあり) | 537.7MiB | 679.0MiB |
+
+ROM は半分になりますが、回収できない RAM が増えます。
 
 # 調査対象
 
@@ -221,6 +244,8 @@ YouTube の再生中の RAM は `ytmem.py` で、Big Buck Bunny 60fps(https://ww
 ## 効果の大きい順
 
 値は配布物の削減量で、段階どうしの差から求めています。
+
+![削減項目ごとの効果](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig4-reduction-items.png)
 
 | 削減の内容 | 手段 | 効果 | 失うもの |
 |---|---|---|---|
@@ -325,6 +350,8 @@ arm64 版では、YouTube の TV 向けアプリ Cobalt のビルド設定から
 
 //chrome 層と CEF 本体は、削減版でも約 45〜55MB 残っています。2 通りの方法で見積もりました。
 
+![削減版に残っているコード](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig8-remaining-code.png)
+
 | 方法 | 見積もり |
 |---|---|
 | リンク時に出力したマップファイル(どのソースのコードが何バイト入ったかの一覧)で、`chrome/`(17.5MB)、CEF 本体(1.9MB)、//chrome から使われる `components/`(約 18MB)と `third_party/`(約 4MB)を積み上げる(arm64 の削減版) | 約 47MB |
@@ -398,6 +425,57 @@ SwiftShader を外した削減版は、計測ツールが付けていた SwiftSh
 
 SwiftShader 用の 3 つのフラグを付けずに `--disable-gpu` を付けると起動し、YouTube も再生できました。ビルドの変更は要りません。
 
+# UPX で圧縮する
+
+UPX は、実行ファイルを圧縮しておき、起動時にメモリ上で展開するツールです。https://qiita.com/rairaii/items/d5a5c3da56dbc7063a19 では、Chromium の実行ファイルを UPX で圧縮すると、ROM は約 190MiB 減る一方で、回収できない RAM が増えることを確かめています。CEF ではコードのほとんどが共有ライブラリ `libcef.so` にあるので、`libcef.so` を圧縮して同じことを確かめました。対象は ROM が最も小さい、arm64 の削減版(SwiftShader なし)です。
+
+## 圧縮した `libcef.so` が起動しない
+
+UPX 4.2.2(Ubuntu のパッケージ)、5.0.2、5.3.0(GitHub のリリース、調査時点の最新)のどれで圧縮しても、`libcef.so` を読み込んだ時点でセグメンテーション違反になりました。Ubuntu のシステムのライブラリ(GNU ld でリンク)は、同じ UPX で圧縮しても読み込めて動きます。原因は 2 つありました。
+
+| 原因 | 内容 | 対処 |
+|---|---|---|
+| セグメントの分け方 | Chromium のリンカ lld は、既定で読み取り専用のデータを実行コードとは別のセグメントに置く(`--rosegment`)。UPX の共有ライブラリの展開処理は、この配置の小さなライブラリ(`libEGL.so`)でも落ちた | リンカオプション `-Wl,--no-rosegment` を付けて `libcef.so` をリンクし直す |
+| IFUNC | 動的リンカは読み込みの途中で、IFUNC(実行時に CPU の機能を見て関数の実装を選ぶ仕組み)の選択関数を呼ぶ。この時点では UPX がまだコードを展開していないので、展開前のデータを実行して落ちる(gdb で確認)。`libcef.so` の IFUNC は、メモリアロケータ PartitionAlloc の ARM のメモリタグ機能(MTE)用の 3 つだった | IFUNC を、初回の呼び出し時に同じ選択関数を呼んで結果を覚える普通の関数に置き換えるパッチ(2 ファイル)を書いた。MTE の有無で実装を選ぶ動作は変わらない |
+
+再配置テーブルの RELR 形式は関係ありませんでした(RELR のない `libEGL.so` も落ち、RELR のまま上の 2 つを直すと動いた)。この 2 つの変更だけでは、サイズも RAM も変わりません(起動直後の回収できない RAM は 101.8MiB と 102.1MiB)。リンクのやり直しとパッチの再ビルドは、どちらも約 2 分でした。
+
+2 つを直した `libcef.so` を UPX 5.3.0 の既定のオプションで圧縮すると、186.2MB が 86.0MB になり、配布物は 196.0MB から 95.3MB になりました。起動し、動作確認の 7 項目もすべて通りました。
+
+## RAM
+
+起動直後(テストページを開いて 30 秒後、3 回の中央値):
+
+| 起動フラグ | 構成 | 回収できない RAM | ファイル由来の RAM |
+|---|---|---|---|
+| なし | 圧縮前 | 102.1MiB | 141.4MiB |
+| なし | UPX | 715.4MiB(+613) | 27.1MiB |
+| 3 フラグ | 圧縮前 | 56.7MiB | 139.7MiB |
+| 3 フラグ | UPX | 210.0MiB(+153) | 25.6MiB |
+
+H.264 1080p の再生中(最後まで再生できた 2 回の中央値):
+
+| 起動フラグ | 構成 | PSS | 回収できない RAM | ファイル由来の RAM |
+|---|---|---|---|---|
+| なし | 圧縮前 | 757.7MiB | 598.3MiB | 167.3MiB |
+| なし | UPX | 887.6MiB | 1,366.2MiB(+768) | 32.5MiB |
+| 3 フラグ | 圧縮前 | 694.0MiB | 537.7MiB | 165.2MiB |
+| 3 フラグ | UPX | 681.5MiB | 679.0MiB(+141) | 31.9MiB |
+
+![UPX の有無と再生中の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig10-upx-ram.png)
+
+## 回収できない RAM が増える理由
+
+![UPX で圧縮したときのメモリの載り方](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig9-upx-mechanism.png)
+
+圧縮前は、`libcef.so` のコードはファイルから読み込まれたページ(ファイル由来の RAM)で、全プロセスで共有され、メモリが足りなくなればカーネルが捨てて読み直せます。UPX で圧縮すると、プロセスが `libcef.so` を読み込むたびに、展開したコードを共有メモリ(memfd)に置きます。ディスクに元のデータがないので、カーネルはこのメモリを捨てられません。
+
+起動フラグなしの起動直後に各プロセスのメモリの割り当てを見ると、ブラウザプロセスとユーティリティプロセスは、それぞれ自分だけの memfd を持っていました(書き込まれた私有ページが 77MiB と 35MiB)。zygote から作られた子プロセスは、zygote の memfd を共有していました。起動直後の増加 613MiB は、展開後の `libcef.so`(186MB)の約 3 個分にあたります。別々に起動されるプロセスが多いほど増え方が大きくなり、1 プロセスにまとめる起動フラグありでは増え方が小さくなります(再生中で +768MiB に対して +141MiB)。参考記事の、実行ファイルを圧縮した場合と同じ仕組みです。
+
+PSS で見ると、起動フラグありでは圧縮前と UPX の差が −12.5MiB でした。PSS は、プロセスが実際に触ったページだけを数えます。cgroup の回収できない RAM には、触っていないページも含めて展開した memfd 全体が入ります。メモリが足りなくなったときに効くのは、カーネルが捨てられるかどうかなので、回収できない RAM の増加を見るべきです。
+
+ROM を約 100MB 減らす代わりに、起動フラグありでも回収できない RAM が約 140MiB 増えます。ROM より RAM が厳しい機器では見合わず、RAM に余裕があって ROM が足りない機器で、起動フラグと組み合わせる場合に検討の余地がある、という結果です。メモリの上限をかけた再生の確認は行っていません。
+
 # パッチとソースコード
 
 パッチ、GN 引数、計測用のスクリプト、計測結果は次のリポジトリにあります。
@@ -411,6 +489,7 @@ https://github.com/aRaikoFunakami/CEF_M158_Investigation
 | `patches/cef/f4b-cef.patch` | CEF のコミット `6ee3fb965` からの差分(16 ファイル) |
 | `patches/chromium/g2.patch` | arm64 版で足した GN 引数 `enable_media_remoting=false` を通すための 2 ファイル |
 | `patches/new-files/` | パッチに含まれない新規ファイル 3 つ |
+| `patches/chromium/upx-noifunc.patch` | UPX のために IFUNC を普通の関数に置き換えるパッチ(PartitionAlloc の 2 ファイル)。リンカオプション `-Wl,--no-rosegment` と合わせて使う |
 | `args/` | 各段階の `args.gn` |
 | `scripts/measure/` | 計測用のスクリプト(サイズ、起動直後の RAM、YouTube の再生中の RAM、動作確認) |
 | `scripts/patch/pakstrip.py` | `resources.pak` の作り直し |
@@ -429,6 +508,7 @@ https://github.com/aRaikoFunakami/CEF_M158_Investigation
 | arm64 の削減版(Cobalt 由来の GN 引数と配布物の整理を入れる前) | G1 |
 | arm64 の削減版 | G2-dist |
 | arm64 の削減版、SwiftShader なし | G2-tv |
+| arm64 の削減版、SwiftShader なし、UPX 用の変更(圧縮前 / 圧縮後) | G2-tv-ni-strip / G2-tv-ni-upx |
 
 3 つのパッチは、タグと CEF のコミットに順に当たることを確認しています(作業中のソースに触れない一時インデックスでの `git apply --check`)。手順は README に書きました。ただし、新しいソースツリーでこの手順を最初から通してビルドしたことはありません。
 
@@ -469,4 +549,5 @@ https://github.com/aRaikoFunakami/CEF_M158_Investigation
 | 4K で AV1 が選ばれない | VP9 を「非対応」にすると H.264 1080p に落ちた。YouTube の「AV1 を優先する」設定(localStorage)だけでは VP9 のままだった。`mediaCapabilities` で「AV1 は省電力で再生できる」と答えさせると AV1 になった |
 | 上限つきの計測で再生後に強制終了される | 最後に取っていたメモリの内訳のダンプ自体がメモリを使っていた。上限つきのときはダンプを取らないようにした |
 | cgroup の最大使用量(`memory.peak`)が使えない | このカーネルでは書き込みでリセットできず、前の条件の最大値が残った。10 秒おきの値から最大値を取った |
+| UPX で圧縮した `libcef.so` が起動しない | 当初は RELR が原因と考えたが、RELR のない `libEGL.so` も落ちた。システムのライブラリは動くことから、lld のセグメントの分け方と IFUNC の 2 つに絞り込んだ。対処は本文のとおり |
 | SwiftShader なしで `--single-process` を使うと起動しない | 当初「ブラウザは起動するがページが作られない」と記録したが、実際はブラウザごと落ちていた。原因と対処は本文のとおり |

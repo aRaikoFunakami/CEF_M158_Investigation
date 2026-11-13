@@ -1,0 +1,228 @@
+{
+ "name": "upx-G2-tv-ni-strip-3flag",
+ "binary": "/root/fp/builds/G2-tv-ni-strip/cefsimple",
+ "url": "http://127.0.0.1:8000/caps.html",
+ "wait": 30,
+ "cgroup": true,
+ "unit": "MiB",
+ "median": {
+  "procs": 1,
+  "unreclaimable": 56.7,
+  "unreclaimable_smaps": 48.8,
+  "pss_file": 139.7,
+  "with_file": 196.5,
+  "sum_rss": 206.4,
+  "sum_pss": 188.5,
+  "binary_rss": 136.4,
+  "binary_pss": 136.4
+ },
+ "runs": [
+  {
+   "procs": 1,
+   "table": [
+    {
+     "pid": 3514,
+     "ppid": 3510,
+     "type": "browser",
+     "rss": 206.4,
+     "pss": 188.5,
+     "pss_anon": 35.8,
+     "pss_file": 139.4,
+     "pss_shmem": 13.2
+    }
+   ],
+   "sum_rss": 206.4,
+   "sum_pss": 188.5,
+   "sum_pss_anon": 35.8,
+   "sum_pss_file": 139.4,
+   "sum_pss_shmem": 13.2,
+   "unreclaimable_smaps": 49.0,
+   "cgroup": {
+    "anon": 37.0,
+    "file": 133.6,
+    "kernel": 5.7,
+    "sock": 0.0,
+    "shmem": 21.0,
+    "file_mapped": 27.2,
+    "current": 177.7
+   },
+   "cgroup_base": {
+    "anon": 0.0,
+    "file": 108.6,
+    "kernel": 3.3,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 113.1
+   },
+   "unreclaimable_cgroup": 58.0,
+   "unreclaimable": 58.0,
+   "with_file": 197.4,
+   "binary_maps": {
+    "rss": 136.4,
+    "pss": 136.4,
+    "size": 178.2,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.1
+     },
+     "r--": {
+      "rss": 9.9,
+      "pss": 9.9,
+      "size": 9.9
+     },
+     "r-x": {
+      "rss": 125.5,
+      "pss": 125.5,
+      "size": 167.1
+     },
+     "rw-": {
+      "rss": 0.9,
+      "pss": 0.9,
+      "size": 1.0
+     }
+    }
+   }
+  },
+  {
+   "procs": 1,
+   "table": [
+    {
+     "pid": 3562,
+     "ppid": 3510,
+     "type": "browser",
+     "rss": 206.4,
+     "pss": 188.5,
+     "pss_anon": 35.6,
+     "pss_file": 139.7,
+     "pss_shmem": 13.2
+    }
+   ],
+   "sum_rss": 206.4,
+   "sum_pss": 188.5,
+   "sum_pss_anon": 35.6,
+   "sum_pss_file": 139.7,
+   "sum_pss_shmem": 13.2,
+   "unreclaimable_smaps": 48.8,
+   "cgroup": {
+    "anon": 36.8,
+    "file": 133.6,
+    "kernel": 5.8,
+    "sock": 0.0,
+    "shmem": 21.0,
+    "file_mapped": 27.5,
+    "current": 177.1
+   },
+   "cgroup_base": {
+    "anon": 1.1,
+    "file": 108.6,
+    "kernel": 3.3,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 115.0
+   },
+   "unreclaimable_cgroup": 56.7,
+   "unreclaimable": 56.7,
+   "with_file": 196.4,
+   "binary_maps": {
+    "rss": 136.4,
+    "pss": 136.4,
+    "size": 178.2,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.1
+     },
+     "r--": {
+      "rss": 9.9,
+      "pss": 9.9,
+      "size": 9.9
+     },
+     "r-x": {
+      "rss": 125.5,
+      "pss": 125.5,
+      "size": 167.1
+     },
+     "rw-": {
+      "rss": 0.9,
+      "pss": 0.9,
+      "size": 1.0
+     }
+    }
+   }
+  },
+  {
+   "procs": 1,
+   "table": [
+    {
+     "pid": 3610,
+     "ppid": 3510,
+     "type": "browser",
+     "rss": 206.5,
+     "pss": 188.6,
+     "pss_anon": 35.6,
+     "pss_file": 139.8,
+     "pss_shmem": 13.2
+    }
+   ],
+   "sum_rss": 206.5,
+   "sum_pss": 188.6,
+   "sum_pss_anon": 35.6,
+   "sum_pss_file": 139.8,
+   "sum_pss_shmem": 13.2,
+   "unreclaimable_smaps": 48.8,
+   "cgroup": {
+    "anon": 36.8,
+    "file": 133.7,
+    "kernel": 5.8,
+    "sock": 0.0,
+    "shmem": 21.0,
+    "file_mapped": 27.6,
+    "current": 177.3
+   },
+   "cgroup_base": {
+    "anon": 1.1,
+    "file": 108.7,
+    "kernel": 3.4,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 114.5
+   },
+   "unreclaimable_cgroup": 56.7,
+   "unreclaimable": 56.7,
+   "with_file": 196.5,
+   "binary_maps": {
+    "rss": 136.4,
+    "pss": 136.4,
+    "size": 178.2,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.1
+     },
+     "r--": {
+      "rss": 9.9,
+      "pss": 9.9,
+      "size": 9.9
+     },
+     "r-x": {
+      "rss": 125.6,
+      "pss": 125.6,
+      "size": 167.1
+     },
+     "rw-": {
+      "rss": 0.9,
+      "pss": 0.9,
+      "size": 1.0
+     }
+    }
+   }
+  }
+ ]
+}

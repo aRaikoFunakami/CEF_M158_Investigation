@@ -104,6 +104,15 @@ python3 $REPO/scripts/build/fpbuild.py . out/F4b cefsimple --log build.log
 
 arm64(G2)は、手順 2 のあとに `patches/chromium/g2.patch` を当て、`args/G2.args.gn` でビルドする。arm64 の sysroot は `build/linux/sysroot_scripts/install-sysroot.py --arch=arm64` で入れる。
 
+## UPX で圧縮する場合(arm64、G2-tv)
+
+`libcef.so` は、そのままでは UPX で圧縮すると読み込み時に落ちる。次の 2 つを入れてから圧縮する(`docs/milestones/M22-arm64-upx.md`)。
+
+1. `patches/chromium/upx-noifunc.patch`(または `scripts/patch/upx_noifunc_patch.py`)で、PartitionAlloc の IFUNC を普通の関数に置き換える
+2. `libcef.so` のリンクに `-Wl,--no-rosegment` を足す(調査では out/G1/obj/cef/libcef.ninja の ldflags を手で書き換えた)
+
+その後 `strip` してから `upx libcef.so cefsimple`(UPX 5.3.0、既定のオプション)。配布物 196.0MB → 95.3MB。回収できない RAM は増える(H.264 1080p 再生中、起動フラグなし 598.3 → 1,366.2MiB、3 フラグ 537.7 → 679.0MiB)。
+
 ## 計測の前提
 
 - 計測はコンテナ(Apple の `container`)上で、GPU デバイスなし、Xvfb、SwiftShader で行った。動画のデコードは CPU(dav1d / FFmpeg)。

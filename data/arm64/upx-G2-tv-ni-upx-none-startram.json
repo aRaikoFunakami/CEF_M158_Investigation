@@ -1,0 +1,438 @@
+{
+ "name": "upx-G2-tv-ni-upx-none",
+ "binary": "/root/fp/builds/G2-tv-ni-upx/cefsimple",
+ "url": "http://127.0.0.1:8000/caps.html",
+ "wait": 30,
+ "cgroup": true,
+ "unit": "MiB",
+ "median": {
+  "procs": 8,
+  "unreclaimable": 715.4,
+  "unreclaimable_smaps": 309.4,
+  "pss_file": 27.1,
+  "with_file": 742.5,
+  "sum_rss": 542.9,
+  "sum_pss": 336.5,
+  "binary_rss": 149.2,
+  "binary_pss": 54.4
+ },
+ "runs": [
+  {
+   "procs": 8,
+   "table": [
+    {
+     "pid": 3662,
+     "ppid": 3658,
+     "type": "browser",
+     "rss": 131.0,
+     "pss": 115.9,
+     "pss_anon": 27.7,
+     "pss_file": 11.3,
+     "pss_shmem": 76.9
+    },
+    {
+     "pid": 3664,
+     "ppid": 3662,
+     "type": "zygote",
+     "rss": 34.0,
+     "pss": 14.1,
+     "pss_anon": 6.0,
+     "pss_file": 1.9,
+     "pss_shmem": 6.2
+    },
+    {
+     "pid": 3665,
+     "ppid": 3662,
+     "type": "zygote",
+     "rss": 34.0,
+     "pss": 8.4,
+     "pss_anon": 3.2,
+     "pss_file": 1.9,
+     "pss_shmem": 3.3
+    },
+    {
+     "pid": 3701,
+     "ppid": 3662,
+     "type": "utility:NetworkService",
+     "rss": 64.4,
+     "pss": 52.1,
+     "pss_anon": 14.2,
+     "pss_file": 2.4,
+     "pss_shmem": 35.5
+    },
+    {
+     "pid": 3704,
+     "ppid": 3665,
+     "type": "zygote",
+     "rss": 37.0,
+     "pss": 11.2,
+     "pss_anon": 3.8,
+     "pss_file": 1.0,
+     "pss_shmem": 6.4
+    },
+    {
+     "pid": 3705,
+     "ppid": 3665,
+     "type": "zygote",
+     "rss": 59.9,
+     "pss": 23.1,
+     "pss_anon": 7.2,
+     "pss_file": 1.9,
+     "pss_shmem": 14.1
+    },
+    {
+     "pid": 3708,
+     "ppid": 3665,
+     "type": "zygote",
+     "rss": 112.6,
+     "pss": 70.7,
+     "pss_anon": 10.3,
+     "pss_file": 5.0,
+     "pss_shmem": 55.4
+    },
+    {
+     "pid": 3753,
+     "ppid": 3664,
+     "type": "zygote",
+     "rss": 70.4,
+     "pss": 41.0,
+     "pss_anon": 7.2,
+     "pss_file": 1.7,
+     "pss_shmem": 32.1
+    }
+   ],
+   "sum_rss": 543.3,
+   "sum_pss": 336.5,
+   "sum_pss_anon": 79.6,
+   "sum_pss_file": 27.1,
+   "sum_pss_shmem": 229.9,
+   "unreclaimable_smaps": 309.5,
+   "cgroup": {
+    "anon": 80.7,
+    "file": 746.9,
+    "kernel": 12.3,
+    "sock": 0.0,
+    "shmem": 635.9,
+    "file_mapped": 244.9,
+    "current": 840.8
+   },
+   "cgroup_base": {
+    "anon": 0.0,
+    "file": 108.7,
+    "kernel": 3.3,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 112.8
+   },
+   "unreclaimable_cgroup": 716.6,
+   "unreclaimable": 716.6,
+   "with_file": 743.7,
+   "binary_maps": {
+    "rss": 149.2,
+    "pss": 54.4,
+    "size": 198.6,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.9
+     },
+     "r--": {
+      "rss": 78.1,
+      "pss": 39.0,
+      "size": 78.3
+     },
+     "r-x": {
+      "rss": 63.2,
+      "pss": 11.6,
+      "size": 110.5
+     },
+     "rw-": {
+      "rss": 7.9,
+      "pss": 3.9,
+      "size": 8.9
+     }
+    }
+   }
+  },
+  {
+   "procs": 8,
+   "table": [
+    {
+     "pid": 3786,
+     "ppid": 3658,
+     "type": "browser",
+     "rss": 130.8,
+     "pss": 115.8,
+     "pss_anon": 27.4,
+     "pss_file": 11.4,
+     "pss_shmem": 76.9
+    },
+    {
+     "pid": 3788,
+     "ppid": 3786,
+     "type": "zygote",
+     "rss": 34.0,
+     "pss": 14.1,
+     "pss_anon": 6.0,
+     "pss_file": 1.9,
+     "pss_shmem": 6.2
+    },
+    {
+     "pid": 3789,
+     "ppid": 3786,
+     "type": "zygote",
+     "rss": 34.0,
+     "pss": 8.4,
+     "pss_anon": 3.2,
+     "pss_file": 1.9,
+     "pss_shmem": 3.3
+    },
+    {
+     "pid": 3825,
+     "ppid": 3786,
+     "type": "utility:NetworkService",
+     "rss": 64.3,
+     "pss": 52.0,
+     "pss_anon": 14.2,
+     "pss_file": 2.4,
+     "pss_shmem": 35.4
+    },
+    {
+     "pid": 3828,
+     "ppid": 3789,
+     "type": "zygote",
+     "rss": 37.0,
+     "pss": 11.1,
+     "pss_anon": 3.8,
+     "pss_file": 1.0,
+     "pss_shmem": 6.4
+    },
+    {
+     "pid": 3829,
+     "ppid": 3789,
+     "type": "zygote",
+     "rss": 59.8,
+     "pss": 23.1,
+     "pss_anon": 7.2,
+     "pss_file": 1.9,
+     "pss_shmem": 14.0
+    },
+    {
+     "pid": 3832,
+     "ppid": 3789,
+     "type": "zygote",
+     "rss": 112.6,
+     "pss": 70.8,
+     "pss_anon": 10.4,
+     "pss_file": 4.9,
+     "pss_shmem": 55.5
+    },
+    {
+     "pid": 3877,
+     "ppid": 3788,
+     "type": "zygote",
+     "rss": 70.4,
+     "pss": 41.0,
+     "pss_anon": 7.2,
+     "pss_file": 1.7,
+     "pss_shmem": 32.1
+    }
+   ],
+   "sum_rss": 542.9,
+   "sum_pss": 336.3,
+   "sum_pss_anon": 79.4,
+   "sum_pss_file": 27.1,
+   "sum_pss_shmem": 229.8,
+   "unreclaimable_smaps": 309.2,
+   "cgroup": {
+    "anon": 80.5,
+    "file": 746.0,
+    "kernel": 12.5,
+    "sock": 0.0,
+    "shmem": 635.9,
+    "file_mapped": 244.9,
+    "current": 840.2
+   },
+   "cgroup_base": {
+    "anon": 1.1,
+    "file": 107.0,
+    "kernel": 3.6,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 113.2
+   },
+   "unreclaimable_cgroup": 715.3,
+   "unreclaimable": 715.3,
+   "with_file": 742.4,
+   "binary_maps": {
+    "rss": 149.2,
+    "pss": 54.4,
+    "size": 198.6,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.9
+     },
+     "r--": {
+      "rss": 78.1,
+      "pss": 39.0,
+      "size": 78.3
+     },
+     "r-x": {
+      "rss": 63.2,
+      "pss": 11.6,
+      "size": 110.5
+     },
+     "rw-": {
+      "rss": 7.9,
+      "pss": 3.9,
+      "size": 8.9
+     }
+    }
+   }
+  },
+  {
+   "procs": 8,
+   "table": [
+    {
+     "pid": 3911,
+     "ppid": 3658,
+     "type": "browser",
+     "rss": 131.0,
+     "pss": 116.0,
+     "pss_anon": 27.7,
+     "pss_file": 11.4,
+     "pss_shmem": 76.9
+    },
+    {
+     "pid": 3913,
+     "ppid": 3911,
+     "type": "zygote",
+     "rss": 34.0,
+     "pss": 14.1,
+     "pss_anon": 6.0,
+     "pss_file": 1.9,
+     "pss_shmem": 6.2
+    },
+    {
+     "pid": 3914,
+     "ppid": 3911,
+     "type": "zygote",
+     "rss": 34.0,
+     "pss": 8.4,
+     "pss_anon": 3.2,
+     "pss_file": 1.9,
+     "pss_shmem": 3.3
+    },
+    {
+     "pid": 3950,
+     "ppid": 3911,
+     "type": "utility:NetworkService",
+     "rss": 64.3,
+     "pss": 52.0,
+     "pss_anon": 14.2,
+     "pss_file": 2.4,
+     "pss_shmem": 35.4
+    },
+    {
+     "pid": 3953,
+     "ppid": 3914,
+     "type": "zygote",
+     "rss": 37.0,
+     "pss": 11.2,
+     "pss_anon": 3.8,
+     "pss_file": 1.0,
+     "pss_shmem": 6.4
+    },
+    {
+     "pid": 3954,
+     "ppid": 3914,
+     "type": "zygote",
+     "rss": 59.3,
+     "pss": 22.9,
+     "pss_anon": 7.2,
+     "pss_file": 1.9,
+     "pss_shmem": 13.9
+    },
+    {
+     "pid": 3956,
+     "ppid": 3914,
+     "type": "zygote",
+     "rss": 112.3,
+     "pss": 70.9,
+     "pss_anon": 10.3,
+     "pss_file": 4.9,
+     "pss_shmem": 55.6
+    },
+    {
+     "pid": 4002,
+     "ppid": 3913,
+     "type": "zygote",
+     "rss": 70.4,
+     "pss": 41.0,
+     "pss_anon": 7.2,
+     "pss_file": 1.7,
+     "pss_shmem": 32.1
+    }
+   ],
+   "sum_rss": 542.3,
+   "sum_pss": 336.5,
+   "sum_pss_anon": 79.6,
+   "sum_pss_file": 27.1,
+   "sum_pss_shmem": 229.8,
+   "unreclaimable_smaps": 309.4,
+   "cgroup": {
+    "anon": 80.7,
+    "file": 745.2,
+    "kernel": 12.8,
+    "sock": 0.0,
+    "shmem": 635.9,
+    "file_mapped": 244.9,
+    "current": 839.9
+   },
+   "cgroup_base": {
+    "anon": 1.2,
+    "file": 106.1,
+    "kernel": 3.9,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 112.6
+   },
+   "unreclaimable_cgroup": 715.4,
+   "unreclaimable": 715.4,
+   "with_file": 742.5,
+   "binary_maps": {
+    "rss": 149.2,
+    "pss": 54.4,
+    "size": 198.6,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.9
+     },
+     "r--": {
+      "rss": 78.1,
+      "pss": 39.0,
+      "size": 78.3
+     },
+     "r-x": {
+      "rss": 63.2,
+      "pss": 11.6,
+      "size": 110.5
+     },
+     "rw-": {
+      "rss": 7.9,
+      "pss": 3.9,
+      "size": 8.9
+     }
+    }
+   }
+  }
+ ]
+}

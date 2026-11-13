@@ -1,0 +1,228 @@
+{
+ "name": "upx-G2-tv-ni-upx-3flag",
+ "binary": "/root/fp/builds/G2-tv-ni-upx/cefsimple",
+ "url": "http://127.0.0.1:8000/caps.html",
+ "wait": 30,
+ "cgroup": true,
+ "unit": "MiB",
+ "median": {
+  "procs": 1,
+  "unreclaimable": 210.0,
+  "unreclaimable_smaps": 162.9,
+  "pss_file": 25.6,
+  "with_file": 235.6,
+  "sum_rss": 206.4,
+  "sum_pss": 188.5,
+  "binary_rss": 22.3,
+  "binary_pss": 22.3
+ },
+ "runs": [
+  {
+   "procs": 1,
+   "table": [
+    {
+     "pid": 4039,
+     "ppid": 4035,
+     "type": "browser",
+     "rss": 206.4,
+     "pss": 188.5,
+     "pss_anon": 35.7,
+     "pss_file": 25.6,
+     "pss_shmem": 127.2
+    }
+   ],
+   "sum_rss": 206.4,
+   "sum_pss": 188.5,
+   "sum_pss_anon": 35.7,
+   "sum_pss_file": 25.6,
+   "sum_pss_shmem": 127.2,
+   "unreclaimable_smaps": 162.9,
+   "cgroup": {
+    "anon": 36.8,
+    "file": 283.6,
+    "kernel": 6.8,
+    "sock": 0.0,
+    "shmem": 174.3,
+    "file_mapped": 141.5,
+    "current": 328.3
+   },
+   "cgroup_base": {
+    "anon": 0.0,
+    "file": 105.3,
+    "kernel": 4.1,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 110.2
+   },
+   "unreclaimable_cgroup": 211.1,
+   "unreclaimable": 211.1,
+   "with_file": 236.7,
+   "binary_maps": {
+    "rss": 22.3,
+    "pss": 22.3,
+    "size": 24.8,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.1
+     },
+     "r--": {
+      "rss": 9.8,
+      "pss": 9.8,
+      "size": 9.9
+     },
+     "r-x": {
+      "rss": 11.5,
+      "pss": 11.5,
+      "size": 13.8
+     },
+     "rw-": {
+      "rss": 0.9,
+      "pss": 0.9,
+      "size": 1.0
+     }
+    }
+   }
+  },
+  {
+   "procs": 1,
+   "table": [
+    {
+     "pid": 4087,
+     "ppid": 4035,
+     "type": "browser",
+     "rss": 206.4,
+     "pss": 188.5,
+     "pss_anon": 35.7,
+     "pss_file": 25.6,
+     "pss_shmem": 127.2
+    }
+   ],
+   "sum_rss": 206.4,
+   "sum_pss": 188.5,
+   "sum_pss_anon": 35.7,
+   "sum_pss_file": 25.6,
+   "sum_pss_shmem": 127.2,
+   "unreclaimable_smaps": 162.9,
+   "cgroup": {
+    "anon": 36.8,
+    "file": 283.7,
+    "kernel": 6.9,
+    "sock": 0.0,
+    "shmem": 174.3,
+    "file_mapped": 141.6,
+    "current": 328.6
+   },
+   "cgroup_base": {
+    "anon": 1.1,
+    "file": 105.3,
+    "kernel": 4.1,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 111.7
+   },
+   "unreclaimable_cgroup": 210.0,
+   "unreclaimable": 210.0,
+   "with_file": 235.6,
+   "binary_maps": {
+    "rss": 22.3,
+    "pss": 22.3,
+    "size": 24.8,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.1
+     },
+     "r--": {
+      "rss": 9.8,
+      "pss": 9.8,
+      "size": 9.9
+     },
+     "r-x": {
+      "rss": 11.5,
+      "pss": 11.5,
+      "size": 13.8
+     },
+     "rw-": {
+      "rss": 0.9,
+      "pss": 0.9,
+      "size": 1.0
+     }
+    }
+   }
+  },
+  {
+   "procs": 1,
+   "table": [
+    {
+     "pid": 4135,
+     "ppid": 4035,
+     "type": "browser",
+     "rss": 206.1,
+     "pss": 188.1,
+     "pss_anon": 35.5,
+     "pss_file": 25.3,
+     "pss_shmem": 127.2
+    }
+   ],
+   "sum_rss": 206.1,
+   "sum_pss": 188.1,
+   "sum_pss_anon": 35.5,
+   "sum_pss_file": 25.3,
+   "sum_pss_shmem": 127.2,
+   "unreclaimable_smaps": 162.7,
+   "cgroup": {
+    "anon": 36.6,
+    "file": 283.7,
+    "kernel": 6.9,
+    "sock": 0.0,
+    "shmem": 174.3,
+    "file_mapped": 141.2,
+    "current": 328.6
+   },
+   "cgroup_base": {
+    "anon": 1.1,
+    "file": 105.4,
+    "kernel": 4.1,
+    "sock": 0.0,
+    "shmem": 0.0,
+    "file_mapped": 2.2,
+    "current": 112.2
+   },
+   "unreclaimable_cgroup": 209.8,
+   "unreclaimable": 209.8,
+   "with_file": 235.1,
+   "binary_maps": {
+    "rss": 22.3,
+    "pss": 22.3,
+    "size": 24.8,
+    "by_perm": {
+     "---": {
+      "rss": 0.0,
+      "pss": 0.0,
+      "size": 0.1
+     },
+     "r--": {
+      "rss": 9.8,
+      "pss": 9.8,
+      "size": 9.9
+     },
+     "r-x": {
+      "rss": 11.5,
+      "pss": 11.5,
+      "size": 13.8
+     },
+     "rw-": {
+      "rss": 0.9,
+      "pss": 0.9,
+      "size": 1.0
+     }
+    }
+   }
+  }
+ ]
+}
