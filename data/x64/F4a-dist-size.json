@@ -1,0 +1,28 @@
+{
+ "name": "F4a-dist",
+ "binary": "/root/fp/builds/F4a-dist/cefsimple",
+ "files": {
+  "resources.pak": 913517,
+  "chrome_100_percent.pak": 577211,
+  "icudtl.dat": 5226480,
+  "v8_context_snapshot.bin": 700720,
+  "libEGL.so": 264240,
+  "libGLESv2.so": 264240,
+  "libvk_swiftshader.so": 5423736,
+  "libvulkan.so.1": 763040,
+  "vk_swiftshader_icd.json": 107
+ },
+ "unstripped": 373607568,
+ "stripped": 200579856,
+ "text": 188686622,
+ "data": 11877111,
+ "bss": 2630252,
+ "exe_stripped": 479288,
+ "libcef_unstripped": 372656576,
+ "libcef_stripped": 200100568,
+ "locales_all": 51287780,
+ "locales_n": 220,
+ "locales_ja_en": 1450684,
+ "total_ja_en": 216163831,
+ "total_all_locales": 266000927
+}

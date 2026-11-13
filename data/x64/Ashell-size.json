@@ -1,0 +1,28 @@
+{
+ "name": "Ashell",
+ "binary": "/root/chromium/src/out/Release/content_shell",
+ "files": {
+  "content_shell.pak": 7366304,
+  "icudtl.dat": 10688512,
+  "v8_context_snapshot.bin": 711448,
+  "snapshot_blob.bin": 356344,
+  "libEGL.so": 324600,
+  "libGLESv2.so": 324600,
+  "libvk_swiftshader.so": 6442120,
+  "libvulkan.so.1": 847752,
+  "libVkLayer_khronos_validation.so": 27824784,
+  "vk_swiftshader_icd.json": 107,
+  "shell_resources.pak": 975,
+  "ui_resources_100_percent.pak": 17340
+ },
+ "unstripped": 373854704,
+ "stripped": 211872544,
+ "text": 202851894,
+ "data": 9006055,
+ "bss": 2656816,
+ "locales_all": 51927661,
+ "locales_n": 220,
+ "locales_ja_en": 1472768,
+ "total_ja_en": 266777430,
+ "total_all_locales": 266777430
+}

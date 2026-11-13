@@ -1,0 +1,13 @@
+{
+ "pdfViewerEnabled": false,
+ "plugins": 0,
+ "mimeTypes": 0,
+ "chrome.runtime": "undefined",
+ "print": "returned",
+ "alive_after_print": true,
+ "embed": "appended",
+ "alive_after_embed": true,
+ "alive_after_pdf_navigate": true,
+ "caps_after": true,
+ "procs": 8
+}

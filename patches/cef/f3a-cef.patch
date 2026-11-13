@@ -1,0 +1,404 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 4d5ed330a..48c8c8633 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -105,6 +105,8 @@ import("//content/public/app/mac_helpers.gni")
+ import("//extensions/buildflags/buildflags.gni")
+ import("//media/media_options.gni")
+ import("//mojo/public/tools/bindings/mojom.gni")
++import("//pdf/features.gni")
++import("//content/public/common/features.gni")
+ import("//printing/buildflags/buildflags.gni")
+ import("//rlz/buildflags/buildflags.gni")
+ import("//testing/test.gni")
+@@ -254,8 +256,8 @@ if (is_linux) {
+ # Set by GetRequiredArgs() in //cef/tools/gn_args.py.
+ #
+ 
+-# Enable support for Print Preview.
+-assert(enable_print_preview)
++# Footprint F3a: Print Preview / printing / PDF / plugins are optional.
++# (was: assert(enable_print_preview))
+ 
+ # Enable support for Widevine CDM.
+ assert(enable_widevine)
+@@ -755,8 +757,6 @@ source_set("libcef_static") {
+     "libcef/browser/prefs/pref_registrar.h",
+     "libcef/browser/prefs/renderer_prefs.cc",
+     "libcef/browser/prefs/renderer_prefs.h",
+-    "libcef/browser/print_settings_impl.cc",
+-    "libcef/browser/print_settings_impl.h",
+     "libcef/browser/printing/print_util.cc",
+     "libcef/browser/printing/print_util.h",
+     "libcef/browser/process_util_impl.cc",
+@@ -992,7 +992,6 @@ source_set("libcef_static") {
+     "//chrome:resources",
+     "//chrome:strings",
+     "//chrome/common:buildflags",
+-    "//chrome/services/printing:lib",
+     "//components/certificate_transparency",
+     "//components/component_updater",
+     "//components/content_settings/core/browser",
+@@ -1004,16 +1003,8 @@ source_set("libcef_static") {
+     "//components/media_router/common/mojom:media_router",
+     "//components/navigation_interception",
+     "//components/network_session_configurator/common",
+-    "//components/pdf/browser",
+-    "//components/pdf/renderer",
+-    "//components/plugins/renderer",
+     "//components/pref_registry",
+-    "//components/printing/browser",
+-    "//components/printing/common",
+-    "//components/printing/renderer",
+     "//components/proxy_config",
+-    "//components/services/print_compositor/public/cpp",
+-    "//components/services/print_compositor/public/mojom",
+     "//components/update_client",
+     "//components/url_formatter",
+     "//components/user_prefs",
+@@ -1037,7 +1028,6 @@ source_set("libcef_static") {
+     "//ipc",
+     "//media",
+     "//net",
+-    "//pdf",
+     "//printing/buildflags",
+     "//services/network:network_service",
+     "//services/network/public/cpp",
+@@ -1098,6 +1088,40 @@ source_set("libcef_static") {
+     ]
+   }
+ 
++  if (enable_printing) {
++    sources += [
++      "libcef/browser/print_settings_impl.cc",
++      "libcef/browser/print_settings_impl.h",
++    ]
++    deps += [
++      "//chrome/services/printing:lib",
++      "//components/printing/browser",
++      "//components/printing/common",
++      "//components/printing/renderer",
++      "//components/services/print_compositor/public/cpp",
++      "//components/services/print_compositor/public/mojom",
++    ]
++    if (is_linux) {
++      sources += [
++        "libcef/browser/printing/print_dialog_linux.cc",
++        "libcef/browser/printing/print_dialog_linux.h",
++      ]
++    }
++  } else {
++    # Footprint F3a: CefPrintSettings::Create() must still exist for libcef_dll.
++    sources += [ "libcef/browser/print_settings_stub.cc" ]
++  }
++  if (enable_pdf) {
++    deps += [
++      "//components/pdf/browser",
++      "//components/pdf/renderer",
++      "//pdf",
++    ]
++  }
++  if (enable_plugins) {
++    deps += [ "//components/plugins/renderer" ]
++  }
++
+   if (is_linux) {
+     sources += includes_linux + [
+       "libcef/browser/input_event_utils_linux.cc",
+@@ -1105,8 +1129,6 @@ source_set("libcef_static") {
+       "libcef/browser/native/browser_platform_delegate_native_linux.h",
+       "libcef/browser/osr/browser_platform_delegate_osr_linux.cc",
+       "libcef/browser/osr/browser_platform_delegate_osr_linux.h",
+-      "libcef/browser/printing/print_dialog_linux.cc",
+-      "libcef/browser/printing/print_dialog_linux.h",
+       "libcef/common/util_linux.h",
+       "libcef/common/util_linux.cc",
+     ]
+@@ -1589,7 +1611,6 @@ make_pack_header("resources") {
+     "$root_gen_dir/chrome/grit/browser_resources.h",
+     "$root_gen_dir/chrome/grit/common_resources.h",
+     "$root_gen_dir/chrome/grit/component_extension_resources.h",
+-    "$root_gen_dir/chrome/grit/pdf_resources.h",
+     "$root_gen_dir/chrome/grit/renderer_resources.h",
+     "$root_gen_dir/components/grit/components_resources.h",
+     "$root_gen_dir/components/grit/dev_ui_components_resources.h",
+@@ -1618,7 +1639,6 @@ make_pack_header("resources") {
+     "//base/tracing/protos:chrome_track_event_resources",
+     "//chrome/browser:resources",
+     "//chrome/browser/resources:component_extension_resources",
+-    "//chrome/browser/resources/pdf:resources",
+     "//chrome/common:resources",
+     "//chrome/renderer:resources",
+     "//components/resources:components_resources",
+@@ -1639,6 +1659,10 @@ make_pack_header("resources") {
+     "//ui/views/resources:resources_grd",
+     "//ui/webui/resources:resources_grit",
+   ]
++  if (enable_pdf) {
++    inputs += [ "$root_gen_dir/chrome/grit/pdf_resources.h" ]
++    deps += [ "//chrome/browser/resources/pdf:resources" ]
++  }
+ }
+ 
+ # Generate cef_pack_strings.h.
+diff --git a/libcef/browser/alloy/alloy_browser_host_impl.cc b/libcef/browser/alloy/alloy_browser_host_impl.cc
+index 83bbddd59..d59e46f59 100644
+--- a/libcef/browser/alloy/alloy_browser_host_impl.cc
++++ b/libcef/browser/alloy/alloy_browser_host_impl.cc
+@@ -36,8 +36,12 @@
+ #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+ #include "chrome/common/webui_url_constants.h"
+ #include "components/input/native_web_keyboard_event.h"
+-#include "components/printing/browser/print_composite_client.h"
+ #include "components/zoom/page_zoom.h"
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PRINTING)
++#include "components/printing/browser/print_composite_client.h"
++#endif
+ #include "content/browser/gpu/compositor_util.h"
+ #include "content/public/browser/desktop_media_id.h"
+ #include "content/public/browser/file_select_listener.h"
+@@ -77,7 +81,9 @@ const char* kAllowedWebUIHosts[] = {
+     chrome::kChromeUINetInternalsHost,
+     content::kChromeUINetworkErrorHost,
+     content::kChromeUINetworkErrorsListingHost,
++#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+     chrome::kChromeUIPrintHost,
++#endif
+     content::kChromeUIProcessInternalsHost,
+     content::kChromeUIResourcesHost,
+ #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+@@ -804,10 +810,12 @@ void AlloyBrowserHostImpl::PrintCrossProcessSubframe(
+     const gfx::Rect& rect,
+     int document_cookie,
+     content::RenderFrameHost* subframe_host) const {
++#if BUILDFLAG(ENABLE_PRINTING)
+   auto* client = printing::PrintCompositeClient::FromWebContents(web_contents);
+   if (client) {
+     client->PrintCrossProcessSubframe(rect, document_cookie, subframe_host);
+   }
++#endif
+ }
+ 
+ content::WebContents* AlloyBrowserHostImpl::OpenURLFromTab(
+diff --git a/libcef/browser/browser_context.h b/libcef/browser/browser_context.h
+index 4565128ee..41836e817 100644
+--- a/libcef/browser/browser_context.h
++++ b/libcef/browser/browser_context.h
+@@ -17,7 +17,11 @@
+ #include "cef/include/cef_request_context_handler.h"
+ #include "cef/libcef/browser/iothread_state.h"
+ #include "cef/libcef/browser/request_context_handler_map.h"
++#include "content/public/common/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PLUGINS)
+ #include "chrome/common/plugin.mojom.h"
++#endif
+ #include "services/network/public/mojom/network_context.mojom.h"
+ #include "ui/base/page_transition_types.h"
+ #include "url/origin.h"
+diff --git a/libcef/browser/browser_guest_util.cc b/libcef/browser/browser_guest_util.cc
+index 3cde4fb6a..249d3adfb 100644
+--- a/libcef/browser/browser_guest_util.cc
++++ b/libcef/browser/browser_guest_util.cc
+@@ -5,9 +5,13 @@
+ #include "cef/libcef/browser/browser_guest_util.h"
+ 
+ #include "chrome/browser/browser_process.h"
+-#include "chrome/browser/printing/print_preview_dialog_controller.h"
+ #include "content/browser/browser_plugin/browser_plugin_guest.h"
+ #include "content/browser/web_contents/web_contents_impl.h"
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
++#include "chrome/browser/printing/print_preview_dialog_controller.h"
++#endif
+ 
+ namespace {
+ 
+@@ -24,10 +28,14 @@ content::WebContents* GetOwnerForBrowserPluginGuest(
+ 
+ content::WebContents* GetInitiatorForPrintPreviewDialog(
+     const content::WebContents* guest) {
++#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+   auto print_preview_controller =
+       g_browser_process->print_preview_dialog_controller();
+   return print_preview_controller->GetInitiator(
+       const_cast<content::WebContents*>(guest));
++#else
++  return nullptr;
++#endif
+ }
+ 
+ }  // namespace
+diff --git a/libcef/browser/browser_platform_delegate.cc b/libcef/browser/browser_platform_delegate.cc
+index 9a8b3d661..0a7ddaf2f 100644
+--- a/libcef/browser/browser_platform_delegate.cc
++++ b/libcef/browser/browser_platform_delegate.cc
+@@ -27,6 +27,7 @@
+ #include "content/browser/web_contents/web_contents_impl.h"
+ #include "content/public/browser/render_view_host.h"
+ #include "content/public/browser/render_widget_host.h"
++#include "printing/buildflags/buildflags.h"
+ #include "content/public/browser/render_widget_host_view.h"
+ #include "third_party/blink/public/common/input/web_gesture_event.h"
+ #include "third_party/blink/public/common/input/web_mouse_event.h"
+@@ -622,6 +623,10 @@ void CefBrowserPlatformDelegate::SetAccessibilityState(
+ }
+ 
+ bool CefBrowserPlatformDelegate::IsPrintPreviewSupported() const {
++#if !BUILDFLAG(ENABLE_PRINT_PREVIEW)
++  // Footprint F3a: print preview is compiled out.
++  return false;
++#else
+   if (IsWindowless()) {
+     // Not supported with windowless rendering.
+     return false;
+@@ -651,6 +656,7 @@ bool CefBrowserPlatformDelegate::IsPrintPreviewSupported() const {
+   }
+ 
+   return true;
++#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+ }
+ 
+ bool CefBrowserPlatformDelegate::IsMovePictureInPictureEnabled() const {
+diff --git a/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.cc b/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.cc
+index 7c96eb632..943a23710 100644
+--- a/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.cc
++++ b/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.cc
+@@ -18,8 +18,10 @@
+ 
+ #if BUILDFLAG(IS_LINUX)
+ #include "base/linux_util.h"
++#if BUILDFLAG(ENABLE_PRINTING)
+ #include "cef/libcef/browser/printing/print_dialog_linux.h"
+ #endif
++#endif
+ 
+ #if BUILDFLAG(IS_WIN)
+ #include "chrome/browser/win/app_icon.h"
+@@ -28,7 +30,7 @@
+ ChromeBrowserMainExtraPartsCef::ChromeBrowserMainExtraPartsCef() = default;
+ 
+ ChromeBrowserMainExtraPartsCef::~ChromeBrowserMainExtraPartsCef() {
+-#if BUILDFLAG(IS_LINUX)
++#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
+   // Clear the global printing delegate pointer before |printing_delegate_| is
+   // destroyed so it does not dangle. |print_dialog_factory_| unregisters itself
+   // via the PrintDialogLinuxFactory destructor.
+@@ -99,7 +101,7 @@ void ChromeBrowserMainExtraPartsCef::ToolkitInitialized() {
+   SetConstrainedWindowViewsClient(CreateAlloyConstrainedWindowViewsClient(
+       CreateChromeConstrainedWindowViewsClient()));
+ 
+-#if BUILDFLAG(IS_LINUX)
++#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
+   printing_delegate_ = std::make_unique<CefPrintingContextLinuxDelegate>();
+   auto* default_delegate =
+       ui::PrintingContextLinuxDelegate::SetInstance(printing_delegate_.get());
+diff --git a/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.h b/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.h
+index 6908b4309..62148fa0c 100644
+--- a/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.h
++++ b/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.h
+@@ -12,7 +12,9 @@
+ #include "cef/libcef/browser/request_context_impl.h"
+ #include "chrome/browser/chrome_browser_main_extra_parts.h"
+ 
+-#if BUILDFLAG(IS_LINUX)
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
+ #include "printing/printing_context_linux.h"
+ 
+ class CefPrintingContextLinuxDelegate;
+@@ -61,7 +63,7 @@ class ChromeBrowserMainExtraPartsCef : public ChromeBrowserMainExtraParts {
+   scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner_;
+   scoped_refptr<base::SingleThreadTaskRunner> user_blocking_task_runner_;
+ 
+-#if BUILDFLAG(IS_LINUX)
++#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
+   // Owns the printing delegate and print dialog factory registered in
+   // ToolkitInitialized(). |printing_delegate_| is declared first so it is
+   // destroyed after |print_dialog_factory_|; the destructor clears the global
+diff --git a/libcef/browser/printing/print_util.cc b/libcef/browser/printing/print_util.cc
+index 59cd6e0e4..2c8672937 100644
+--- a/libcef/browser/printing/print_util.cc
++++ b/libcef/browser/printing/print_util.cc
+@@ -6,12 +6,34 @@
+ 
+ #include "base/files/file_util.h"
+ #include "cef/libcef/browser/thread_util.h"
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PRINTING)
+ #include "chrome/browser/printing/print_view_manager.h"
+ #include "chrome/browser/printing/print_view_manager_common.h"
+ #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
++#endif
+ 
+ namespace print_util {
+ 
++#if !BUILDFLAG(ENABLE_PRINTING)
++
++// Footprint F3a: printing is compiled out. Print() does nothing and
++// PrintToPDF() reports failure.
++void Print(content::WebContents* web_contents, bool print_preview_disabled) {}
++
++void PrintToPDF(content::WebContents* web_contents,
++                const CefString& path,
++                const CefPdfPrintSettings& settings,
++                CefRefPtr<CefPdfPrintCallback> callback) {
++  LOG(ERROR) << "PrintToPDF is not supported (printing disabled at build).";
++  if (callback) {
++    callback->OnPdfPrintFinished(CefString(), false);
++  }
++}
++
++#else  // BUILDFLAG(ENABLE_PRINTING)
++
+ namespace {
+ 
+ // Write the PDF file to disk.
+@@ -141,4 +163,6 @@ void PrintToPDF(content::WebContents* web_contents,
+   callback->OnPdfPrintFinished(CefString(), false);
+ }
+ 
++#endif  // BUILDFLAG(ENABLE_PRINTING)
++
+ }  // namespace print_util
+diff --git a/libcef/renderer/chrome/chrome_content_renderer_client_cef.cc b/libcef/renderer/chrome/chrome_content_renderer_client_cef.cc
+index 1cb197c3d..0605fbaad 100644
+--- a/libcef/renderer/chrome/chrome_content_renderer_client_cef.cc
++++ b/libcef/renderer/chrome/chrome_content_renderer_client_cef.cc
+@@ -8,11 +8,15 @@
+ #include "cef/libcef/renderer/render_frame_observer.h"
+ #include "cef/libcef/renderer/render_manager.h"
+ #include "cef/libcef/renderer/thread_util.h"
+-#include "chrome/renderer/printing/chrome_print_render_frame_helper_delegate.h"
+ #include "content/public/renderer/render_frame.h"
+ #include "content/public/renderer/render_thread.h"
++#include "printing/buildflags/buildflags.h"
+ #include "third_party/blink/public/web/web_view.h"
+ 
++#if BUILDFLAG(ENABLE_PRINTING)
++#include "chrome/renderer/printing/chrome_print_render_frame_helper_delegate.h"
++#endif
++
+ ChromeContentRendererClientCef::ChromeContentRendererClientCef()
+     : render_manager_(new CefRenderManager) {}
+ 
+@@ -54,12 +58,14 @@ void ChromeContentRendererClientCef::RenderFrameCreated(
+     OnBrowserCreated(render_frame->GetWebView(), *config);
+   }
+ 
++#if BUILDFLAG(ENABLE_PRINTING)
+   if (config.has_value()) {
+     // This value will be used when the ChromeContentRendererClient
+     // creates the new ChromePrintRenderFrameHelperDelegate below.
+     ChromePrintRenderFrameHelperDelegate::SetNextPrintPreviewEnabled(
+         (*config).print_preview_enabled);
+   }
++#endif
+ 
+   ChromeContentRendererClient::RenderFrameCreated(render_frame);
+ }

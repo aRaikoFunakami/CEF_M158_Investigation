@@ -1,0 +1,55 @@
+is_official_build = true
+is_debug = false
+symbol_level = 0
+blink_symbol_level = 0
+v8_symbol_level = 0
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+use_cups = false
+enable_vr = false
+enable_openxr = false
+enable_remoting = false
+enable_media_remoting = false
+enable_media_remoting_rpc = false
+enable_browser_speech_service = false
+use_on_device_model_service = false
+webnn_use_tflite = false
+use_perfetto_trace_processor = false
+enable_libaom = false
+rtc_include_dav1d_in_internal_decoder_factory = false
+use_qt5 = false
+use_qt6 = false
+use_kerberos = false
+use_bluez = false
+enable_paint_preview = false
+generate_about_credits = false
+dawn_enable_vulkan_validation_layers = false
+use_dawn = false
+skia_use_dawn = false
+# --- ここから D で追加(//chrome の assert で B/C では使えなかったもの)
+enable_mdns = false
+# --- TV 用途で不要と判断した追加分
+ozone_platform_wayland = false
+use_gtk = false
+use_gio = false
+use_libpci = false
+use_vaapi = false
+rtc_use_pipewire = false
+enable_library_cdms = false
+enable_jxl_decoder = false
+media_use_iamf_tools = false
+enable_reporting = false
+enable_device_bound_sessions = false
+enable_compute_pressure = false
+enable_chrome_notifications = false
+enable_message_center = false
+# --- Cobalt 27 の common.gn にならったもの
+enable_backup_ref_ptr_support = false
+enable_backup_ref_ptr_feature_flag = false
+include_transport_security_state_preload_list = false
+enable_vectorized_html_scanning = false
+# D3
+webnn_use_litert = false
+chrome_wide_echo_cancellation_supported = false
+# D3-4: CFI を無効化(icall のジャンプテーブルが死んだコードを生かすため。TV 向け ARM ビルドでは元々無効)
+use_siso = false

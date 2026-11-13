@@ -1,0 +1,13 @@
+<!doctype html><meta charset=utf-8><title>eme</title><link rel=stylesheet href=style.css><script src=common.js></script>
+<script src="https://ajax.googleapis.com/ajax/libs/shaka-player/4.11.2/shaka-player.compiled.js"></script>
+<h2 id=h>EME (ClearKey, DASH, Shaka Player): 実行中</h2><video id=v muted autoplay></video><pre id=out></pre>
+<script>(async()=>{ const r={pass:false}; const v=document.getElementById('v'); try{
+  shaka.polyfill.installAll(); const p = new shaka.Player(); await p.attach(v);
+  p.configure({preferredVideoCodecs:['avc1'], preferredAudioCodecs:['mp4a'],
+    drm:{clearKeys:{'feedf00deedeadbeeff0baadf00dd00d':'00112233445566778899aabbccddeeff'}}});
+  await p.load('https://storage.googleapis.com/shaka-demo-assets/angel-one-clearkey/dash.mpd'); v.play();
+  r.played = await waitPlay(v, 5, 60000); r.currentTime = v.currentTime; r.size = v.videoWidth+'x'+v.videoHeight;
+  r.mediaKeys = !!v.mediaKeys; r.keySystem = p.keySystem();
+  const t = p.getVariantTracks().find(t=>t.active)||{}; r.videoCodec=t.videoCodec; r.audioCodec=t.audioCodec;
+  r.pass = r.played && r.mediaKeys && v.videoWidth>0;
+}catch(e){ r.error = String(e && (e.message||e.code) || e) + ' ' + JSON.stringify(e); } done('EME', r); })();</script>

@@ -1,0 +1,27 @@
+{
+ "name": "D1",
+ "binary": "/root/fp/builds/D1/content_shell",
+ "files": {
+  "content_shell.pak": 2527099,
+  "icudtl.dat": 10688512,
+  "v8_context_snapshot.bin": 711448,
+  "snapshot_blob.bin": 356344,
+  "libEGL.so": 324600,
+  "libGLESv2.so": 324600,
+  "libvk_swiftshader.so": 6428560,
+  "libvulkan.so.1": 845512,
+  "vk_swiftshader_icd.json": 107,
+  "shell_resources.pak": 975,
+  "ui_resources_100_percent.pak": 17340
+ },
+ "unstripped": 341431544,
+ "stripped": 192408352,
+ "text": 184038782,
+ "data": 8356159,
+ "bss": 2551976,
+ "locales_all": 0,
+ "locales_n": 0,
+ "locales_ja_en": 0,
+ "total_ja_en": 214633449,
+ "total_all_locales": 214633449
+}

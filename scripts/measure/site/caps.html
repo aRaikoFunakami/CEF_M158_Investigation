@@ -1,0 +1,23 @@
+<!doctype html><meta charset=utf-8><title>caps</title><link rel=stylesheet href=style.css><script src=common.js></script>
+<h2 id=h>機能の有無: 実行中</h2><pre id=out></pre>
+<script>(async()=>{ const r={pass:true, mse:{}, api:{}};
+  const types = {h264:'video/mp4; codecs="avc1.640028"', aac:'audio/mp4; codecs="mp4a.40.2"', vp9:'video/webm; codecs="vp09.00.10.08"',
+    av1:'video/mp4; codecs="av01.0.05M.08"', opus:'audio/webm; codecs="opus"', hevc:'video/mp4; codecs="hvc1.1.6.L93.B0"', ac3:'audio/mp4; codecs="ac-3"'};
+  for (const k in types) r.mse[k] = !!(window.MediaSource && MediaSource.isTypeSupported(types[k]));
+  try{ await navigator.requestMediaKeySystemAccess('org.w3.clearkey',[{initDataTypes:['cenc'],videoCapabilities:[{contentType:'video/mp4; codecs="avc1.42E01E"'}]}]); r.api.emeClearKey=true; }catch(e){ r.api.emeClearKey=false; }
+  try{ await navigator.requestMediaKeySystemAccess('com.widevine.alpha',[{initDataTypes:['cenc'],videoCapabilities:[{contentType:'video/mp4; codecs="avc1.42E01E"'}]}]); r.api.emeWidevine=true; }catch(e){ r.api.emeWidevine=false; }
+  const has = { MediaSource:()=>!!window.MediaSource, WebSocket:()=>!!window.WebSocket, fetch:()=>!!window.fetch, cryptoSubtle:()=>!!(crypto&&crypto.subtle),
+    indexedDB:()=>!!window.indexedDB, localStorage:()=>!!window.localStorage, WebAssembly:()=>!!window.WebAssembly, AudioContext:()=>!!window.AudioContext,
+    serviceWorker:()=>'serviceWorker' in navigator, canvas2d:()=>!!document.createElement('canvas').getContext('2d'),
+    webgl:()=>!!document.createElement('canvas').getContext('webgl'), webgl2:()=>!!document.createElement('canvas').getContext('webgl2'),
+    Intl:()=>!!(window.Intl&&Intl.DateTimeFormat), TextTrack:()=>!!window.TextTrack, Worker:()=>!!window.Worker, SharedWorker:()=>!!window.SharedWorker,
+    RTCPeerConnection:()=>!!window.RTCPeerConnection, getUserMedia:()=>!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia), MediaRecorder:()=>!!window.MediaRecorder,
+    WebCodecs:()=>!!window.VideoDecoder, webgpu:()=>!!navigator.gpu, webnn:()=>!!navigator.ml, usb:()=>!!navigator.usb, hid:()=>!!navigator.hid, serial:()=>!!navigator.serial,
+    bluetooth:()=>!!navigator.bluetooth, midi:()=>!!navigator.requestMIDIAccess, gamepad:()=>!!navigator.getGamepads, xr:()=>!!navigator.xr,
+    PaymentRequest:()=>!!window.PaymentRequest, Notification:()=>!!window.Notification, PushManager:()=>!!window.PushManager,
+    SpeechRecognition:()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition), speechSynthesis:()=>!!window.speechSynthesis,
+    credentials:()=>!!navigator.credentials, PublicKeyCredential:()=>!!window.PublicKeyCredential, geolocation:()=>!!navigator.geolocation,
+    WebTransport:()=>!!window.WebTransport, PresentationRequest:()=>!!window.PresentationRequest, RemotePlayback:()=>!!window.RemotePlayback,
+    pictureInPicture:()=>!!document.pictureInPictureEnabled, print:()=>typeof window.print==='function', pdfViewer:()=>!!navigator.pdfViewerEnabled };
+  for (const k in has) { try{ r.api[k] = has[k](); }catch(e){ r.api[k] = 'err'; } }
+  r.ua = navigator.userAgent; done('機能の有無', r); })();</script>

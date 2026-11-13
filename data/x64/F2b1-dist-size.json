@@ -1,0 +1,28 @@
+{
+ "name": "F2b1-dist",
+ "binary": "/root/fp/builds/F2b1-dist/cefsimple",
+ "files": {
+  "resources.pak": 2214984,
+  "chrome_100_percent.pak": 577211,
+  "icudtl.dat": 5226480,
+  "v8_context_snapshot.bin": 700720,
+  "libEGL.so": 309608,
+  "libGLESv2.so": 309608,
+  "libvk_swiftshader.so": 5556568,
+  "libvulkan.so.1": 824072,
+  "vk_swiftshader_icd.json": 107
+ },
+ "unstripped": 389738704,
+ "stripped": 218469296,
+ "text": 206444398,
+ "data": 12004631,
+ "bss": 2633324,
+ "exe_stripped": 714968,
+ "libcef_unstripped": 388590272,
+ "libcef_stripped": 217754328,
+ "locales_all": 51919015,
+ "locales_n": 220,
+ "locales_ja_en": 1469425,
+ "total_ja_en": 235658079,
+ "total_all_locales": 286107669
+}

@@ -1,0 +1,54 @@
+diff --git a/chrome/browser/media/cast_mirroring_service_host.cc b/chrome/browser/media/cast_mirroring_service_host.cc
+index 674893e7e3..62a4624cc6 100644
+--- a/chrome/browser/media/cast_mirroring_service_host.cc
++++ b/chrome/browser/media/cast_mirroring_service_host.cc
+@@ -20,7 +20,10 @@
+ #include "base/task/thread_pool.h"
+ #include "build/build_config.h"
+ #include "chrome/browser/browser_process.h"
++#include "media/media_buildflags.h"
++#if BUILDFLAG(ENABLE_MEDIA_REMOTING)
+ #include "chrome/browser/media/cast_remoting_connector.h"
++#endif
+ #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+ #include "chrome/browser/media/router/media_router_feature.h"
+ #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+@@ -516,8 +519,10 @@ void CastMirroringServiceHost::ConnectToRemotingSource(
+   if (source_media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
+     content::WebContents* source_contents = web_contents();
+     if (source_contents) {
++#if BUILDFLAG(ENABLE_MEDIA_REMOTING)  // FP: media remoting
+       CastRemotingConnector::Get(source_contents)
+           ->ConnectWithMediaRemoter(std::move(remoter), std::move(receiver));
++#endif
+     }
+   }
+ }
+diff --git a/chrome/browser/media/router/mojo/media_router_desktop.cc b/chrome/browser/media/router/mojo/media_router_desktop.cc
+index 7180783ca0..d6891d5cdc 100644
+--- a/chrome/browser/media/router/mojo/media_router_desktop.cc
++++ b/chrome/browser/media/router/mojo/media_router_desktop.cc
+@@ -20,7 +20,10 @@
+ #include "build/build_config.h"
+ #include "chrome/browser/browser_process.h"
+ #include "chrome/browser/media/cast_mirroring_service_host.h"
++#include "media/media_buildflags.h"
++#if BUILDFLAG(ENABLE_MEDIA_REMOTING)
+ #include "chrome/browser/media/cast_remoting_connector.h"
++#endif
+ #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
+ #include "chrome/browser/media/router/media_router_feature.h"
+ #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
+@@ -179,10 +182,12 @@ void MediaRouterDesktop::CreateRoute(const MediaSource::Id& source_id,
+ 
+   const MediaSource source(source_id);
+   if (source.IsTabMirroringSource()) {
++#if BUILDFLAG(ENABLE_MEDIA_REMOTING)  // FP: media remoting
+     // Ensure the CastRemotingConnector is created before mirroring starts.
+     CastRemotingConnector* const connector =
+         CastRemotingConnector::Get(web_contents);
+     connector->ResetRemotingPermission();
++#endif
+ 
+     MediaRouterMojoMetrics::RecordTabMirroringMetrics(web_contents);
+   }

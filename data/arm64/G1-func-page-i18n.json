@@ -1,0 +1,33 @@
+{
+ "name": "G1-func",
+ "page": "i18n",
+ "result": {
+  "date_ja": "2026年11月12日木曜日 10:02:03 JST",
+  "date_ja_era": "令和8年11月12日",
+  "date_en": "Thursday, November 12, 2026",
+  "date_de": "Donnerstag, 12. November 2026",
+  "num_ja": "￥1,234,567",
+  "num_compact": "1.2億",
+  "rel": "昨日",
+  "plural": "one",
+  "list": "赤、青、黄",
+  "display": "アメリカ合衆国",
+  "collator": "あいカん",
+  "segment_word": "今日|は|良い|天気|です|ね",
+  "segment_grapheme": 2,
+  "locales": "ja,en-US,de,fr,zh-CN,ko,ar,th,hi",
+  "sjis": "日本語",
+  "eucjp": "日本語",
+  "iso2022jp": "日本",
+  "gbk": "中文",
+  "euckr": "한글",
+  "big5": "中文",
+  "normalize": "2,ガ",
+  "upper": "STRASSE,İ",
+  "idn": "xn--wgv71a119e.jp",
+  "wrap_lines": null,
+  "tz": "2026/11/11 米国東部標準時",
+  "pass": true,
+  "bad": []
+ }
+}

@@ -1,0 +1,109 @@
+{
+ "name": "x64-E1",
+ "binary": "/root/fp/builds/E1/cefsimple",
+ "extra_args": "",
+ "pages": {
+  "youtube": {
+   "players": {
+    "3589BBF59DE61027EE035037C0CBC226": {
+     "kVideoDecoderName": "Dav1dVideoDecoder",
+     "kAudioDecoderName": "OpusAudioDecoder",
+     "kVideoTracks": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"av1\",\"coded size\":\"1920x1080\",\"color space\":{\"matrix\":\"BT709\",\"primaries\":\"BT709\",\"range\":\"LIMITED\",\"transfer\":\"BT709\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":false,\"hdr metadata\":{},\"natural size\":\"1920x1080\",\"orientation\":\"0°\",\"profile\":\"av1 profile main\",\"visible rect\":\"0,0 1920x1080\"}]",
+     "kAudioTracks": "[{\"bytes per channel\":4,\"bytes per frame\":8,\"channel layout\":\"STEREO\",\"channels\":2,\"codec\":\"opus\",\"codec delay\":312,\"discard decoder delay\":true,\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"profile\":\"unknown\",\"sample format\":\"Float 32-bit\",\"samples per second\":48000,\"seek preroll\":\"80000us\"}]",
+     "kIsVideoDecryptingDemuxerStream": "false",
+     "kRendererName": "RendererImpl",
+     "kIsPlatformVideoDecoder": "false",
+     "kIsPlatformAudioDecoder": "false"
+    }
+   },
+   "errors": [],
+   "decoder_msgs": [
+    "Cannot select SymphoniaAudioDecoder for audio decoding. status=DecoderStatus::Codes::kUnsupportedCodec",
+    "Cannot select IamfAudioDecoder for audio decoding. status=DecoderStatus::Codes::kUnsupportedCodec",
+    "Selected OpusAudioDecoder for audio decoding, config: codec: opus, profile: unknown, bytes_per_channel: 4, channel_layout: STEREO, channels: 2, samples_per_second: 48000, sample_format: Float 32-bit, ",
+    "Cannot select DecryptingVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedEncryptionMode",
+    "Cannot select VaapiVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedConfig",
+    "Cannot select VpxVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedConfig",
+    "Selected Dav1dVideoDecoder for video decoding, config: codec: av1, profile: av1 profile main, level: not available, alpha_mode: is_opaque, coded size: [1920,1080], visible rect: [0,0,1920,1080], natur"
+   ],
+   "video": {
+    "currentTime": 48.859448,
+    "paused": false,
+    "size": "1920x1080",
+    "readyState": 4,
+    "total": 2435,
+    "dropped": 0
+   }
+  },
+  "mp4": {
+   "players": {
+    "203B55DDF433E70456632E94C7E4AD45": {
+     "kVideoDecoderName": "FFmpegVideoDecoder",
+     "kAudioTracks": "[{\"bytes per channel\":4,\"bytes per frame\":8,\"channel layout\":\"STEREO\",\"channels\":2,\"codec\":\"aac\",\"codec delay\":0,\"discard decoder delay\":true,\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"profile\":\"unknown\",\"sample format\":\"Float 32-bit planar\",\"samples per second\":48000,\"seek preroll\":\"0us\"}]",
+     "kRendererName": "RendererImpl",
+     "kIsPlatformAudioDecoder": "false",
+     "kAudioDecoderName": "FFmpegAudioDecoder",
+     "kVideoTracks": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"854x480\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"854x480\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 854x480\"}]",
+     "kIsVideoDecryptingDemuxerStream": "false",
+     "kIsPlatformVideoDecoder": "false"
+    }
+   },
+   "errors": [],
+   "decoder_msgs": [
+    "FFmpegDemuxer: created audio stream, config codec: aac, profile: unknown, bytes_per_channel: 4, channel_layout: STEREO, channels: 2, samples_per_second: 48000, sample_format: Float 32-bit planar, byte",
+    "Cannot select SymphoniaAudioDecoder for audio decoding. status=DecoderStatus::Codes::kUnsupportedCodec",
+    "Cannot select IamfAudioDecoder for audio decoding. status=DecoderStatus::Codes::kUnsupportedCodec",
+    "Cannot select OpusAudioDecoder for audio decoding. status=DecoderStatus::Codes::kUnsupportedConfig",
+    "Selected FFmpegAudioDecoder for audio decoding, config: codec: aac, profile: unknown, bytes_per_channel: 4, channel_layout: STEREO, channels: 2, samples_per_second: 48000, sample_format: Float 32-bit ",
+    "Cannot select VaapiVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedConfig",
+    "Cannot select DecryptingVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedEncryptionMode",
+    "Cannot select VpxVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedConfig",
+    "Cannot select Dav1dVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedCodec",
+    "Selected FFmpegVideoDecoder for video decoding, config: codec: h264, profile: h264 high, level: not available, alpha_mode: is_opaque, coded size: [854,480], visible rect: [0,0,854,480], natural size: "
+   ],
+   "video": {
+    "currentTime": 24.815446,
+    "paused": false,
+    "size": "854x480",
+    "readyState": 4,
+    "total": 600,
+    "dropped": 0
+   }
+  },
+  "mse": {
+   "players": {
+    "D906C181DF028F6D32B6931A3C182AED": {
+     "kVideoTracks": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"720x576\",\"color space\":{\"matrix\":\"BT709\",\"primaries\":\"BT709\",\"range\":\"LIMITED\",\"transfer\":\"BT709\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":false,\"hdr metadata\":{},\"natural size\":\"720x576\",\"orientation\":\"0°\",\"profile\":\"h264 main\",\"visible rect\":\"0,0 720x576\"}]",
+     "kRendererName": "RendererImpl",
+     "kVideoDecoderName": "FFmpegVideoDecoder",
+     "kAudioDecoderName": "FFmpegAudioDecoder",
+     "kAudioTracks": "[{\"bytes per channel\":2,\"bytes per frame\":4,\"channel layout\":\"STEREO\",\"channels\":2,\"codec\":\"aac\",\"codec delay\":0,\"discard decoder delay\":false,\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"profile\":\"unknown\",\"sample format\":\"Signed 16-bit\",\"samples per second\":48000,\"seek preroll\":\"0us\"}]",
+     "kIsVideoDecryptingDemuxerStream": "false",
+     "kIsPlatformVideoDecoder": "false",
+     "kIsPlatformAudioDecoder": "false"
+    }
+   },
+   "errors": [],
+   "decoder_msgs": [
+    "Cannot select SymphoniaAudioDecoder for audio decoding. status=DecoderStatus::Codes::kUnsupportedCodec",
+    "Cannot select IamfAudioDecoder for audio decoding. status=DecoderStatus::Codes::kUnsupportedCodec",
+    "Cannot select OpusAudioDecoder for audio decoding. status=DecoderStatus::Codes::kUnsupportedConfig",
+    "Selected FFmpegAudioDecoder for audio decoding, config: codec: aac, profile: unknown, bytes_per_channel: 2, channel_layout: STEREO, channels: 2, samples_per_second: 48000, sample_format: Signed 16-bit",
+    "Cannot select DecryptingVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedEncryptionMode",
+    "Cannot select VaapiVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedConfig",
+    "Cannot select VpxVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedConfig",
+    "Cannot select Dav1dVideoDecoder for video decoding. status=DecoderStatus::Codes::kUnsupportedCodec",
+    "Selected FFmpegVideoDecoder for video decoding, config: codec: h264, profile: h264 main, level: 30, alpha_mode: is_opaque, coded size: [720,576], visible rect: [0,0,720,576], natural size: [720,576], ",
+    "video decoder config changed midstream, new config: codec: h264, profile: h264 main, level: 21, alpha_mode: is_opaque, coded size: [450,360], visible rect: [0,0,450,360], natural size: [450,360], has "
+   ],
+   "video": {
+    "currentTime": 22.571144,
+    "paused": false,
+    "size": "450x360",
+    "readyState": 4,
+    "total": 568,
+    "dropped": 0
+   }
+  }
+ }
+}

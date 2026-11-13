@@ -1,0 +1,766 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 4d5ed330a..6c6ee4a45 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -105,6 +105,8 @@ import("//content/public/app/mac_helpers.gni")
+ import("//extensions/buildflags/buildflags.gni")
+ import("//media/media_options.gni")
+ import("//mojo/public/tools/bindings/mojom.gni")
++import("//pdf/features.gni")
++import("//content/public/common/features.gni")
+ import("//printing/buildflags/buildflags.gni")
+ import("//rlz/buildflags/buildflags.gni")
+ import("//testing/test.gni")
+@@ -254,8 +256,8 @@ if (is_linux) {
+ # Set by GetRequiredArgs() in //cef/tools/gn_args.py.
+ #
+ 
+-# Enable support for Print Preview.
+-assert(enable_print_preview)
++# Footprint F3a: Print Preview / printing / PDF / plugins are optional.
++# (was: assert(enable_print_preview))
+ 
+ # Enable support for Widevine CDM.
+ assert(enable_widevine)
+@@ -609,8 +611,6 @@ source_set("libcef_static") {
+     "libcef/browser/chrome/chrome_web_contents_view_delegate_cef.h",
+     "libcef/browser/chrome/extensions/chrome_extension_util.cc",
+     "libcef/browser/chrome/extensions/chrome_extension_util.h",
+-    "libcef/browser/chrome/extensions/chrome_mime_handler_view_guest_delegate_cef.cc",
+-    "libcef/browser/chrome/extensions/chrome_mime_handler_view_guest_delegate_cef.h",
+     "libcef/browser/chrome/views/browser_platform_delegate_chrome_child_window.cc",
+     "libcef/browser/chrome/views/browser_platform_delegate_chrome_child_window.h",
+     "libcef/browser/chrome/views/browser_platform_delegate_chrome_views.cc",
+@@ -755,8 +755,6 @@ source_set("libcef_static") {
+     "libcef/browser/prefs/pref_registrar.h",
+     "libcef/browser/prefs/renderer_prefs.cc",
+     "libcef/browser/prefs/renderer_prefs.h",
+-    "libcef/browser/print_settings_impl.cc",
+-    "libcef/browser/print_settings_impl.h",
+     "libcef/browser/printing/print_util.cc",
+     "libcef/browser/printing/print_util.h",
+     "libcef/browser/process_util_impl.cc",
+@@ -992,7 +990,6 @@ source_set("libcef_static") {
+     "//chrome:resources",
+     "//chrome:strings",
+     "//chrome/common:buildflags",
+-    "//chrome/services/printing:lib",
+     "//components/certificate_transparency",
+     "//components/component_updater",
+     "//components/content_settings/core/browser",
+@@ -1004,16 +1001,8 @@ source_set("libcef_static") {
+     "//components/media_router/common/mojom:media_router",
+     "//components/navigation_interception",
+     "//components/network_session_configurator/common",
+-    "//components/pdf/browser",
+-    "//components/pdf/renderer",
+-    "//components/plugins/renderer",
+     "//components/pref_registry",
+-    "//components/printing/browser",
+-    "//components/printing/common",
+-    "//components/printing/renderer",
+     "//components/proxy_config",
+-    "//components/services/print_compositor/public/cpp",
+-    "//components/services/print_compositor/public/mojom",
+     "//components/update_client",
+     "//components/url_formatter",
+     "//components/user_prefs",
+@@ -1029,15 +1018,10 @@ source_set("libcef_static") {
+     "//content/public/utility",
+     "//crypto",
+     "//device/base",
+-    "//extensions/browser",
+     "//extensions/buildflags",
+-    "//extensions/common/api",
+-    "//extensions/common:core_api_provider",
+-    "//extensions/renderer",
+     "//ipc",
+     "//media",
+     "//net",
+-    "//pdf",
+     "//printing/buildflags",
+     "//services/network:network_service",
+     "//services/network/public/cpp",
+@@ -1070,6 +1054,26 @@ source_set("libcef_static") {
+     "//url",
+     "//v8",
+   ]
++  if (enable_extensions_core) {
++    deps += [ "//extensions/common/api" ]
++  }
++  if (enable_extensions_core) {
++    deps += [ "//extensions/common:core_api_provider" ]
++  }
++  if (enable_extensions_core) {
++    deps += [ "//extensions/browser" ]
++  }
++  if (enable_extensions_core) {
++    deps += [ "//extensions/renderer" ]
++  }
++  if (enable_extensions) {
++    # Subclass of ChromeMimeHandlerViewGuestDelegate, which
++    # //chrome/browser/guest_view only builds with extensions.
++    sources += [
++      "libcef/browser/chrome/extensions/chrome_mime_handler_view_guest_delegate_cef.cc",
++      "libcef/browser/chrome/extensions/chrome_mime_handler_view_guest_delegate_cef.h",
++    ]
++  }
+ 
+   if (is_win) {
+     sources += includes_win + [
+@@ -1098,6 +1102,40 @@ source_set("libcef_static") {
+     ]
+   }
+ 
++  if (enable_printing) {
++    sources += [
++      "libcef/browser/print_settings_impl.cc",
++      "libcef/browser/print_settings_impl.h",
++    ]
++    deps += [
++      "//chrome/services/printing:lib",
++      "//components/printing/browser",
++      "//components/printing/common",
++      "//components/printing/renderer",
++      "//components/services/print_compositor/public/cpp",
++      "//components/services/print_compositor/public/mojom",
++    ]
++    if (is_linux) {
++      sources += [
++        "libcef/browser/printing/print_dialog_linux.cc",
++        "libcef/browser/printing/print_dialog_linux.h",
++      ]
++    }
++  } else {
++    # Footprint F3a: CefPrintSettings::Create() must still exist for libcef_dll.
++    sources += [ "libcef/browser/print_settings_stub.cc" ]
++  }
++  if (enable_pdf) {
++    deps += [
++      "//components/pdf/browser",
++      "//components/pdf/renderer",
++      "//pdf",
++    ]
++  }
++  if (enable_plugins) {
++    deps += [ "//components/plugins/renderer" ]
++  }
++
+   if (is_linux) {
+     sources += includes_linux + [
+       "libcef/browser/input_event_utils_linux.cc",
+@@ -1105,8 +1143,6 @@ source_set("libcef_static") {
+       "libcef/browser/native/browser_platform_delegate_native_linux.h",
+       "libcef/browser/osr/browser_platform_delegate_osr_linux.cc",
+       "libcef/browser/osr/browser_platform_delegate_osr_linux.h",
+-      "libcef/browser/printing/print_dialog_linux.cc",
+-      "libcef/browser/printing/print_dialog_linux.h",
+       "libcef/common/util_linux.h",
+       "libcef/common/util_linux.cc",
+     ]
+@@ -1588,8 +1624,6 @@ make_pack_header("resources") {
+     "$root_gen_dir/cef/grit/cef_resources.h",
+     "$root_gen_dir/chrome/grit/browser_resources.h",
+     "$root_gen_dir/chrome/grit/common_resources.h",
+-    "$root_gen_dir/chrome/grit/component_extension_resources.h",
+-    "$root_gen_dir/chrome/grit/pdf_resources.h",
+     "$root_gen_dir/chrome/grit/renderer_resources.h",
+     "$root_gen_dir/components/grit/components_resources.h",
+     "$root_gen_dir/components/grit/dev_ui_components_resources.h",
+@@ -1601,9 +1635,6 @@ make_pack_header("resources") {
+     "$root_gen_dir/content/grit/histograms_resources.h",
+     "$root_gen_dir/content/grit/process_resources.h",
+     "$root_gen_dir/content/grit/service_worker_resources.h",
+-    "$root_gen_dir/extensions/grit/extensions_browser_resources.h",
+-    "$root_gen_dir/extensions/grit/extensions_renderer_resources.h",
+-    "$root_gen_dir/extensions/grit/extensions_resources.h",
+     "$root_gen_dir/mojo/public/js/grit/mojo_bindings_resources.h",
+     "$root_gen_dir/net/grit/net_resources.h",
+     "$root_gen_dir/third_party/blink/public/resources/grit/blink_image_resources.h",
+@@ -1617,8 +1648,6 @@ make_pack_header("resources") {
+     ":cef_resources",
+     "//base/tracing/protos:chrome_track_event_resources",
+     "//chrome/browser:resources",
+-    "//chrome/browser/resources:component_extension_resources",
+-    "//chrome/browser/resources/pdf:resources",
+     "//chrome/common:resources",
+     "//chrome/renderer:resources",
+     "//components/resources:components_resources",
+@@ -1628,9 +1657,6 @@ make_pack_header("resources") {
+     "//content/browser/tracing:resources",
+     "//content/browser/webrtc/resources",
+     "//content:content_resources",
+-    "//extensions:extensions_browser_resources",
+-    "//extensions/renderer/resources:extensions_renderer_resources",
+-    "//extensions:extensions_resources_grd",
+     "//mojo/public/js:resources",
+     "//net:net_resources",
+     "//third_party/blink/public:image_resources",
+@@ -1639,6 +1665,30 @@ make_pack_header("resources") {
+     "//ui/views/resources:resources_grd",
+     "//ui/webui/resources:resources_grit",
+   ]
++  if (enable_extensions_core) {
++    deps += [ "//chrome/browser/resources:component_extension_resources" ]
++  }
++  if (enable_extensions_core) {
++    deps += [ "//extensions:extensions_resources_grd" ]
++  }
++  if (enable_extensions_core) {
++    deps += [ "//extensions/renderer/resources:extensions_renderer_resources" ]
++  }
++  if (enable_extensions_core) {
++    deps += [ "//extensions:extensions_browser_resources" ]
++  }
++  if (enable_extensions_core) {
++    inputs += [
++      "$root_gen_dir/chrome/grit/component_extension_resources.h",
++      "$root_gen_dir/extensions/grit/extensions_browser_resources.h",
++      "$root_gen_dir/extensions/grit/extensions_renderer_resources.h",
++      "$root_gen_dir/extensions/grit/extensions_resources.h",
++    ]
++  }
++  if (enable_pdf) {
++    inputs += [ "$root_gen_dir/chrome/grit/pdf_resources.h" ]
++    deps += [ "//chrome/browser/resources/pdf:resources" ]
++  }
+ }
+ 
+ # Generate cef_pack_strings.h.
+@@ -1654,7 +1704,6 @@ make_pack_header("strings") {
+     "$root_gen_dir/components/omnibox/resources/grit/omnibox_pedal_synonyms.h",
+     "$root_gen_dir/components/strings/grit/components_branded_strings.h",
+     "$root_gen_dir/components/strings/grit/components_strings.h",
+-    "$root_gen_dir/extensions/strings/grit/extensions_strings.h",
+     "$root_gen_dir/services/strings/grit/services_strings.h",
+     "$root_gen_dir/third_party/blink/public/strings/grit/blink_strings.h",
+     "$root_gen_dir/third_party/blink/public/strings/grit/permission_element_generated_strings.h",
+@@ -1674,7 +1723,6 @@ make_pack_header("strings") {
+     "//components/strings:components_branded_strings",
+     "//components/strings:components_locale_settings",
+     "//components/strings:components_strings",
+-    "//extensions/strings",
+     "//services/strings",
+     "//third_party/blink/public/strings",
+     "//third_party/blink/public/strings:permission_element_generated_strings",
+@@ -1683,6 +1731,12 @@ make_pack_header("strings") {
+     "//ui/strings:auto_image_annotation_strings",
+     "//ui/strings:ui_strings",
+   ]
++  if (enable_extensions_core) {
++    deps += [ "//extensions/strings" ]
++  }
++  if (enable_extensions_core) {
++    inputs += [ "$root_gen_dir/extensions/strings/grit/extensions_strings.h" ]
++  }
+ }
+ 
+ # Generate cef_command_ids.h.
+diff --git a/libcef/browser/alloy/alloy_browser_host_impl.cc b/libcef/browser/alloy/alloy_browser_host_impl.cc
+index 83bbddd59..778d3d910 100644
+--- a/libcef/browser/alloy/alloy_browser_host_impl.cc
++++ b/libcef/browser/alloy/alloy_browser_host_impl.cc
+@@ -36,8 +36,12 @@
+ #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+ #include "chrome/common/webui_url_constants.h"
+ #include "components/input/native_web_keyboard_event.h"
+-#include "components/printing/browser/print_composite_client.h"
+ #include "components/zoom/page_zoom.h"
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PRINTING)
++#include "components/printing/browser/print_composite_client.h"
++#endif
+ #include "content/browser/gpu/compositor_util.h"
+ #include "content/public/browser/desktop_media_id.h"
+ #include "content/public/browser/file_select_listener.h"
+@@ -50,10 +54,15 @@
+ #include "content/public/browser/render_widget_host.h"
+ #include "content/public/browser/web_contents.h"
+ #include "content/public/common/url_constants.h"
+-#include "extensions/common/constants.h"
+ #include "net/base/net_errors.h"
+ #include "ui/events/base_event_utils.h"
+ 
++#include "extensions/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++#include "extensions/common/constants.h"
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++
+ using content::KeyboardEventProcessingResult;
+ 
+ namespace {
+@@ -77,7 +86,9 @@ const char* kAllowedWebUIHosts[] = {
+     chrome::kChromeUINetInternalsHost,
+     content::kChromeUINetworkErrorHost,
+     content::kChromeUINetworkErrorsListingHost,
++#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+     chrome::kChromeUIPrintHost,
++#endif
+     content::kChromeUIProcessInternalsHost,
+     content::kChromeUIResourcesHost,
+ #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+@@ -529,7 +540,9 @@ bool AlloyBrowserHostImpl::MaybeAllowNavigation(
+   const bool is_guest_view =
+       IsBrowserPluginGuest(content::WebContents::FromRenderFrameHost(opener));
+   if (is_guest_view && !params.is_pdf &&
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+       !params.url.SchemeIs(extensions::kExtensionScheme) &&
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+       !params.url.SchemeIs(content::kChromeUIScheme)) {
+     // The PDF viewer will load the PDF extension in the guest view, and print
+     // preview will load chrome://print in the guest view. The PDF renderer
+@@ -804,10 +817,12 @@ void AlloyBrowserHostImpl::PrintCrossProcessSubframe(
+     const gfx::Rect& rect,
+     int document_cookie,
+     content::RenderFrameHost* subframe_host) const {
++#if BUILDFLAG(ENABLE_PRINTING)
+   auto* client = printing::PrintCompositeClient::FromWebContents(web_contents);
+   if (client) {
+     client->PrintCrossProcessSubframe(rect, document_cookie, subframe_host);
+   }
++#endif
+ }
+ 
+ content::WebContents* AlloyBrowserHostImpl::OpenURLFromTab(
+diff --git a/libcef/browser/browser_context.h b/libcef/browser/browser_context.h
+index 4565128ee..41836e817 100644
+--- a/libcef/browser/browser_context.h
++++ b/libcef/browser/browser_context.h
+@@ -17,7 +17,11 @@
+ #include "cef/include/cef_request_context_handler.h"
+ #include "cef/libcef/browser/iothread_state.h"
+ #include "cef/libcef/browser/request_context_handler_map.h"
++#include "content/public/common/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PLUGINS)
+ #include "chrome/common/plugin.mojom.h"
++#endif
+ #include "services/network/public/mojom/network_context.mojom.h"
+ #include "ui/base/page_transition_types.h"
+ #include "url/origin.h"
+diff --git a/libcef/browser/browser_guest_util.cc b/libcef/browser/browser_guest_util.cc
+index 3cde4fb6a..249d3adfb 100644
+--- a/libcef/browser/browser_guest_util.cc
++++ b/libcef/browser/browser_guest_util.cc
+@@ -5,9 +5,13 @@
+ #include "cef/libcef/browser/browser_guest_util.h"
+ 
+ #include "chrome/browser/browser_process.h"
+-#include "chrome/browser/printing/print_preview_dialog_controller.h"
+ #include "content/browser/browser_plugin/browser_plugin_guest.h"
+ #include "content/browser/web_contents/web_contents_impl.h"
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
++#include "chrome/browser/printing/print_preview_dialog_controller.h"
++#endif
+ 
+ namespace {
+ 
+@@ -24,10 +28,14 @@ content::WebContents* GetOwnerForBrowserPluginGuest(
+ 
+ content::WebContents* GetInitiatorForPrintPreviewDialog(
+     const content::WebContents* guest) {
++#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+   auto print_preview_controller =
+       g_browser_process->print_preview_dialog_controller();
+   return print_preview_controller->GetInitiator(
+       const_cast<content::WebContents*>(guest));
++#else
++  return nullptr;
++#endif
+ }
+ 
+ }  // namespace
+diff --git a/libcef/browser/browser_platform_delegate.cc b/libcef/browser/browser_platform_delegate.cc
+index 9a8b3d661..0a7ddaf2f 100644
+--- a/libcef/browser/browser_platform_delegate.cc
++++ b/libcef/browser/browser_platform_delegate.cc
+@@ -27,6 +27,7 @@
+ #include "content/browser/web_contents/web_contents_impl.h"
+ #include "content/public/browser/render_view_host.h"
+ #include "content/public/browser/render_widget_host.h"
++#include "printing/buildflags/buildflags.h"
+ #include "content/public/browser/render_widget_host_view.h"
+ #include "third_party/blink/public/common/input/web_gesture_event.h"
+ #include "third_party/blink/public/common/input/web_mouse_event.h"
+@@ -622,6 +623,10 @@ void CefBrowserPlatformDelegate::SetAccessibilityState(
+ }
+ 
+ bool CefBrowserPlatformDelegate::IsPrintPreviewSupported() const {
++#if !BUILDFLAG(ENABLE_PRINT_PREVIEW)
++  // Footprint F3a: print preview is compiled out.
++  return false;
++#else
+   if (IsWindowless()) {
+     // Not supported with windowless rendering.
+     return false;
+@@ -651,6 +656,7 @@ bool CefBrowserPlatformDelegate::IsPrintPreviewSupported() const {
+   }
+ 
+   return true;
++#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+ }
+ 
+ bool CefBrowserPlatformDelegate::IsMovePictureInPictureEnabled() const {
+diff --git a/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.cc b/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.cc
+index 7c96eb632..943a23710 100644
+--- a/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.cc
++++ b/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.cc
+@@ -18,8 +18,10 @@
+ 
+ #if BUILDFLAG(IS_LINUX)
+ #include "base/linux_util.h"
++#if BUILDFLAG(ENABLE_PRINTING)
+ #include "cef/libcef/browser/printing/print_dialog_linux.h"
+ #endif
++#endif
+ 
+ #if BUILDFLAG(IS_WIN)
+ #include "chrome/browser/win/app_icon.h"
+@@ -28,7 +30,7 @@
+ ChromeBrowserMainExtraPartsCef::ChromeBrowserMainExtraPartsCef() = default;
+ 
+ ChromeBrowserMainExtraPartsCef::~ChromeBrowserMainExtraPartsCef() {
+-#if BUILDFLAG(IS_LINUX)
++#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
+   // Clear the global printing delegate pointer before |printing_delegate_| is
+   // destroyed so it does not dangle. |print_dialog_factory_| unregisters itself
+   // via the PrintDialogLinuxFactory destructor.
+@@ -99,7 +101,7 @@ void ChromeBrowserMainExtraPartsCef::ToolkitInitialized() {
+   SetConstrainedWindowViewsClient(CreateAlloyConstrainedWindowViewsClient(
+       CreateChromeConstrainedWindowViewsClient()));
+ 
+-#if BUILDFLAG(IS_LINUX)
++#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
+   printing_delegate_ = std::make_unique<CefPrintingContextLinuxDelegate>();
+   auto* default_delegate =
+       ui::PrintingContextLinuxDelegate::SetInstance(printing_delegate_.get());
+diff --git a/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.h b/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.h
+index 6908b4309..62148fa0c 100644
+--- a/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.h
++++ b/libcef/browser/chrome/chrome_browser_main_extra_parts_cef.h
+@@ -12,7 +12,9 @@
+ #include "cef/libcef/browser/request_context_impl.h"
+ #include "chrome/browser/chrome_browser_main_extra_parts.h"
+ 
+-#if BUILDFLAG(IS_LINUX)
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
+ #include "printing/printing_context_linux.h"
+ 
+ class CefPrintingContextLinuxDelegate;
+@@ -61,7 +63,7 @@ class ChromeBrowserMainExtraPartsCef : public ChromeBrowserMainExtraParts {
+   scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner_;
+   scoped_refptr<base::SingleThreadTaskRunner> user_blocking_task_runner_;
+ 
+-#if BUILDFLAG(IS_LINUX)
++#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
+   // Owns the printing delegate and print dialog factory registered in
+   // ToolkitInitialized(). |printing_delegate_| is declared first so it is
+   // destroyed after |print_dialog_factory_|; the destructor clears the global
+diff --git a/libcef/browser/chrome/views/toolbar_view_impl.cc b/libcef/browser/chrome/views/toolbar_view_impl.cc
+index 638475e21..9840ac9ac 100644
+--- a/libcef/browser/chrome/views/toolbar_view_impl.cc
++++ b/libcef/browser/chrome/views/toolbar_view_impl.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "cef/libcef/browser/chrome/views/toolbar_view_impl.h"
+ 
++#include "base/notreached.h"
++
+ // static
+ CefRefPtr<CefToolbarViewImpl> CefToolbarViewImpl::Create(
+     CefRefPtr<CefViewDelegate> delegate,
+@@ -36,8 +38,8 @@ void CefToolbarViewImpl::Destroyed() {
+ }
+ 
+ CefToolbarViewView* CefToolbarViewImpl::CreateRootView() {
+-  return new CefToolbarViewView(delegate(), browser_, browser_view_,
+-                                display_mode_);
++  // FP: Alloy スタイル専用。Chrome のツールバー(ToolbarView の派生)は作らない。
++  NOTREACHED();
+ }
+ 
+ void CefToolbarViewImpl::InitializeRootView() {
+diff --git a/libcef/browser/net_service/proxy_url_loader_factory.cc b/libcef/browser/net_service/proxy_url_loader_factory.cc
+index 13386d45d..bc40eb868 100644
+--- a/libcef/browser/net_service/proxy_url_loader_factory.cc
++++ b/libcef/browser/net_service/proxy_url_loader_factory.cc
+@@ -26,7 +26,6 @@
+ #include "content/public/browser/render_frame_host.h"
+ #include "content/public/browser/web_contents.h"
+ #include "content/public/common/referrer.h"
+-#include "extensions/common/constants.h"
+ #include "mojo/public/cpp/base/big_buffer.h"
+ #include "mojo/public/cpp/bindings/receiver.h"
+ #include "net/http/http_status_code.h"
+@@ -38,6 +37,12 @@
+ #include "services/network/public/mojom/early_hints.mojom.h"
+ #include "third_party/blink/public/common/loader/referrer_utils.h"
+ 
++#include "extensions/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++#include "extensions/common/constants.h"
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++
+ namespace net_service {
+ 
+ namespace {
+@@ -569,10 +574,14 @@ void InterceptedRequest::Restart() {
+   // CorsURLLoader, which applies the extension's CORS origin access list.
+   // Referrer sanitization would turn the chrome-extension initiator into an
+   // opaque origin and send "Origin: null" (issue #4309).
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+   const bool is_extension_initiated =
+       request_.mode != network::mojom::RequestMode::kNavigate &&
+       request_.request_initiator &&
+       request_.request_initiator->scheme() == extensions::kExtensionScheme;
++#else
++  const bool is_extension_initiated = false;
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+ 
+   if (should_add_origin_header && !is_extension_initiated) {
+     // Match logic in navigation_request.cc AddAdditionalRequestHeaders.
+diff --git a/libcef/browser/origin_whitelist_impl.cc b/libcef/browser/origin_whitelist_impl.cc
+index 129b37f6a..d46af8bf7 100644
+--- a/libcef/browser/origin_whitelist_impl.cc
++++ b/libcef/browser/origin_whitelist_impl.cc
+@@ -18,10 +18,15 @@
+ #include "chrome/common/webui_url_constants.h"
+ #include "content/public/browser/render_process_host.h"
+ #include "content/public/common/url_constants.h"
+-#include "extensions/common/constants.h"
+ #include "url/gurl.h"
+ #include "url/origin.h"
+ 
++#include "extensions/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++#include "extensions/common/constants.h"
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++
+ namespace {
+ 
+ // Class that manages cross-origin whitelist registrations.
+@@ -294,6 +299,7 @@ void GetCrossOriginWhitelistEntries(
+ 
+ bool HasCrossOriginWhitelistEntry(const url::Origin& source,
+                                   const url::Origin& target) {
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+   // Components of chrome that are implemented as extensions or platform apps
+   // are allowed to use chrome://resources/ and chrome://theme/ URLs.
+   // See also RegisterNonNetworkSubresourceURLLoaderFactories.
+@@ -303,6 +309,7 @@ bool HasCrossOriginWhitelistEntry(const url::Origin& source,
+        target.host() == content::kChromeUIResourcesHost)) {
+     return true;
+   }
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+ 
+   return CefOriginWhitelistManager::GetInstance()->HasCrossOriginWhitelistEntry(
+       source, target);
+diff --git a/libcef/browser/printing/print_util.cc b/libcef/browser/printing/print_util.cc
+index 59cd6e0e4..2c8672937 100644
+--- a/libcef/browser/printing/print_util.cc
++++ b/libcef/browser/printing/print_util.cc
+@@ -6,12 +6,34 @@
+ 
+ #include "base/files/file_util.h"
+ #include "cef/libcef/browser/thread_util.h"
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PRINTING)
+ #include "chrome/browser/printing/print_view_manager.h"
+ #include "chrome/browser/printing/print_view_manager_common.h"
+ #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
++#endif
+ 
+ namespace print_util {
+ 
++#if !BUILDFLAG(ENABLE_PRINTING)
++
++// Footprint F3a: printing is compiled out. Print() does nothing and
++// PrintToPDF() reports failure.
++void Print(content::WebContents* web_contents, bool print_preview_disabled) {}
++
++void PrintToPDF(content::WebContents* web_contents,
++                const CefString& path,
++                const CefPdfPrintSettings& settings,
++                CefRefPtr<CefPdfPrintCallback> callback) {
++  LOG(ERROR) << "PrintToPDF is not supported (printing disabled at build).";
++  if (callback) {
++    callback->OnPdfPrintFinished(CefString(), false);
++  }
++}
++
++#else  // BUILDFLAG(ENABLE_PRINTING)
++
+ namespace {
+ 
+ // Write the PDF file to disk.
+@@ -141,4 +163,6 @@ void PrintToPDF(content::WebContents* web_contents,
+   callback->OnPdfPrintFinished(CefString(), false);
+ }
+ 
++#endif  // BUILDFLAG(ENABLE_PRINTING)
++
+ }  // namespace print_util
+diff --git a/libcef/browser/views/browser_view_impl.cc b/libcef/browser/views/browser_view_impl.cc
+index 720da377b..6794f507b 100644
+--- a/libcef/browser/views/browser_view_impl.cc
++++ b/libcef/browser/views/browser_view_impl.cc
+@@ -7,6 +7,8 @@
+ #include <memory>
+ #include <optional>
+ 
++#include "base/check.h"
++
+ #include "cef/libcef/browser/browser_event_util.h"
+ #include "cef/libcef/browser/browser_host_base.h"
+ #include "cef/libcef/browser/chrome/views/chrome_browser_view.h"
+@@ -412,9 +414,8 @@ void CefBrowserViewImpl::SetDefaults(const CefBrowserSettings& settings) {
+ }
+ 
+ views::View* CefBrowserViewImpl::CreateRootView() {
+-  if (!is_alloy_style_) {
+-    return new ChromeBrowserView(this);
+-  }
++  // FP: Alloy スタイル専用。ChromeBrowserView(BrowserView の派生)は作らない。
++  CHECK(is_alloy_style_);
+ 
+   return new CefBrowserViewView(delegate(), this);
+ }
+diff --git a/libcef/browser/views/widget.cc b/libcef/browser/views/widget.cc
+index 5b46ed9c6..e18878120 100644
+--- a/libcef/browser/views/widget.cc
++++ b/libcef/browser/views/widget.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "cef/libcef/browser/views/widget.h"
+ 
++#include "base/check.h"
++
+ #include "cef/libcef/browser/chrome/views/chrome_browser_widget.h"
+ #include "cef/libcef/browser/views/view_util.h"
+ #include "cef/libcef/browser/views/widget_impl.h"
+@@ -31,9 +33,8 @@ ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
+ 
+ // static
+ CefWidget* CefWidget::Create(CefWindowView* window_view) {
+-  if (window_view->IsChromeStyle()) {
+-    return new ChromeBrowserWidget(window_view);
+-  }
++  // FP: Alloy スタイル専用。ChromeBrowserWidget(BrowserWidget の派生)は作らない。
++  CHECK(!window_view->IsChromeStyle());
+   return new CefWidgetImpl(window_view);
+ }
+ 
+diff --git a/libcef/common/net/scheme_registration.cc b/libcef/common/net/scheme_registration.cc
+index 15c1d9b49..5f6ba3a72 100644
+--- a/libcef/common/net/scheme_registration.cc
++++ b/libcef/common/net/scheme_registration.cc
+@@ -7,10 +7,15 @@
+ #include <algorithm>
+ 
+ #include "content/public/common/url_constants.h"
+-#include "extensions/common/constants.h"
+ #include "url/url_constants.h"
+ #include "url/url_util.h"
+ 
++#include "extensions/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++#include "extensions/common/constants.h"
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++
+ namespace scheme {
+ 
+ bool IsInternalHandledScheme(std::string_view scheme) {
+@@ -21,7 +26,9 @@ bool IsInternalHandledScheme(std::string_view scheme) {
+       content::kChromeUIScheme,
+       content::kChromeUIUntrustedScheme,
+       url::kDataScheme,
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+       extensions::kExtensionScheme,
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+       url::kFileScheme,
+       url::kFileSystemScheme,
+       url::kHttpScheme,
+diff --git a/libcef/renderer/chrome/chrome_content_renderer_client_cef.cc b/libcef/renderer/chrome/chrome_content_renderer_client_cef.cc
+index 1cb197c3d..0605fbaad 100644
+--- a/libcef/renderer/chrome/chrome_content_renderer_client_cef.cc
++++ b/libcef/renderer/chrome/chrome_content_renderer_client_cef.cc
+@@ -8,11 +8,15 @@
+ #include "cef/libcef/renderer/render_frame_observer.h"
+ #include "cef/libcef/renderer/render_manager.h"
+ #include "cef/libcef/renderer/thread_util.h"
+-#include "chrome/renderer/printing/chrome_print_render_frame_helper_delegate.h"
+ #include "content/public/renderer/render_frame.h"
+ #include "content/public/renderer/render_thread.h"
++#include "printing/buildflags/buildflags.h"
+ #include "third_party/blink/public/web/web_view.h"
+ 
++#if BUILDFLAG(ENABLE_PRINTING)
++#include "chrome/renderer/printing/chrome_print_render_frame_helper_delegate.h"
++#endif
++
+ ChromeContentRendererClientCef::ChromeContentRendererClientCef()
+     : render_manager_(new CefRenderManager) {}
+ 
+@@ -54,12 +58,14 @@ void ChromeContentRendererClientCef::RenderFrameCreated(
+     OnBrowserCreated(render_frame->GetWebView(), *config);
+   }
+ 
++#if BUILDFLAG(ENABLE_PRINTING)
+   if (config.has_value()) {
+     // This value will be used when the ChromeContentRendererClient
+     // creates the new ChromePrintRenderFrameHelperDelegate below.
+     ChromePrintRenderFrameHelperDelegate::SetNextPrintPreviewEnabled(
+         (*config).print_preview_enabled);
+   }
++#endif
+ 
+   ChromeContentRendererClient::RenderFrameCreated(render_frame);
+ }
+diff --git a/libcef/renderer/render_manager.cc b/libcef/renderer/render_manager.cc
+index 5012d60e6..7743c256e 100644
+--- a/libcef/renderer/render_manager.cc
++++ b/libcef/renderer/render_manager.cc
+@@ -8,6 +8,12 @@
+ 
+ #include "build/build_config.h"
+ 
++#include "extensions/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++#include "extensions/common/switches.h"
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
++
+ // Enable deprecation warnings on Windows. See http://crbug.com/585142.
+ #if BUILDFLAG(IS_WIN)
+ #if defined(__clang__)
+@@ -34,7 +40,6 @@
+ #include "content/public/common/content_switches.h"
+ #include "content/public/renderer/render_frame.h"
+ #include "content/public/renderer/render_thread.h"
+-#include "extensions/common/switches.h"
+ #include "mojo/public/cpp/bindings/binder_map.h"
+ #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
+ #include "third_party/blink/public/platform/web_string.h"
+@@ -183,8 +188,12 @@ CefRenderManager::GetBrowserManager() {
+ 
+ // static
+ bool CefRenderManager::IsExtensionProcess() {
++#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+   return base::CommandLine::ForCurrentProcess()->HasSwitch(
+       extensions::switches::kExtensionProcess);
++#else
++  return false;
++#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+ }
+ 
+ void CefRenderManager::BindReceiver(

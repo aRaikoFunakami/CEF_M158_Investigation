@@ -1,0 +1,9 @@
+<!doctype html><meta charset=utf-8><title>mp4</title><link rel=stylesheet href=style.css><script src=common.js></script>
+<h2 id=h>MP4 (H.264 + AAC) 直接再生: 実行中</h2><video id=v muted autoplay></video><pre id=out></pre>
+<script>(async()=>{ const r={pass:false}; const v=document.getElementById('v'); try{
+  r.canPlayH264 = v.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
+  v.src = "https://media.w3.org/2010/05/sintel/trailer.mp4"; v.onerror = ()=>{ r.mediaError = v.error && (v.error.code+' '+v.error.message); };
+  try{ await v.play(); }catch(e){ r.playError = String(e); }
+  r.played = await waitPlay(v, 5, 60000); r.currentTime = v.currentTime; r.size = v.videoWidth+'x'+v.videoHeight;
+  r.pass = r.played && v.videoWidth>0;
+}catch(e){ r.error = String(e); } done('MP4', r); })();</script>

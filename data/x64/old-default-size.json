@@ -1,0 +1,31 @@
+{
+ "name": "old-default",
+ "binary": "/root/chromium/src/out/Default/chrome",
+ "files": {
+  "resources.pak": 26245378,
+  "chrome_100_percent.pak": 577198,
+  "chrome_200_percent.pak": 934813,
+  "icudtl.dat": 10688512,
+  "v8_context_snapshot.bin": 711448,
+  "snapshot_blob.bin": 356344,
+  "libEGL.so": 354832,
+  "libGLESv2.so": 354832,
+  "libvk_swiftshader.so": 6651216,
+  "libvulkan.so.1": 890368,
+  "libVkLayer_khronos_validation.so": 28802816,
+  "chrome_crashpad_handler": 2484016,
+  "libqt5_shim.so": 36032,
+  "libqt6_shim.so": 39232,
+  "vk_swiftshader_icd.json": 107
+ },
+ "unstripped": 550590424,
+ "stripped": 363985616,
+ "text": 350272538,
+ "data": 13697687,
+ "bss": 1826788,
+ "locales_all": 51927661,
+ "locales_n": 220,
+ "locales_ja_en": 1472768,
+ "total_ja_en": 444585528,
+ "total_all_locales": 495040421
+}

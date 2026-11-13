@@ -1,0 +1,144 @@
+{
+ "name": "F2b1-dist",
+ "binary": "/root/fp/builds/F2b1-dist/cefsimple",
+ "results": {
+  "caps": {
+   "pass": true,
+   "mse": {
+    "h264": true,
+    "aac": true,
+    "vp9": true,
+    "av1": true,
+    "opus": true,
+    "hevc": false,
+    "ac3": false
+   },
+   "api": {
+    "emeClearKey": true,
+    "emeWidevine": false,
+    "MediaSource": true,
+    "WebSocket": true,
+    "fetch": true,
+    "cryptoSubtle": true,
+    "indexedDB": true,
+    "localStorage": true,
+    "WebAssembly": true,
+    "AudioContext": true,
+    "serviceWorker": true,
+    "canvas2d": true,
+    "webgl": true,
+    "webgl2": true,
+    "Intl": true,
+    "TextTrack": true,
+    "Worker": true,
+    "SharedWorker": true,
+    "RTCPeerConnection": false,
+    "getUserMedia": false,
+    "MediaRecorder": false,
+    "WebCodecs": true,
+    "webgpu": true,
+    "webnn": false,
+    "usb": false,
+    "hid": false,
+    "serial": false,
+    "bluetooth": false,
+    "midi": false,
+    "gamepad": true,
+    "xr": false,
+    "PaymentRequest": false,
+    "Notification": false,
+    "PushManager": false,
+    "SpeechRecognition": false,
+    "speechSynthesis": false,
+    "credentials": false,
+    "PublicKeyCredential": false,
+    "geolocation": true,
+    "WebTransport": true,
+    "PresentationRequest": true,
+    "RemotePlayback": true,
+    "pictureInPicture": true,
+    "print": true,
+    "pdfViewer": true
+   },
+   "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36"
+  },
+  "sw": {
+   "pass": true,
+   "hasAPI": true,
+   "controlled": true,
+   "body": "from-sw",
+   "cacheAPI": "cached"
+  },
+  "ws": {
+   "pass": true,
+   "echo": "hello-ws-こんにちは"
+  },
+  "mp4": {
+   "pass": true,
+   "canPlayH264": "probably",
+   "played": true,
+   "currentTime": 5.478475,
+   "size": "854x480"
+  },
+  "mse": {
+   "pass": true,
+   "played": true,
+   "currentTime": 5.07799,
+   "size": "450x360",
+   "videoCodec": "avc1.4d4015",
+   "audioCodec": "mp4a.40.2"
+  },
+  "eme": {
+   "pass": true,
+   "played": true,
+   "currentTime": 5.236205,
+   "size": "192x144",
+   "mediaKeys": true,
+   "keySystem": "org.w3.clearkey",
+   "videoCodec": "avc1.42c01e",
+   "audioCodec": "mp4a.40.2"
+  },
+  "youtube": {
+   "pass": true,
+   "attempts": 1,
+   "t1": {
+    "currentTime": 18.03362,
+    "paused": false,
+    "size": "1920x1080",
+    "readyState": 4,
+    "total": 1087,
+    "dropped": 359
+   },
+   "t2": {
+    "currentTime": 28.040827,
+    "paused": false,
+    "size": "1920x1080",
+    "readyState": 4,
+    "total": 1688,
+    "dropped": 553
+   },
+   "tries": [
+    {
+     "ok": true,
+     "t1": {
+      "currentTime": 18.03362,
+      "paused": false,
+      "size": "1920x1080",
+      "readyState": 4,
+      "total": 1087,
+      "dropped": 359
+     },
+     "t2": {
+      "currentTime": 28.040827,
+      "paused": false,
+      "size": "1920x1080",
+      "readyState": 4,
+      "total": 1688,
+      "dropped": 553
+     }
+    }
+   ],
+   "title": "Big Buck Bunny 60fps 4K - Official Blender Foundation Short Film - YouTube"
+  }
+ }
+}

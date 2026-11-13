@@ -1,0 +1,70 @@
+name	binary	extra_args	limit_mib	codec	quality	valid	tried	blank_pss	play_pss_median	play_pss_max	play_anon_median	play_file_median	play_shmem_median	play_unreclaimable_cg_median	procs	buffer_ahead_s	dropped_ratio	codecs	resolution	jsHeapLimitMiB
+G1-pilot-off	G1		None	auto		1	1	312.4	1152.0	1202.1	929.9	182.3	39.8	971.0	10	37.8	0.1	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+G1-pilot2-off	G1		None	auto		0	3	None	None	None	None	None	None	None	None	None	None	None	None	None
+G1-pilot2-on	G1	--enable-low-end-device-mode	None	auto		0	3	None	None	None	None	None	None	None	None	None	None	None	None	None
+G1-pilot3-off	G1		None	auto		1	1	289.5	1180.0	1230.5	958.2	182.1	39.7	999.4	10	40	0.4	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+av14k-G0-3flag	G0	--single-process --no-zygote --enable-low-end-device-mode	None	av1	hd2160	2	2	323.6	1348.7	1365.8	997.4	255.3	96.0	1094.5	1.0	10.7	0.0	av01.0.13M.08 (401) / opus (251)	3840x2160@60 / 3840x2160@60	273
+av14k-G0-none	G0		None	av1	hd2160	2	2	362.6	1509.5	1557.9	1153.5	257.1	98.9	1252.6	10.0	12.6	0.0	av01.0.13M.08 (401) / opus (251)	3840x2160@60 / 3840x2160@60	4132
+av14k-G2tv-3flag	G2-tv	--single-process --no-zygote --enable-low-end-device-mode	None	av1	hd2160	2	2	196.9	1005.5	1025.7	753.5	164.2	87.7	850.2	1.0	10.9	0.0	av01.0.13M.08 (401) / opus (251)	3840x2160@60 / 3840x2160@60	273
+av14k-G2tv-none	G2-tv		None	av1	hd2160	2	2	244.7	1131.9	1169.2	875.5	165.9	90.6	974.0	10.0	12.6	0.0	av01.0.13M.08 (401) / opus (251)	3840x2160@60 / 3840x2160@60	4132
+av14klimit-G0-3flag-1320	G0	--single-process --no-zygote --enable-low-end-device-mode	1320	av1	hd2160	1	2	328.3	1346.5	1375.5	995.5	255.1	95.9	1091.4	1	11.1	0.0	av01.0.13M.08 (401) / opus (251)	3840x2160@60 / 3840x2160@60	273
+av14klimit-G2tv-3flag-1080	G2-tv	--single-process --no-zygote --enable-low-end-device-mode	1080	av1	hd2160	1	1	197.9	1021.9	1036.5	771.4	160.9	87.9	870.0	1	10.3	0.0	av01.0.13M.08 (401) / opus (251)	3840x2160@60 / 3840x2160@60	273
+av14klimit-G2tv-3flag-980	G2-tv	--single-process --no-zygote --enable-low-end-device-mode	980	av1	hd2160	1	1	196.4	1064.2	1081.7	816.2	160.6	87.4	911.4	1	10.3	0.0	av01.0.13M.08 (401) / opus (251)	3840x2160@60 / 3840x2160@60	273
+av14kpilot-av1-2160	G2-dist		None	av1	hd2160	1	1	248.3	1100.8	1118.5	891.1	180.4	29.3	920.6	9	25.9	0.0	avc1.64002A (299) / opus (251)	1920x1080@60	4132
+bimodal-fresh	G2		None	auto		2	2	267.4	1121.2	1160.8	901.7	179.8	42.7	942.3	10.0	40.2	0.3	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+bimodal-warm	G2		None	auto		3	3	299.6	919.5	985.8	702.4	182.7	35.8	737.1	10	39.5	0.3	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+cobalt-cobalt-sp	G2	--enable-low-end-device-mode --disable-rgba-4444-textures --disable-in-process-stack-traces --disable-accelerated-video-decode --disable-accelerated-video-encode --force-dark-mode --hide-scrollbars --enable-features=SmallerInterestArea,ReclaimPrepaintTilesWhenIdle,ReclaimOldPrepaintTiles,WebAudioRemoveAudioDestinationResampler,DomStorageSmartFlushing --gpu-rasterization-msaa-sample-count=4 --enable-blink-features=PreciseMemoryInfo --js-flags="--no-decommit-pooled-pages --no-concurrent-marking" --single-process --no-zygote	None	auto		3	3	245.7	857.5	865.1	642.5	180.8	36.7	677.3	1	39.2	0.2	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+cobalt-cobalt	G2	--enable-low-end-device-mode --disable-rgba-4444-textures --disable-in-process-stack-traces --disable-accelerated-video-decode --disable-accelerated-video-encode --force-dark-mode --hide-scrollbars --enable-features=SmallerInterestArea,ReclaimPrepaintTilesWhenIdle,ReclaimOldPrepaintTiles,WebAudioRemoveAudioDestinationResampler,DomStorageSmartFlushing --gpu-rasterization-msaa-sample-count=4 --enable-blink-features=PreciseMemoryInfo --js-flags="--no-decommit-pooled-pages --no-concurrent-marking"	None	auto		3	3	272.3	891.5	895.8	678.2	181.1	36.1	711.0	9	39.1	0.2	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+cpu16-off	G2		None	auto		3	3	277.3	936.8	1003.3	721.2	183.0	32.9	754.4	10	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4131
+cpu2-off	G2		None	auto		3	3	299.4	897.6	954.9	675.4	183.2	38.8	714.5	10	39.8	0.2	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+cpu2-on	G2	--enable-low-end-device-mode	None	auto		3	3	293.8	863.5	871.9	647.6	183.1	33.0	682.0	9	39.4	0.2	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+cpu4-off	G2		None	auto		3	3	277.9	912.4	969.9	700.2	182.3	32.2	730.4	10	39.4	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+diag440-g2tv-sp	G2-tv	--single-process --no-zygote --enable-low-end-device-mode --disable-gpu	None	auto	hd1080	1	3	193.8	665.2	675.7	457.3	163.8	44.1	509.2	1	39	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	273
+h264limit-G0-3flag-780	G0	--single-process --no-zygote --enable-low-end-device-mode	780	h264	hd1080	0	2	None	None	None	None	None	None	None	None	None	None	None	None	None
+h264limit-G2tv-3flag-640	G2-tv	--single-process --no-zygote --enable-low-end-device-mode	640	h264	hd1080	1	2	197.9	699.8	704.2	494.7	164.8	40.2	542.8	1	25.3	0.0	avc1.64002A (299) / opus (251)	1920x1080@60 / 1920x1080@60	273
+h264limit2-G0-3flag-880	G0	--single-process --no-zygote --enable-low-end-device-mode	880	h264	hd1080	1	1	320.0	918.3	935.4	642.6	253.0	22.7	665.4	1	25.6	0.0	avc1.64002A (299) / opus (251)	1920x1080@60 / 1920x1080@60	273
+h264limit2-G2tv-3flag-640	G2-tv	--single-process --no-zygote --enable-low-end-device-mode	640	h264	hd1080	1	1	197.4	677.0	681.8	472.1	163.9	40.9	520.8	1	25.4	0.0	avc1.64002A (299) / opus (251)	1920x1080@60 / 1920x1080@60	273
+h264main-G0-3flag	G0	--single-process --no-zygote --enable-low-end-device-mode	None	h264	hd1080	2	2	320.4	912.2	916.8	639.1	251.4	21.6	661.9	1.0	25.2	0.0	avc1.64002A (299) / opus (251)	1920x1080@60 / 1920x1080@60	273
+h264main-G0-none	G0		None	h264	hd1080	2	2	362.1	1045.5	1097.6	765.1	255.8	24.7	790.0	10.0	25.4	0.0	avc1.64002A (299) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+h264main-G2tv-3flag	G2-tv	--single-process --no-zygote --enable-low-end-device-mode	None	h264	hd1080	2	2	197.6	684.4	691.7	481.6	162.1	40.5	531.2	1.0	25.0	0.0	avc1.64002A (299) / opus (251)	1920x1080@60 / 1920x1080@60	273
+h264main-G2tv-none	G2-tv		None	h264	hd1080	2	3	243.9	759.3	821.2	549.5	165.8	44.0	601.6	10.0	25.5	0.0	avc1.64002A (299) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+h264pilot-h264-720	G2-dist		None	h264	hd720	1	1	272.5	1030.4	1099.5	829.4	182.0	19.0	848.7	9	67.4	0.0	av01.0.08M.08 (398) / opus (251)	1280x720@60 / 1280x720@60	4132
+h264pilot2-h264-1080	G2-dist		None	h264	hd1080	1	1	276.5	939.1	1003.8	726.5	179.7	32.9	759.7	10	39.1	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+limit-G0-L1024-off	G0		1024	auto		2	2	341.7	1039.4	1080.8	756.0	255.1	28.3	784.5	10.0	39.9	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+limit-G0-L1024-on	G0	--enable-low-end-device-mode	1024	auto		2	2	329.9	1013.7	1024.3	730.3	254.5	28.8	760.6	9.0	39.5	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+limit-G0-L600-off	G0		600	auto		0	3	None	None	None	None	None	None	None	None	None	None	None	None	None
+limit-G2dist-L1024-off	G2-dist		1024	auto		2	2	285.1	916.6	986.0	700.5	183.2	33.0	733.7	10.0	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+limit-G2tv-L1024-off	G2-tv		1024	auto		2	3	244.1	751.7	826.2	543.0	165.3	43.3	594.4	10.0	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+limit-G2tv-L1024-on	G2-tv	--enable-low-end-device-mode	1024	auto		2	2	239.0	748.2	753.2	539.3	165.9	43.0	591.4	9.0	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+limitmin-G0-min-L300	G0	--single-process --no-zygote --enable-low-end-device-mode	300	auto		0	1	None	None	None	None	None	None	None	None	None	None	None	None	None
+limitmin-G0-min-L450	G0	--single-process --no-zygote --enable-low-end-device-mode	450	auto		0	2	None	None	None	None	None	None	None	None	None	None	None	None	None
+limitmin-G0-min-L600	G0	--single-process --no-zygote --enable-low-end-device-mode	600	auto		0	2	None	None	None	None	None	None	None	None	None	None	None	None	None
+limitmin-G0-min-L800	G0	--single-process --no-zygote --enable-low-end-device-mode	800	auto		1	2	328.2	943.3	952.3	666.4	252.4	24.6	692.2	1	39.4	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	273
+limitmin2-G0-min-L700	G0	--single-process --no-zygote --enable-low-end-device-mode	700	auto		0	2	None	None	None	None	None	None	None	None	None	None	None	None	None
+limitmin2-G2dist-min-L450	G2-dist	--single-process --no-zygote --enable-low-end-device-mode	450	auto		0	2	None	None	None	None	None	None	None	None	None	None	None	None	None
+limitmin2-G2dist-min-L600	G2-dist	--single-process --no-zygote --enable-low-end-device-mode	600	auto		0	2	None	None	None	None	None	None	None	None	None	None	None	None	None
+limitmin2-G2dist-min-L700	G2-dist	--single-process --no-zygote --enable-low-end-device-mode	700	auto		1	2	253.4	846.8	857.8	639.1	180.4	27.3	667.7	1	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	273
+limitmin2-G2dist-min-L800	G2-dist	--single-process --no-zygote --enable-low-end-device-mode	800	auto		1	2	254.4	815.0	820.3	606.3	181.4	27.3	634.8	1	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	273
+main8c8G-off	G0		None	auto		3	4	362.8	1060.7	1134.2	775.4	257.6	29.3	803.3	10	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+main8c8G-on	G0	--enable-low-end-device-mode	None	auto		3	3	357.5	1008.3	1016.2	723.6	257.5	27.4	752.2	9	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+main8c8G-off	G1		None	auto		3	3	276.0	907.4	979.1	691.9	182.6	32.9	725.1	10	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+main8c8G-on	G1	--enable-low-end-device-mode	None	auto		3	3	271.7	883.6	894.8	671.1	182.9	30.0	702.4	9	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+main8c8G-off	G2		None	auto		3	4	276.8	923.1	993.6	709.6	182.7	32.9	742.9	10	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+main8c8G-on	G2	--enable-low-end-device-mode	None	auto		3	3	272.4	1090.9	1102.4	878.7	182.7	29.3	909.4	8	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+main8c8G-off	G2-tv		None	auto		3	3	244.6	931.8	1009.0	724.5	165.2	42.1	774.5	9	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+main8c8G-on	G2-tv	--enable-low-end-device-mode	None	auto		3	3	239.0	945.2	957.1	737.4	164.9	42.4	789.1	8	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+main8c8G-off	G2-tv		None	auto		3	3	244.6	931.8	1009.0	724.5	165.2	42.1	774.5	9	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+main8c8G-on	G2-tv	--enable-low-end-device-mode	None	auto		3	3	239.0	945.2	957.1	737.4	164.9	42.4	789.1	8	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	259
+mem2G-auto	G2		None	auto		3	8	245.3	1123.3	1151.7	900.8	182.9	39.7	941.9	10	39.7	0.3	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	1147
+mem2G-disable	G2	--disable-low-end-device-mode	None	auto		3	7	260.1	1121.1	1157.1	893.7	180.8	42.7	937.9	10	40	0.3	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	1147
+mem3G-off	G2		None	auto		3	6	244.8	1121.9	1172.4	900.2	179.5	36.1	941.4	10	39.9	0.2	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	1620
+w-free8G-h5000-off	G2		None	auto		3	3	274.1	935.9	998.5	719.5	183.4	32.9	752.7	10	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+w-free8G-h6500-off	G2		None	auto		3	3	276.4	922.9	995.8	707.7	182.9	32.9	740.9	10	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+w-mem16G-off	G2		None	auto		2	9	276.4	1034.2	1103.2	818.0	183.7	32.6	850.9	9.5	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4192
+w-mem1900M-auto	G2		None	auto		3	4	276.2	909.2	919.8	692.2	183.7	32.9	725.5	10	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	983
+w-mem1900M-disable	G2	--disable-low-end-device-mode	None	auto		3	3	276.6	922.3	955.5	706.2	183.3	32.9	740.6	10	39.4	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	1028
+w-mem2G-off	G2		None	auto		3	3	293.5	916.1	993.5	700.5	183.1	32.9	733.7	10	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	1147
+w-mem3G-off	G2		None	auto		3	4	278.2	897.5	970.6	697.1	181.5	32.9	730.2	10	39.3	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	1620
+w-mem4G-off	G2		None	auto		3	3	276.6	904.1	983.0	686.5	184.6	33.0	719.8	10	39.4	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	2120
+warmtest-off	G2		None	auto		4	6	284.8	904.3	965.6	683.9	183.4	35.8	721.2	10.0	39.2	0.3	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132
+webgltest-nowebgl	G2	--disable-webgl	None	auto		4	4	288.3	1021.3	1090.9	804.8	181.1	35.5	840.6	9.5	39.2	0.0	av01.0.09M.08 (399) / opus (251)	1920x1080@60 / 1920x1080@60	4132

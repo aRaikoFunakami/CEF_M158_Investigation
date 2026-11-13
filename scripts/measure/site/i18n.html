@@ -1,0 +1,38 @@
+<!doctype html><meta charset="utf-8"><title>i18n check</title><link rel="stylesheet" href="style.css">
+<h1>ICU / 日本語処理の確認</h1><pre id="out"></pre>
+<p id="wrap" style="width:8em;border:1px solid #888;font-size:20px">東京特許許可局で今日は良い天気ですね。</p>
+<script>
+const r = {}; const t = (k, f) => { try { r[k] = f(); } catch (e) { r[k] = 'ERR ' + e.message; } };
+const d = new Date(Date.UTC(2026, 10, 12, 1, 2, 3));
+t('date_ja', () => new Intl.DateTimeFormat('ja-JP', {dateStyle: 'full', timeStyle: 'long', timeZone: 'Asia/Tokyo'}).format(d));
+t('date_ja_era', () => new Intl.DateTimeFormat('ja-JP-u-ca-japanese', {era: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tokyo'}).format(d));
+t('date_en', () => new Intl.DateTimeFormat('en-US', {dateStyle: 'full', timeZone: 'UTC'}).format(d));
+t('date_de', () => new Intl.DateTimeFormat('de-DE', {dateStyle: 'full', timeZone: 'UTC'}).format(d));
+t('num_ja', () => new Intl.NumberFormat('ja-JP', {style: 'currency', currency: 'JPY'}).format(1234567));
+t('num_compact', () => new Intl.NumberFormat('ja-JP', {notation: 'compact'}).format(123456789));
+t('rel', () => new Intl.RelativeTimeFormat('ja', {numeric: 'auto'}).format(-1, 'day'));
+t('plural', () => new Intl.PluralRules('en-US').select(1));
+t('list', () => new Intl.ListFormat('ja', {type: 'conjunction'}).format(['赤', '青', '黄']));
+t('display', () => new Intl.DisplayNames(['ja'], {type: 'region'}).of('US'));
+t('collator', () => ['ん', 'あ', 'カ', 'い'].sort(new Intl.Collator('ja').compare).join(''));
+t('segment_word', () => [...new Intl.Segmenter('ja', {granularity: 'word'}).segment('今日は良い天気ですね')].map(s => s.segment).join('|'));
+t('segment_grapheme', () => [...new Intl.Segmenter('ja', {granularity: 'grapheme'}).segment('が👨‍👩‍👧')].length);
+t('locales', () => Intl.DateTimeFormat.supportedLocalesOf(['ja', 'en-US', 'de', 'fr', 'zh-CN', 'ko', 'ar', 'th', 'hi']).join(','));
+t('sjis', () => new TextDecoder('shift_jis').decode(new Uint8Array([0x93, 0xfa, 0x96, 0x7b, 0x8c, 0xea])));
+t('eucjp', () => new TextDecoder('euc-jp').decode(new Uint8Array([0xc6, 0xfc, 0xcb, 0xdc, 0xb8, 0xec])));
+t('iso2022jp', () => new TextDecoder('iso-2022-jp').decode(new Uint8Array([0x1b, 0x24, 0x42, 0x46, 0x7c, 0x4b, 0x5c, 0x1b, 0x28, 0x42])));
+t('gbk', () => new TextDecoder('gbk').decode(new Uint8Array([0xd6, 0xd0, 0xce, 0xc4])));
+t('euckr', () => new TextDecoder('euc-kr').decode(new Uint8Array([0xc7, 0xd1, 0xb1, 0xdb])));
+t('big5', () => new TextDecoder('big5').decode(new Uint8Array([0xa4, 0xa4, 0xa4, 0xe5])));
+t('normalize', () => 'が'.normalize('NFD').length + ',' + 'ｶﾞ'.normalize('NFKC'));
+t('upper', () => 'straße'.toLocaleUpperCase('de') + ',' + 'i'.toLocaleUpperCase('tr'));
+t('idn', () => new URL('http://日本語.jp/').hostname);
+t('wrap_lines', () => { const e = document.getElementById('wrap'); return Math.round(e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).lineHeight || 24)); });
+t('tz', () => new Intl.DateTimeFormat('ja-JP', {timeZone: 'America/New_York', timeZoneName: 'long'}).format(d));
+const expect = {sjis: '日本語', eucjp: '日本語', iso2022jp: '日本', gbk: '中文', euckr: '한글', big5: '中文', list: '赤、青、黄', display: 'アメリカ合衆国', rel: '昨日', idn: 'xn--wgv71a119e.jp'};
+const bad = Object.keys(expect).filter(k => r[k] !== expect[k]);
+const errs = Object.keys(r).filter(k => String(r[k]).startsWith('ERR'));
+r.pass = bad.length === 0 && errs.length === 0 && /2026年11月12日/.test(r.date_ja) && /令和8年/.test(r.date_ja_era) && r.segment_word.split('|').length >= 4;
+r.bad = bad.concat(errs);
+document.getElementById('out').textContent = JSON.stringify(r, null, 1); window.__result = r;
+</script>

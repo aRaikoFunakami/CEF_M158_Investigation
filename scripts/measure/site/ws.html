@@ -1,0 +1,7 @@
+<!doctype html><meta charset=utf-8><title>ws</title><link rel=stylesheet href=style.css><script src=common.js></script>
+<h2 id=h>WebSocket: 実行中</h2><pre id=out></pre>
+<script>(async()=>{ const r={pass:false}; try{
+  r.echo = await new Promise((res,rej)=>{ const w = new WebSocket('ws://localhost:8001'); w.onopen=()=>w.send('hello-ws-こんにちは');
+    w.onmessage=e=>{res(e.data); w.close();}; w.onerror=()=>rej('ws error'); setTimeout(()=>rej('timeout'),10000); });
+  r.pass = r.echo === 'hello-ws-こんにちは';
+}catch(e){ r.error = String(e); } done('WebSocket', r); })();</script>

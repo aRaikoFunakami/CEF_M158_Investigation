@@ -1,0 +1,28 @@
+{
+ "name": "B",
+ "binary": "/root/chromium/src/out/Slim1/chrome",
+ "files": {
+  "resources.pak": 26094001,
+  "chrome_100_percent.pak": 577198,
+  "chrome_200_percent.pak": 934813,
+  "icudtl.dat": 10688512,
+  "v8_context_snapshot.bin": 711448,
+  "snapshot_blob.bin": 356344,
+  "libEGL.so": 324600,
+  "libGLESv2.so": 324600,
+  "libvk_swiftshader.so": 6442120,
+  "libvulkan.so.1": 847752,
+  "chrome_crashpad_handler": 2794000,
+  "vk_swiftshader_icd.json": 107
+ },
+ "unstripped": 536662424,
+ "stripped": 301521616,
+ "text": 288083951,
+ "data": 13427791,
+ "bss": 2745740,
+ "locales_all": 51851142,
+ "locales_n": 220,
+ "locales_ja_en": 1470530,
+ "total_ja_en": 353087641,
+ "total_all_locales": 403468253
+}

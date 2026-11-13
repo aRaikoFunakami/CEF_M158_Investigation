@@ -1,0 +1,865 @@
+diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
+index c267546ebd..451aaa6a4c 100644
+--- a/build/config/compiler/BUILD.gn
++++ b/build/config/compiler/BUILD.gn
+@@ -48,6 +48,12 @@ if (!is_clang) {
+   default_lld_path = "$clang_base_path/bin"
+ }
+ 
++declare_args() {
++  # FP: Linux でも RELR 形式の再配置(-Wl,--pack-dyn-relocs=relr)を使う。
++  # 実行環境に glibc 2.36 以降(または DT_RELR 対応の libc)が必要。
++  fp_use_relr_relocations = false
++}
++
+ declare_args() {
+   # This allows overriding the location of lld.
+   lld_path = default_lld_path
+@@ -1129,6 +1135,10 @@ config("linker") {
+     }
+   }
+ 
++  if (fp_use_relr_relocations && is_linux && use_lld) {
++    ldflags += [ "-Wl,-z,pack-relative-relocs" ]
++  }
++
+   if (is_chromeos_device && current_toolchain == default_toolchain) {
+     # Flags added automatically by ChromeOS's custom toolchain that are
+     # not already added elsewhere in the configuration. Add these here,
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index 7f1674a621..b4462ff401 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -1577,7 +1577,6 @@ source_set("core") {
+       "//chrome/browser/indigo/onboarding",
+       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+       "//chrome/browser/password_manager/remote_actor",
+-      "//chrome/browser/printing",
+       "//chrome/browser/record_replay:impl",
+       "//chrome/browser/sensor",
+       "//chrome/browser/sharing_hub",
+@@ -1637,6 +1636,9 @@ source_set("core") {
+       "//components/soda:utils",
+       "//components/webapps/isolated_web_apps",
+     ]
++    if (enable_printing) {
++      deps += [ "//chrome/browser/printing" ]
++    }
+   }
+ 
+   if (enable_extensions) {
+diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
+index 05bbf0b6ff..ba8f62ee1b 100644
+--- a/chrome/browser/about_flags.cc
++++ b/chrome/browser/about_flags.cc
+@@ -11132,7 +11132,7 @@ const FeatureEntry kFeatureEntries[] = {
+      kOsMac | kOsWin | kOsLinux,
+      FEATURE_VALUE_TYPE(features::kGlicPrintMenuItem)},
+ 
+-#if !BUILDFLAG(IS_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_PDF)
+     {"glic-pdf-summarize", flag_descriptions::kGlicPdfSummarizeName,
+      flag_descriptions::kGlicPdfSummarizeDescription, kOsDesktop,
+      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kPdfGlicSummarize,
+diff --git a/chrome/browser/back_forward_cache/BUILD.gn b/chrome/browser/back_forward_cache/BUILD.gn
+index 0c5ab3048b..c2b3001c46 100644
+--- a/chrome/browser/back_forward_cache/BUILD.gn
++++ b/chrome/browser/back_forward_cache/BUILD.gn
+@@ -32,7 +32,6 @@ if (!is_android) {
+       "//chrome/browser:browser_process",
+       "//chrome/browser/content_settings",
+       "//chrome/browser/content_settings:content_settings_factory",
+-      "//chrome/browser/pdf:test_mime_handler_stream_manager",
+       "//chrome/browser/preloading:test_support",
+       "//chrome/browser/profiles:profile",
+       "//chrome/browser/task_manager:test_support",
+@@ -57,6 +56,9 @@ if (!is_android) {
+       "//third_party/blink/public/common",
+       "//ui/base",
+     ]
++    if (enable_pdf) {
++      deps += [ "//chrome/browser/pdf:test_mime_handler_stream_manager" ]
++    }
+ 
+     if (enable_pdf) {
+       deps += [
+diff --git a/chrome/browser/chrome_browser_main.cc b/chrome/browser/chrome_browser_main.cc
+index af95a5f52a..02ff74d4cc 100644
+--- a/chrome/browser/chrome_browser_main.cc
++++ b/chrome/browser/chrome_browser_main.cc
+@@ -1920,8 +1920,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
+   // on CrOS is called inside `PostProfileInit()`.
+   content::WebUIControllerFactory::RegisterFactory(
+       ChromeWebUIControllerFactory::GetInstance());
+-  RegisterChromeWebUIConfigs();
+-  RegisterChromeUntrustedWebUIConfigs();
++  // FP: chrome:// の WebUI は登録しない(TV 向け最小構成)。
+ 
+   // This step is costly and is already measured in Startup.CreateFirstProfile
+   // and more directly Profile.CreateAndInitializeProfile.
+diff --git a/chrome/browser/chrome_browser_main_linux.cc b/chrome/browser/chrome_browser_main_linux.cc
+index 2eba856cf1..8a768eb5b7 100644
+--- a/chrome/browser/chrome_browser_main_linux.cc
++++ b/chrome/browser/chrome_browser_main_linux.cc
+@@ -21,7 +21,6 @@
+ #include "chrome/common/chrome_features.h"
+ #include "components/password_manager/core/browser/password_manager_switches.h"
+ #include "content/public/browser/browser_thread.h"
+-#include "device/bluetooth/dbus/bluez_dbus_manager.h"
+ #include "ui/base/l10n/l10n_util.h"
+ 
+ #if BUILDFLAG(IS_LINUX)
+@@ -88,8 +87,7 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
+ 
+ #if !BUILDFLAG(IS_CHROMEOS)
+ #if BUILDFLAG(USE_DBUS)
+-  bluez::BluezDBusManager::Initialize(
+-      dbus_thread_linux::GetSharedSystemBus().get());
++  // FP: BlueZ(Bluetooth)は使わない(use_bluez=false)。
+   session_end_listener_ = SessionEndListenerLinux::Create();
+ #endif  // BUILDFLAG(USE_DBUS)
+ #endif  // !BUILDFLAG(IS_CHROMEOS)
+@@ -151,7 +149,7 @@ void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
+ #if BUILDFLAG(USE_DBUS)
+   session_end_listener_.reset();
+ #endif
+-  bluez::BluezDBusManager::Shutdown();
++  // FP: BlueZ(Bluetooth)は使わない(use_bluez=false)。
+   // TODO(shelley.vohr): Call dbus_thread_linux::Shutdown() here. It cannot run
+   // yet because the in-process device service (battery, wifi, wake lock) is
+   // destroyed after this last BrowserMainParts hook and still dereferences
+diff --git a/chrome/browser/chrome_content_browser_client_receiver_bindings.cc b/chrome/browser/chrome_content_browser_client_receiver_bindings.cc
+index aa6ff52009..2f1b8f5827 100644
+--- a/chrome/browser/chrome_content_browser_client_receiver_bindings.cc
++++ b/chrome/browser/chrome_content_browser_client_receiver_bindings.cc
+@@ -350,7 +350,7 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
+     content::RenderFrameHost* render_frame_host,
+     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
+   chrome::internal::PopulateChromeFrameBinders(map, render_frame_host);
+-  chrome::internal::PopulateChromeWebUIFrameBinders(map, render_frame_host);
++  // FP: WebUI 用の Mojo バインダは登録しない。
+ 
+ #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+   if (!render_frame_host->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
+@@ -376,12 +376,12 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
+ 
+ void ChromeContentBrowserClient::RegisterTrustedWebUIInterfaceBrokers(
+     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+-  chrome::internal::PopulateTrustedChromeWebUIFrameInterfaceBrokers(registry);
++  // FP: WebUI 用のインターフェースブローカー(trusted)は登録しない。
+ }
+ 
+ void ChromeContentBrowserClient::RegisterUntrustedWebUIInterfaceBrokers(
+     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+-  chrome::internal::PopulateUntrustedChromeWebUIFrameInterfaceBrokers(registry);
++  // FP: WebUI 用のインターフェースブローカー(untrusted)は登録しない。
+ }
+ 
+ void ChromeContentBrowserClient::
+diff --git a/chrome/browser/contextual_tasks/BUILD.gn b/chrome/browser/contextual_tasks/BUILD.gn
+index b406627d41..f5175dfb45 100644
+--- a/chrome/browser/contextual_tasks/BUILD.gn
++++ b/chrome/browser/contextual_tasks/BUILD.gn
+@@ -553,7 +553,6 @@ source_set("ui_impl") {
+     ]
+     deps += [
+       "//chrome/browser:file_select_helper",
+-      "//chrome/browser/pdf",
+       "//chrome/browser/resources/contextual_tasks:resources",
+       "//chrome/browser/resources/webui_toolbar_shared:resources",
+       "//chrome/browser/tab_list",
+@@ -581,6 +580,9 @@ source_set("ui_impl") {
+       "//ui/views/controls/webview",
+       "//url",
+     ]
++    if (enable_pdf) {
++      deps += [ "//chrome/browser/pdf" ]
++    }
+   }
+ 
+   if (enable_dice_support) {
+diff --git a/chrome/browser/enterprise/data_protection/BUILD.gn b/chrome/browser/enterprise/data_protection/BUILD.gn
+index ca865c84a2..8e60538e2b 100644
+--- a/chrome/browser/enterprise/data_protection/BUILD.gn
++++ b/chrome/browser/enterprise/data_protection/BUILD.gn
+@@ -54,7 +54,7 @@ source_set("unit_tests") {
+     deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
+   }
+ 
+-  if (enable_extensions && enterprise_local_content_analysis) {
++  if (enable_extensions && enable_printing && enterprise_local_content_analysis) {
+     sources += [ "print_utils_unittest.cc" ]
+     deps += [ "//chrome/browser/printing:test_support" ]
+   }
+@@ -143,9 +143,11 @@ if (enterprise_data_controls && !is_android) {
+     ]
+     if (enable_print_preview) {
+       deps += [
+-        "//chrome/browser/printing:test_support",
+         "//printing:test_support",
+       ]
++      if (enable_printing) {
++        deps += [ "//chrome/browser/printing:test_support" ]
++      }
+     }
+   }
+ }
+diff --git a/chrome/browser/extensions/BUILD.gn b/chrome/browser/extensions/BUILD.gn
+index c520c973be..ed9dda7f91 100644
+--- a/chrome/browser/extensions/BUILD.gn
++++ b/chrome/browser/extensions/BUILD.gn
+@@ -3182,11 +3182,9 @@ source_set("browser_tests") {
+       "//chrome/browser/extensions/api/messaging:test_support",
+       "//chrome/browser/extensions/api/mime_handlers:browser_tests",
+       "//chrome/browser/extensions/api/passwords_private:test_support",
+-      "//chrome/browser/extensions/api/pdf_viewer_private:browser_tests",
+       "//chrome/browser/hid",
+       "//chrome/browser/password_manager",
+       "//chrome/browser/password_manager:test_support",
+-      "//chrome/browser/pdf:pdf_extension_test_utils",
+       "//chrome/browser/prefetch",
+       "//chrome/browser/service_worker:browser_tests",
+       "//chrome/browser/sync_file_system",
+@@ -3268,6 +3266,12 @@ source_set("browser_tests") {
+       "//ui/views:test_support",
+       "//ui/web_dialogs:test_support",
+     ]
++    if (enable_pdf) {
++      deps += [ "//chrome/browser/pdf:pdf_extension_test_utils" ]
++    }
++    if (enable_pdf) {
++      deps += [ "//chrome/browser/extensions/api/pdf_viewer_private:browser_tests" ]
++    }
+ 
+     if (!is_chromeos) {
+       # Chrome OS doesn't use background mode or download bubbles.
+diff --git a/chrome/browser/guest_view/BUILD.gn b/chrome/browser/guest_view/BUILD.gn
+index b4e94778b3..4e9a6ae8c3 100644
+--- a/chrome/browser/guest_view/BUILD.gn
++++ b/chrome/browser/guest_view/BUILD.gn
+@@ -5,6 +5,7 @@
+ import("//components/captive_portal/core/features.gni")
+ import("//components/guest_view/buildflags/buildflags.gni")
+ import("//extensions/buildflags/buildflags.gni")
++import("//printing/buildflags/buildflags.gni")
+ 
+ assert(enable_guest_view)
+ 
+@@ -110,9 +111,7 @@ if (!is_android && enable_extensions) {
+ 
+     deps = [
+       "//chrome/browser/extensions:test_support",
+-      "//chrome/browser/printing:test_support",
+       "//chrome/browser/profiles:profile",
+-      "//chrome/browser/ui/webui/print_preview",
+       "//chrome/test:test_support",
+       "//chrome/test:test_support_ui",
+       "//components/guest_view/browser",
+@@ -128,6 +127,12 @@ if (!is_android && enable_extensions) {
+       "//net:test_support",
+       "//testing/gtest",
+     ]
++    if (enable_printing) {
++      deps += [ "//chrome/browser/printing:test_support" ]
++    }
++    if (enable_print_preview) {
++      deps += [ "//chrome/browser/ui/webui/print_preview" ]
++    }
+   }
+ 
+   source_set("interactive_ui_tests") {
+diff --git a/chrome/browser/metrics/bluetooth_metrics_provider.cc b/chrome/browser/metrics/bluetooth_metrics_provider.cc
+index 5def5490f7..87c9c8b670 100644
+--- a/chrome/browser/metrics/bluetooth_metrics_provider.cc
++++ b/chrome/browser/metrics/bluetooth_metrics_provider.cc
+@@ -6,7 +6,6 @@
+ 
+ #include "base/functional/bind.h"
+ #include "base/metrics/histogram_functions.h"
+-#include "device/bluetooth/floss/floss_features.h"
+ 
+ namespace metrics {
+ 
+@@ -15,10 +14,7 @@ BluetoothMetricsProvider::BluetoothMetricsProvider() = default;
+ BluetoothMetricsProvider::~BluetoothMetricsProvider() = default;
+ 
+ bool BluetoothMetricsProvider::ProvideHistograms() {
+-  base::UmaHistogramEnumeration("Bluetooth.StackName",
+-                                floss::features::IsFlossEnabled()
+-                                    ? BluetoothStackName::kFloss
+-                                    : BluetoothStackName::kBlueZ);
++  // FP: BlueZ / Floss は使わない(use_bluez=false)。スタック名のヒストグラムは記録しない。
+   return true;
+ }
+ 
+diff --git a/chrome/browser/renderer_context_menu/BUILD.gn b/chrome/browser/renderer_context_menu/BUILD.gn
+index fe5a6b11df..0cb9a8ed4e 100644
+--- a/chrome/browser/renderer_context_menu/BUILD.gn
++++ b/chrome/browser/renderer_context_menu/BUILD.gn
+@@ -137,7 +137,6 @@ source_set("impl") {
+       "//chrome/browser/lens/region_search",
+       "//chrome/browser/media/router:media_router_feature",
+       "//chrome/browser/password_manager",
+-      "//chrome/browser/pdf",
+       "//chrome/browser/predictors",
+       "//chrome/browser/prefs",
+       "//chrome/browser/preloading:prefs",
+@@ -198,6 +197,9 @@ source_set("impl") {
+       "//ui/menus",
+       "//url",
+     ]
++    if (enable_pdf) {
++      deps += [ "//chrome/browser/pdf" ]
++    }
+ 
+     if (enable_print_preview) {
+       deps += [ "//chrome/browser/printing" ]
+@@ -403,7 +405,6 @@ if (!is_android) {
+       "//chrome/browser/devtools",
+       "//chrome/browser/download:test_support",
+       "//chrome/browser/enterprise/data_controls:test_support",
+-      "//chrome/browser/pdf:pdf_extension_test_utils",
+       "//chrome/browser/profiles:misc",
+       "//chrome/browser/search_engines",
+       "//chrome/browser/send_tab_to_self",
+@@ -440,6 +441,9 @@ if (!is_android) {
+       "//ui/events:test_support",
+       "//url",
+     ]
++    if (enable_pdf) {
++      deps += [ "//chrome/browser/pdf:pdf_extension_test_utils" ]
++    }
+ 
+     if (is_linux || is_chromeos || is_win) {
+       sources += [
+diff --git a/chrome/browser/renderer_context_menu/render_view_context_menu.cc b/chrome/browser/renderer_context_menu/render_view_context_menu.cc
+index 6e772b279c..7b66143e2c 100644
+--- a/chrome/browser/renderer_context_menu/render_view_context_menu.cc
++++ b/chrome/browser/renderer_context_menu/render_view_context_menu.cc
+@@ -4836,6 +4836,9 @@ bool RenderViewContextMenu::IsPasteAndMatchStyleEnabled() const {
+ }
+ 
+ bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
++#if !BUILDFLAG(ENABLE_PRINTING)
++  return false;
++#else
+   if (IsAnyGlicWebContents(this) &&
+       base::FeatureList::IsEnabled(features::kGlicPrintMenuItem)) {
+     return GetPrefs(browser_context_)->GetBoolean(prefs::kPrintingEnabled) &&
+@@ -4849,6 +4852,7 @@ bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
+ 
+   BrowserWindowInterface* browser = GetBrowser();
+   return browser && chrome::CanPrint(browser);
++#endif  // BUILDFLAG(ENABLE_PRINTING)
+ }
+ 
+ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
+diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
+index 194c164806..bf5b371328 100644
+--- a/chrome/browser/ui/BUILD.gn
++++ b/chrome/browser/ui/BUILD.gn
+@@ -156,12 +156,14 @@ if (!is_android) {
+       "//chrome/browser/history",
+       "//chrome/browser/lifetime",
+       "//chrome/browser/lifetime:termination_notification",
+-      "//chrome/browser/printing",
+       "//chrome/browser/profiles:profile",
+       "//chrome/browser/profiles:profile_manager",
+       "//components/keep_alive_registry",
+       "//printing/buildflags",
+     ]
++    if (enable_printing) {
++      deps += [ "//chrome/browser/printing" ]
++    }
+   }
+ 
+   source_set("intent_picker_tab_helper") {
+@@ -877,11 +879,9 @@ if (!is_android) {
+       "//chrome/browser/media/router:media_router_feature",
+       "//chrome/browser/page_info",
+       "//chrome/browser/password_manager",
+-      "//chrome/browser/pdf",
+       "//chrome/browser/permissions",
+       "//chrome/browser/picture_in_picture",
+       "//chrome/browser/prefs",
+-      "//chrome/browser/printing",
+       "//chrome/browser/profiles:profile",
+       "//chrome/browser/profiles:profile_util",
+       "//chrome/browser/reading_list",
+@@ -987,6 +987,12 @@ if (!is_android) {
+       "//ui/gfx",
+       "//ui/gfx/geometry",
+     ]
++    if (enable_printing) {
++      deps += [ "//chrome/browser/printing" ]
++    }
++    if (enable_pdf) {
++      deps += [ "//chrome/browser/pdf" ]
++    }
+     if (is_win || is_mac || is_linux) {
+       deps += [ "//chrome/browser/ui/views/scheduled_restart" ]
+     }
+@@ -1401,7 +1407,6 @@ if (!is_android) {
+       "//chrome/browser/picture_in_picture",
+       "//chrome/browser/policy",
+       "//chrome/browser/prefs",
+-      "//chrome/browser/printing",
+       "//chrome/browser/profiles",
+       "//chrome/browser/profiles:profile",
+       "//chrome/browser/profiles:profile_manager",
+@@ -1475,6 +1480,9 @@ if (!is_android) {
+       "//ui/gfx",
+       "//url",
+     ]
++    if (enable_printing) {
++      deps += [ "//chrome/browser/printing" ]
++    }
+     if (is_chromeos) {
+       deps += [
+         "//ash/constants",
+diff --git a/chrome/browser/ui/blocked_content/BUILD.gn b/chrome/browser/ui/blocked_content/BUILD.gn
+index b831198f1e..9a4c1450f3 100644
+--- a/chrome/browser/ui/blocked_content/BUILD.gn
++++ b/chrome/browser/ui/blocked_content/BUILD.gn
+@@ -5,6 +5,7 @@
+ import("//build/config/chromeos/args.gni")
+ import("//build/config/ozone.gni")
+ import("//extensions/buildflags/buildflags.gni")
++import("//printing/buildflags/buildflags.gni")
+ 
+ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+ 
+@@ -117,7 +118,6 @@ if (!is_android && !is_chromeos_device) {
+     deps = [
+       ":blocked_content",
+       "//chrome/browser/content_settings:content_settings_factory",
+-      "//chrome/browser/printing",
+       "//chrome/browser/search_engines",
+       "//chrome/browser/ui:browser_commands",
+       "//chrome/browser/ui:browser_window_header",
+@@ -131,6 +131,9 @@ if (!is_android && !is_chromeos_device) {
+       "//components/embedder_support",
+       "//components/javascript_dialogs",
+     ]
++    if (enable_printing) {
++      deps += [ "//chrome/browser/printing" ]
++    }
+   }
+ }
+ 
+diff --git a/chrome/browser/ui/browser_web_contents_delegate/BUILD.gn b/chrome/browser/ui/browser_web_contents_delegate/BUILD.gn
+index 7dbf9fb2fd..adee8d212a 100644
+--- a/chrome/browser/ui/browser_web_contents_delegate/BUILD.gn
++++ b/chrome/browser/ui/browser_web_contents_delegate/BUILD.gn
+@@ -4,6 +4,7 @@
+ 
+ import("//build/config/ozone.gni")
+ import("//build/config/ui.gni")
++import("//printing/buildflags/buildflags.gni")
+ 
+ if (!is_android) {
+   source_set("browser_web_contents_delegate") {
+@@ -42,10 +43,12 @@ if (!is_android) {
+       "//components/headless/console_message_logger",
+       "//components/javascript_dialogs",
+       "//components/page_load_metrics/browser",
+-      "//components/printing/browser",
+       "//content/public/browser",
+       "//ui/base",
+     ]
++    if (enable_printing) {
++      deps += [ "//components/printing/browser" ]
++    }
+     if (use_aura) {
+       deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]
+     }
+diff --git a/chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.cc b/chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.cc
+index 3c3aaff4f9..0a3dad0f68 100644
+--- a/chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.cc
++++ b/chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.cc
+@@ -72,7 +72,6 @@
+ #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+ #include "components/paint_preview/browser/paint_preview_client.h"
+ #include "components/permissions/permission_request_manager.h"
+-#include "components/printing/browser/print_composite_client.h"
+ #include "components/split_tabs/split_tab_id.h"
+ #include "components/tabs/public/split_tab_data.h"
+ #include "components/tabs/public/tab_interface.h"
+@@ -123,6 +122,11 @@
+ #include "ui/display/display.h"
+ #include "ui/display/screen.h"
+ #include "ui/display/types/display_constants.h"
++#include "printing/buildflags/buildflags.h"
++
++#if BUILDFLAG(ENABLE_PRINTING)
++#include "components/printing/browser/print_composite_client.h"
++#endif
+ #endif  // BUILDFLAG(IS_MAC)
+ 
+ DEFINE_USER_DATA(BrowserWebContentsDelegate);
+@@ -1509,10 +1513,12 @@ void BrowserWebContentsDelegate::PrintCrossProcessSubframe(
+     const gfx::Rect& rect,
+     int document_cookie,
+     content::RenderFrameHost* subframe_host) const {
++#if BUILDFLAG(ENABLE_PRINTING)
+   auto* client = printing::PrintCompositeClient::FromWebContents(web_contents);
+   if (client) {
+     client->PrintCrossProcessSubframe(rect, document_cookie, subframe_host);
+   }
++#endif  // BUILDFLAG(ENABLE_PRINTING)
+ }
+ 
+ void BrowserWebContentsDelegate::CapturePaintPreviewOfSubframe(
+diff --git a/chrome/browser/ui/lens/BUILD.gn b/chrome/browser/ui/lens/BUILD.gn
+index fe8aaf3b7e..abe0bd2441 100644
+--- a/chrome/browser/ui/lens/BUILD.gn
++++ b/chrome/browser/ui/lens/BUILD.gn
+@@ -382,7 +382,6 @@ if (!is_android) {
+       "//chrome/browser/contextual_tasks:test_support",
+       "//chrome/browser/contextual_tasks:ui",
+       "//chrome/browser/lens/core/mojom:mojo_bindings",
+-      "//chrome/browser/pdf:pdf_extension_test_base",
+       "//chrome/browser/profiles:profile",
+       "//chrome/browser/signin/e2e_tests:test_support",
+       "//chrome/browser/sync",
+@@ -448,6 +447,9 @@ if (!is_android) {
+       "//ui/views/controls/webview",
+       "//url",
+     ]
++    if (enable_pdf) {
++      deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
++    }
+     if (enable_pdf) {
+       deps += [ "//chrome/browser/pdf" ]
+     }
+diff --git a/chrome/browser/ui/read_anything/BUILD.gn b/chrome/browser/ui/read_anything/BUILD.gn
+index 03a2d493eb..f83cd38398 100644
+--- a/chrome/browser/ui/read_anything/BUILD.gn
++++ b/chrome/browser/ui/read_anything/BUILD.gn
+@@ -194,7 +194,6 @@ source_set("browser_tests") {
+     "//base/test:test_support",
+     "//chrome/browser",
+     "//chrome/browser/optimization_guide:test_support",
+-    "//chrome/browser/pdf:pdf_extension_test_utils",
+     "//chrome/browser/search_engines",
+     "//chrome/browser/ui:browser_actions",
+     "//chrome/browser/ui:browser_commands",
+@@ -224,6 +223,9 @@ source_set("browser_tests") {
+     "//ui/accessibility",
+     "//ui/views",
+   ]
++  if (enable_pdf) {
++    deps += [ "//chrome/browser/pdf:pdf_extension_test_utils" ]
++  }
+ 
+   if (enable_print_preview) {
+     sources += [ "read_anything_printing_browsertest.cc" ]
+diff --git a/chrome/browser/ui/read_anything/read_anything_entry_point_controller.cc b/chrome/browser/ui/read_anything/read_anything_entry_point_controller.cc
+index f42e27e53b..5d55e32b78 100644
+--- a/chrome/browser/ui/read_anything/read_anything_entry_point_controller.cc
++++ b/chrome/browser/ui/read_anything/read_anything_entry_point_controller.cc
+@@ -83,8 +83,9 @@ void LogDecision(ReadAnythingOmniboxChipDecision decision) {
+   base::UmaHistogramEnumeration(kOmniboxDecisionHistogram, decision);
+ }
+ 
+-#if BUILDFLAG(ENABLE_PDF)
+ size_t g_min_pdf_text_length_for_omnibox = 1100;
++
++#if BUILDFLAG(ENABLE_PDF)
+ constexpr float kMaxNonAlphaFraction = 0.33;
+ 
+ bool IsMostlyAlphaChars(const std::u16string& text) {
+@@ -132,15 +133,11 @@ void RunPdfDistillableHeuristic(
+       /*page_index=*/0,
+       base::BindOnce(&OnPdfTextReceived, std::move(result_callback)));
+ }
+-#endif
+ 
+ pdf::PDFDocumentHelper* GetPdf(content::WebContents& contents) {
+-#if BUILDFLAG(ENABLE_PDF)
+   return pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
+-#else
+-  return nullptr;
+-#endif
+ }
++#endif  // BUILDFLAG(ENABLE_PDF)
+ 
+ void OnReadabilityDecision(base::OnceCallback<void(bool)> result_callback,
+                            bool should_show) {
+@@ -170,12 +167,14 @@ void OnOptimizationGuideDecision(
+     return;
+   }
+ 
++#if BUILDFLAG(ENABLE_PDF)
+   // This check is already done in CheckIfShouldSuggestReadingMode but it's
+   // possible that the page was not detected as a PDF yet so check again.
+   if (auto* pdf_helper = GetPdf(*contents)) {
+     RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
+     return;
+   }
++#endif  // BUILDFLAG(ENABLE_PDF)
+ 
+   switch (decision) {
+     case optimization_guide::OptimizationGuideDecision::kFalse:
+@@ -455,10 +454,12 @@ void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+     return;
+   }
+   content::WebContents* contents = tab->GetContents();
++#if BUILDFLAG(ENABLE_PDF)
+   if (auto* pdf_helper = GetPdf(*contents)) {
+     RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
+     return;
+   }
++#endif  // BUILDFLAG(ENABLE_PDF)
+ 
+   auto* optimization_guide_decider =
+       OptimizationGuideKeyedServiceFactory::GetForProfile(bwi->GetProfile());
+diff --git a/chrome/browser/ui/views/frame/browser_window_factory.cc b/chrome/browser/ui/views/frame/browser_window_factory.cc
+index ad579aa818..d4f6904a66 100644
+--- a/chrome/browser/ui/views/frame/browser_window_factory.cc
++++ b/chrome/browser/ui/views/frame/browser_window_factory.cc
+@@ -5,6 +5,7 @@
+ #include <memory>
+ 
+ #include "build/build_config.h"
++#include "base/notreached.h"
+ #include "chrome/browser/ui/browser_window_deleter.h"
+ #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
+ #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
+@@ -32,6 +33,9 @@ std::unique_ptr<BrowserWindow, BrowserWindowDeleter>
+ BrowserWindow::CreateBrowserWindow(BrowserWindowInterface* browser,
+                                    bool user_gesture,
+                                    bool in_tab_dragging) {
++  // FP: Alloy スタイル専用。Chrome スタイルのブラウザウィンドウ(BrowserView)は作らない。
++  NOTREACHED();
++#if 0
+   if (webui_browser::IsWebUIBrowserEnabled() &&
+       browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
+     return std::unique_ptr<BrowserWindow, BrowserWindowDeleter>(
+@@ -82,6 +86,7 @@ BrowserWindow::CreateBrowserWindow(BrowserWindowInterface* browser,
+ #endif
+ 
+   return std::unique_ptr<BrowserWindow, BrowserWindowDeleter>(view);
++#endif
+ }
+ 
+ // static
+diff --git a/chrome/browser/ui/views/user_education/BUILD.gn b/chrome/browser/ui/views/user_education/BUILD.gn
+index a56728b88b..1f0371fc4a 100644
+--- a/chrome/browser/ui/views/user_education/BUILD.gn
++++ b/chrome/browser/ui/views/user_education/BUILD.gn
+@@ -181,8 +181,11 @@ source_set("impl") {
+     deps += [ "//chrome/browser/ui/webui/extensions_zero_state_promo" ]
+   }
+ 
+-  if (enable_pdf_ink2) {
+-    deps += [ "//chrome/browser/pdf" ]
++  if (enable_pdf) {
++    deps += [
++      "//chrome/browser/pdf",
++      "//components/pdf/browser",
++    ]
+   }
+ }
+ 
+diff --git a/chrome/browser/ui/views/user_education/browser_user_education_service.cc b/chrome/browser/ui/views/user_education/browser_user_education_service.cc
+index a14d4dbd6d..af5ca77755 100644
+--- a/chrome/browser/ui/views/user_education/browser_user_education_service.cc
++++ b/chrome/browser/ui/views/user_education/browser_user_education_service.cc
+@@ -115,7 +115,6 @@
+ #include "components/feature_engagement/public/feature_constants.h"
+ #include "components/lens/lens_features.h"
+ #include "components/omnibox/common/omnibox_features.h"
+-#include "components/pdf/browser/pdf_document_helper.h"
+ #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
+ #include "components/saved_tab_groups/public/features.h"
+ #include "components/send_tab_to_self/features.h"
+@@ -176,8 +175,9 @@
+ #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
+ #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+ 
+-#if BUILDFLAG(ENABLE_PDF_INK2)
++#if BUILDFLAG(ENABLE_PDF)
+ #include "chrome/browser/pdf/pdf_help_bubble_handler_factory.h"
++#include "components/pdf/browser/pdf_document_helper.h"
+ #endif
+ 
+ namespace {
+@@ -1135,6 +1135,7 @@ void MaybeRegisterChromeFeaturePromos(
+           .SetBubbleIcon(kLightbulbOutlineIcon)
+           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE)));
+ 
++#if BUILDFLAG(ENABLE_PDF)
+   // kIPHPdfGlicSummarizeFeature:
+   registry.RegisterFeature(std::move(
+       FeaturePromoSpecification::CreateForToastPromo(
+@@ -1152,6 +1153,7 @@ void MaybeRegisterChromeFeaturePromos(
+           .SetMetadata(151, "cuianthony@chromium.org",
+                        "Triggered when the PDF Viewer loads with the "
+                        "Summarize button.")));
++#endif  // BUILDFLAG(ENABLE_PDF)
+ 
+ #if BUILDFLAG(ENABLE_PDF_INK2)
+   // kIPHPdfInkSignaturesFeature:
+@@ -1176,6 +1178,7 @@ void MaybeRegisterChromeFeaturePromos(
+                        "Triggered when the PDF Viewer opens.")));
+ #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+ 
++#if BUILDFLAG(ENABLE_PDF)
+   // kIPHPdfSearchifyFeature:
+   registry.RegisterFeature(std::move(
+       FeaturePromoSpecification::CreateForToastPromo(
+@@ -1210,6 +1213,7 @@ void MaybeRegisterChromeFeaturePromos(
+                 }
+                 return nullptr;
+               }))));
++#endif  // BUILDFLAG(ENABLE_PDF)
+ 
+   // kIPHLensOverlayFeature:
+   registry.RegisterFeature(std::move(
+diff --git a/chrome/browser/ui/webui/side_panel/read_anything/BUILD.gn b/chrome/browser/ui/webui/side_panel/read_anything/BUILD.gn
+index 498a20e3a0..d0af8fe2a2 100644
+--- a/chrome/browser/ui/webui/side_panel/read_anything/BUILD.gn
++++ b/chrome/browser/ui/webui/side_panel/read_anything/BUILD.gn
+@@ -2,6 +2,8 @@
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
+ 
++import("//pdf/features.gni")
++
+ assert(!is_android)
+ 
+ source_set("read_anything") {
+@@ -121,7 +123,6 @@ source_set("browser_tests") {
+   sources = [ "read_anything_untrusted_page_handler_browsertest.cc" ]
+   deps = [
+     ":read_anything",
+-    "//chrome/browser/pdf:pdf_extension_test_utils",
+     "//chrome/browser/speech",
+     "//chrome/browser/translate",
+     "//chrome/browser/ui/browser_window",
+@@ -147,6 +148,9 @@ source_set("browser_tests") {
+     "//testing/gmock",
+     "//testing/gtest",
+   ]
++  if (enable_pdf) {
++    deps += [ "//chrome/browser/pdf:pdf_extension_test_utils" ]
++  }
+ }
+ 
+ source_set("interactive_ui_tests") {
+diff --git a/chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.cc b/chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.cc
+index 3f95637242..d9db3a745c 100644
+--- a/chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.cc
++++ b/chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.cc
+@@ -83,6 +83,7 @@
+ #include "url/url_constants.h"
+ 
+ #if BUILDFLAG(ENABLE_PDF)
++#include "components/pdf/browser/pdf_frame_util.h"
+ #include "components/pdf/common/pdf_util.h"
+ #include "components/translate/content/browser/content_translate_driver.h"
+ #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
+@@ -286,6 +287,7 @@ bool IsFullPagePdf(content::WebContents* contents) {
+ }
+ 
+ bool IsPdfContents(content::WebContents* contents, bool has_pdf_observer) {
++#if BUILDFLAG(ENABLE_PDF)
+   if (!contents) {
+     return false;
+   }
+@@ -293,8 +295,12 @@ bool IsPdfContents(content::WebContents* contents, bool has_pdf_observer) {
+              ? !!extensions::mime_handler::MimeHandlerStreamManager::
+                     FromWebContents(contents)
+              : has_pdf_observer;
++#else
++  return false;
++#endif  // BUILDFLAG(ENABLE_PDF)
+ }
+ 
++#if BUILDFLAG(ENABLE_PDF)
+ // Returns the frame hosting the PDF's contents, or nullptr if `contents` is
+ // not displaying a PDF or the frame does not exist yet. This is the frame that
+ // `PdfAccessibilityTree` serializes the PDF's accessibility nodes into, so its
+@@ -314,6 +320,7 @@ content::RenderFrameHost* FindPdfContentFrame(content::WebContents* contents) {
+   return embedder_host ? pdf_frame_util::FindPdfChildFrame(embedder_host)
+                        : nullptr;
+ }
++#endif  // BUILDFLAG(ENABLE_PDF)
+ 
+ // Returns whether `rfh` is a subframe of the primary page that the primary main
+ // frame can already script, i.e. it is same-origin with it. Opaque main frame
+@@ -948,6 +955,7 @@ bool ReadAnythingUntrustedPageHandler::IsObservingTree(
+            IsWhatsNewEmbeddedContentFrame(rfh, main_frame);
+   }
+ 
++#if BUILDFLAG(ENABLE_PDF)
+   content::RenderFrameHost* pdf_rfh =
+       chrome_pdf::features::IsOopifPdfEnabled()
+           ? pdf_frame_util::FindFullPagePdfExtensionHost(contents)
+@@ -964,6 +972,10 @@ bool ReadAnythingUntrustedPageHandler::IsObservingTree(
+   // host or the content frame succeed.
+   return chrome_pdf::features::IsOopifPdfEnabled() &&
+          rfh == pdf_frame_util::FindPdfChildFrame(pdf_rfh);
++#else
++  // IsPdfContents() is always false without PDF support.
++  return false;
++#endif  // BUILDFLAG(ENABLE_PDF)
+ }
+ 
+ bool ReadAnythingUntrustedPageHandler::AreActionsAllowedInTree(
+diff --git a/chrome/test/BUILD.gn b/chrome/test/BUILD.gn
+index b0ef6f56ec..bf59c8cfe3 100644
+--- a/chrome/test/BUILD.gn
++++ b/chrome/test/BUILD.gn
+@@ -1322,7 +1322,6 @@ if (!is_android) {
+       "//chrome/browser/permissions:browser_tests",
+       "//chrome/browser/personal_context:browser_tests",
+       "//chrome/browser/picture_in_picture:browser_tests",
+-      "//chrome/browser/plugins:browser_tests",
+       "//chrome/browser/policy:browser_tests",
+       "//chrome/browser/predictors:browser_tests",
+       "//chrome/browser/prefetch:browser_tests",
+@@ -1553,6 +1552,9 @@ if (!is_android) {
+       "//ui/resources",
+       "//ui/webui:buildflags",
+     ]
++    if (enable_plugins) {
++      deps += [ "//chrome/browser/plugins:browser_tests" ]
++    }
+ 
+     # Runtime dependencies
+     data_deps = [
+@@ -3995,7 +3997,6 @@ if (!is_android && !is_chromeos_device) {
+       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
+       "//chrome/browser/ui/webui/cr_components/history_embeddings:interactive_ui_tests",
+       "//chrome/browser/ui/webui/downloads:interactive_ui_tests",
+-      "//chrome/browser/ui/webui/print_preview:interactive_ui_tests",
+       "//chrome/browser/ui/webui/searchbox:interactive_ui_tests",
+       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
+       "//chrome/browser/ui/webui/settings:interactive_ui_tests",
+@@ -4021,6 +4022,9 @@ if (!is_android && !is_chromeos_device) {
+       "//ui/display:display_interactive_ui_tests",
+       "//ui/events:events_interactive_ui_tests",
+     ]
++    if (enable_print_preview) {
++      deps += [ "//chrome/browser/ui/webui/print_preview:interactive_ui_tests" ]
++    }
+ 
+     if (is_linux) {
+       deps += [ "//ui/linux:display_server_utils" ]
+diff --git a/content/utility/utility_main.cc b/content/utility/utility_main.cc
+index a938879482..288e382886 100644
+--- a/content/utility/utility_main.cc
++++ b/content/utility/utility_main.cc
+@@ -297,9 +297,7 @@ int UtilityMain(MainFunctionParams parameters) {
+     }
+   }
+ 
+-  if (utility_sub_type == on_device_model::mojom::OnDeviceModelService::Name_) {
+-    CHECK(on_device_model::PreSandboxInit());
+-  }
++  // FP: on-device model の PreSandboxInit を削除(Dawn / tint への参照を断つ)。
+ 
+ #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+ 

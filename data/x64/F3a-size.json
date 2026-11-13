@@ -1,0 +1,31 @@
+{
+ "name": "F3a",
+ "binary": "/root/fp/builds/F3a/cefsimple",
+ "files": {
+  "resources.pak": 25347447,
+  "chrome_100_percent.pak": 577211,
+  "chrome_200_percent.pak": 934826,
+  "icudtl.dat": 10824576,
+  "v8_context_snapshot.bin": 700720,
+  "snapshot_blob.bin": 355688,
+  "libEGL.so": 328400,
+  "libGLESv2.so": 328400,
+  "libvk_swiftshader.so": 5751312,
+  "libvulkan.so.1": 845920,
+  "chrome_crashpad_handler": 2190296,
+  "vk_swiftshader_icd.json": 107
+ },
+ "unstripped": 433246016,
+ "stripped": 253350592,
+ "text": 240768657,
+ "data": 12565791,
+ "bss": 2730068,
+ "exe_stripped": 784432,
+ "libcef_unstripped": 432028128,
+ "libcef_stripped": 252566160,
+ "locales_all": 51287780,
+ "locales_n": 220,
+ "locales_ja_en": 1450684,
+ "total_ja_en": 302986179,
+ "total_all_locales": 352823275
+}

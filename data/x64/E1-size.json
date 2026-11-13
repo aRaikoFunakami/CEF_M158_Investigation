@@ -1,0 +1,32 @@
+{
+ "name": "E1",
+ "binary": "/root/fp/builds/E1/cefsimple",
+ "files": {
+  "resources.pak": 25775409,
+  "chrome_100_percent.pak": 577211,
+  "chrome_200_percent.pak": 934826,
+  "icudtl.dat": 10824576,
+  "v8_context_snapshot.bin": 709320,
+  "snapshot_blob.bin": 355688,
+  "libEGL.so": 323656,
+  "libGLESv2.so": 323656,
+  "libvk_swiftshader.so": 6013416,
+  "libvulkan.so.1": 843200,
+  "libVkLayer_khronos_validation.so": 27273592,
+  "chrome_crashpad_handler": 2451376,
+  "vk_swiftshader_icd.json": 107
+ },
+ "unstripped": 554984256,
+ "stripped": 299647976,
+ "text": 285297717,
+ "data": 14336471,
+ "bss": 2824524,
+ "exe_stripped": 813400,
+ "libcef_unstripped": 553699064,
+ "libcef_stripped": 298834576,
+ "locales_all": 51995534,
+ "locales_n": 220,
+ "locales_ja_en": 1471663,
+ "total_ja_en": 377525672,
+ "total_all_locales": 428049543
+}
