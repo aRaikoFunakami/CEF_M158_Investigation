@@ -135,3 +135,51 @@ ab_fig('fig10-upx-ram.svg', 'H.264 1080p 再生中の RAM(arm64、単位 MiB)',
        [('起動フラグなし', [('CEF 既定', 789.8, 255.8, 790.0, 1045.5), ('削減版', 590.3, 167.3, 598.3, 757.7), ('削減版 + UPX', 855.0, 32.5, 1366.2, 887.6)]),
         ('3 フラグ', [('CEF 既定', 660.7, 251.4, 661.9, 912.2), ('削減版', 528.9, 165.2, 537.7, 694.0), ('削減版 + UPX', 649.6, 31.9, 679.0, 681.5)])], 0.42,
        ['UPX では、展開したコードのうちプロセスが触っていない部分が cgroup にだけ入るので、cgroup が PSS を超える。', '最後まで再生できた 2 回の中央値。CEF 既定は SwiftShader で描画、削減版の 3 フラグは --disable-gpu。M18、logs/484。'])
+
+# ---- 図 15: 描画の経路(GPU あり / GPU なし + SwiftShader / GPU なし・SwiftShader なし)
+def box(x, y, w, h, s1, s2='', fill='#f1f3f4', st=GRY, bold=False, sw=1):
+    o = [r(x, y, w, h, fill, st, 6, sw), t(x + w / 2, y + (h / 2 + 5 if not s2 else h / 2 - 3), s1, 14, 'middle', bold=bold)]
+    if s2: o += [t(x + w / 2, y + h / 2 + 15, s2, 11.5, 'middle', SUB)]
+    return o
+def arrow(x, y1, y2):
+    return [line(x, y1, x, y2 - 6, SUB, 1.5), f'<path d="M{x-5},{y2-8} L{x+5},{y2-8} L{x},{y2} z" fill="{SUB}"/>']
+b = [t(30, 36, 'Chromium の描画の経路: GPU、SwiftShader、ソフトウェア合成', 20, bold=True),
+     t(30, 60, 'ページの絵(タイル)を描く処理は、今回の 3 つの環境ではどれも CPU(Skia)。違いは、絵や動画を 1 枚の画面にまとめる「合成」と、WebGL の行き先。', 12.5, fill=SUB)]
+cols = [('① GPU あり(実機)', '#e8f0fe', BLUE), ('② GPU なし、SwiftShader あり', '#fef7e0', '#f9ab00'), ('③ GPU なし、SwiftShader なし', '#fce8e6', RED)]
+W = 300; G = 20; X = [30 + i * (W + G) for i in range(3)]
+for i, (title, bg, col) in enumerate(cols):
+    x = X[i]
+    b += [r(x, 78, W, 560, bg, col, 10, 2), t(x + W / 2, 104, title, 15, 'middle', bold=True)]
+    b += box(x + 20, 120, W - 40, 44, 'Blink(ページの内容)')
+    b += arrow(x + W / 2, 164, 182)
+    b += box(x + 20, 182, W - 40, 44, 'ページの絵を描く(ラスタ)', 'Skia が CPU で描く' if i else 'Skia。GPU でも描ける')
+    b += arrow(x + W / 2, 226, 244)
+    if i < 2:
+        b += box(x + 20, 244, W - 40, 44, '合成(GPU 合成)', 'Skia が GLES を呼ぶ', '#fff', col, True, 2)
+        b += arrow(x + W / 2, 288, 306)
+        b += box(x + 20, 306, W - 40, 44, 'ANGLE', 'GLES を下の API に翻訳')
+        b += arrow(x + W / 2, 350, 368)
+        if i == 0:
+            b += box(x + 20, 368, W - 40, 44, 'GPU ドライバ', '機器ベンダーの GLES / Vulkan')
+            b += arrow(x + W / 2, 412, 430)
+            b += box(x + 20, 430, W - 40, 44, 'GPU(ハードウェア)', '', '#fff', BLUE, True, 2)
+        else:
+            b += box(x + 20, 368, W - 40, 44, 'SwiftShader', 'GPU のふりをする CPU のプログラム', '#fff', '#f9ab00', True, 2)
+            b += arrow(x + W / 2, 412, 430)
+            b += box(x + 20, 430, W - 40, 44, 'CPU', '', '#fff', GRY, True, 2)
+    else:
+        b += box(x + 20, 244, W - 40, 44, '合成(ソフトウェア合成)', 'Skia が CPU で直接まとめる', '#fff', RED, True, 2)
+        b += arrow(x + 60, 288, 430)
+        b += [t(x + 80, 340, 'GLES、ANGLE、GPU ドライバ、', 12.5, 'start', SUB), t(x + 80, 360, 'SwiftShader を通らない', 12.5, 'start', SUB), t(x + 80, 380, '(GL を無効にする)', 12.5, 'start', SUB)]
+        b += [line(x + 60, 474, x + 60, 474)]
+        b += box(x + 20, 430, W - 40, 44, 'CPU', '', '#fff', GRY, True, 2)
+    b += arrow(x + W / 2, 474, 492)
+    b += box(x + 20, 492, W - 40, 36, '画面')
+    res = [('WebGL ○', 'GPU 合成 ○', '今回は未計測'),
+           ('WebGL ○(CPU で動くので遅い)', 'GPU 合成 ○(実体は CPU)', '削減版: 1080p60 でコマ落ち 約 3 割'),
+           ('WebGL ×', 'GPU 合成 ×(ソフトウェア合成)', '削減版: 1080p60 でコマ落ち 0')][i]
+    for k, s in enumerate(res): b += [t(x + W / 2, 556 + k * 22, s, 13, 'middle', bold=(k == 0))]
+b += [t(30, 662, 'CEF 既定は②、今回の「削減版、SwiftShader なし」は③。②と③の WebGL、GPU 合成の状態は SystemInfo.getInfo の featureStatus(logs/515b)。', 11.5, fill=SUB),
+      t(30, 682, 'コマ落ちは YouTube 1080p60、AV1、ソフトウェアデコード、マルチプロセス(logs/421、422)。①は実機で確かめていない。', 11.5, fill=SUB),
+      t(30, 702, 'GPU がない、または初期化に失敗すると、マルチプロセスでは ②(SwiftShader があれば)か ③ に切り替わる。--single-process では切り替えられない。', 11.5, fill=SUB)]
+save('fig15-render-paths.svg', svg(1000, 718, b))

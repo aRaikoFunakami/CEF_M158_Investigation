@@ -68,3 +68,9 @@
 - 対処: 記事の RAM の表(結果、計測方法、起動直後、UPX の起動直後と再生中、CEF 既定との比較、execve、2 通りの見方)を「PSS(A + B)/ A / B / 回収できない RAM(cgroup)」の形に統一。図 6、図 10 を、A + B の積み上げ(= PSS)と cgroup の枠線の棒に作り直した。README も同じ形に。
 - あわせて、execve の表の 3 フラグの動作確認を「7/7」から「一部」に訂正(3 フラグで確かめたのは機能の有無のページ(logs/443)と YouTube 再生(M18、logs/484)だけで、7 項目は流していない)。
 - ユーザーの質問「SwiftShader なしは描画を確かめていないのか」: 確かめている。GPU プロセスが SwiftShader(Vulkan)の初期化に失敗して終了したあと、ブラウザはソフトウェア合成に切り替え、動作確認 7/7(logs/422)。冒頭の GIF もこの状態(logs/485)。使えないのは WebGL。記事の ROM の節と GIF の説明に追記。
+
+### 描画の経路の説明(2026-11-14 08:35 JST、logs/515、515b、ユーザー質問「SwiftShader なしで GPU なしなのに描画できるとはどういうことか」)
+
+- logs/515b: SystemInfo.getInfo の featureStatus。G2-dist(SwiftShader あり): opengl enabled_on、gpu_compositing enabled、webgl enabled、2d_canvas enabled、rasterization disabled_software、video_decode disabled_software、GPU は「ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0)))」。G2-tv(なし): opengl disabled_off、gpu_compositing disabled_software、webgl disabled_off、2d_canvas disabled_software、GPU なし。G2-tv の GPU プロセスは GL 無効の指定で起動し直されていた(コマンドラインの表示は `--use-gl=d` と途中で切れている)。
+- ソース: GPU モード DISPLAY_COMPOSITOR では `--use-gl=disabled` を付けて GPU プロセスを起動する(gpu_data_manager_impl_private.cc:1270)。合成は components/viz/service/display/software_renderer.cc。
+- 記事: 「SwiftShader がなくても描画できる理由」の節と図 15(①GPU あり、②GPU なし + SwiftShader、③どちらもなし の描画の経路)を追加。ROM の節の説明はこの節への参照にした。

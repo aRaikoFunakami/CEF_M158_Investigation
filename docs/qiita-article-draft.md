@@ -83,7 +83,7 @@ CEF は長く、content 層の上に直接載っていて、//chrome 層は使�
 - 削減の作業は、調べやすい x64(PC)で進め、最後に同じ変更を TV の SoC に多い arm64 に当てました。
 - 実行ファイルは `libcef.so` と `cefsimple` の合計で、デバッグ用のシンボルを取り除いた(strip した)サイズです。
 - 配布物は、実行ファイルに、実行時に読むデータとライブラリを足した合計です。主なものは、画像や HTML などのリソースをまとめた `.pak` ファイル、文字列処理と国際化のライブラリ ICU のデータ、V8 の起動用データ、OpenGL ES の呼び出しを各 GPU の API に変換する ANGLE です。ロケールは ja と en-US だけを数えています(全 220 ロケールでは +50.5MB)。動画の DRM(Widevine)の復号モジュール(約 21MB、初回起動時に取得)は含みません。
-- SwiftShader は、GPU の処理を CPU で行うソフトウェア実装です。GPU のない環境で画面を描くために CEF に同梱されています。GPU のある機器では要らないので、外した場合の値も示しました。SwiftShader を外しても、GPU のない計測環境で画面は描けます。GPU の初期化に失敗すると、ブラウザは GPU を使わない描画方式(CPU でページを描いて合成するソフトウェア合成)に切り替えます(logs/422 で、GPU プロセスが初期化に失敗して終了したあとも、動作確認の 7 項目が通った)。使えなくなるのは WebGL です。
+- SwiftShader は、GPU の処理を CPU で行うソフトウェア実装です。GPU のない環境で画面を描くために CEF に同梱されています。GPU のある機器では要らないので、外した場合の値も示しました。SwiftShader を外しても、GPU のない計測環境で画面は描けます。使えなくなるのは WebGL です(理由は「SwiftShader がなくても描画できる理由」の節)。
 
 ![ROM の推移](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig2-rom-x64.png)
 
@@ -428,6 +428,49 @@ AV1 4K60 は H.264 1080p60 より +320〜460MiB 多く必要でした。増え�
 Chromium は cgroup の上限を見ていません。上限に近づいても自分からメモリを手放さず、カーネルがファイル由来のページを捨て、それでも足りなければブラウザを強制終了します。そのため上限を変えても動作は変わらず、再生できるかどうかだけが変わります。
 
 上限に数えられるのは、回収できない RAM のほかに、捨てきれないファイル由来のページ(約 100〜130MiB)とカーネルの分(約 10MiB)です。制限なしで測った回収できない RAM の最大値に約 100MB を足した上限では、CEF 既定(H.264 1080p、780MiB)が読み込み中に強制終了されました。約 200MB を足した上限では、どの条件でも再生できました。
+
+## SwiftShader がなくても描画できる理由
+
+Chromium には、画面を作る道が 2 本あります。GPU を使う道と、最初から CPU だけで済ませる道です。SwiftShader は、GPU を使う道を GPU のない機器でも通すための「GPU のふりをする CPU のプログラム」です。SwiftShader も GPU もないと、Chromium は CPU だけの道に切り替えます。CPU だけの道はもともと GPU の命令を使わないので、SwiftShader がなくても画面を描けます。
+
+![Chromium の描画の経路](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig15-render-paths.png)
+
+図に出てくる部品は次のとおりです。
+
+| 部品 | 役割 |
+|---|---|
+| Skia | Chromium の 2D 描画ライブラリ。図形や文字を、CPU でも GPU(GLES 経由)でも描ける |
+| 合成 | ページの絵(タイル)、動画、スクロールする層などを 1 枚の画面にまとめる処理 |
+| GLES(OpenGL ES) | GPU に絵を描かせるための標準の命令セット(API)。Chromium の GPU の処理は GLES で書かれている |
+| ANGLE | GLES の命令を、その機器で使える API(GPU ドライバの OpenGL ES や Vulkan など)に翻訳する。`libcef.so` に入っている |
+| GPU ドライバ | 機器ベンダーが提供する、GPU を動かすソフトウェア |
+| SwiftShader | GPU の API(Vulkan)を CPU で実装したもの。ANGLE からは GPU ドライバと同じに見える。CEF は `libvk_swiftshader.so` などの一式を同梱している |
+
+計測環境(GPU なし)で、SwiftShader のある削減版(図の②)とない削減版(図の③)の GPU の機能の状態を、DevTools プロトコルの `SystemInfo.getInfo` で比べました(logs/515b)。
+
+| 機能 | ② SwiftShader あり | ③ SwiftShader なし |
+|---|---|---|
+| GL(`opengl`) | 有効 | 無効 |
+| GPU 合成(`gpu_compositing`) | 有効(SwiftShader の上) | ソフトウェア合成 |
+| WebGL(`webgl`) | 有効 | 無効 |
+| 2D の canvas(`2d_canvas`) | 有効 | ソフトウェア |
+| ページの絵を描く処理(`rasterization`) | ソフトウェア | ソフトウェア |
+| 動画のデコード(`video_decode`) | ソフトウェア | ソフトウェア |
+| GPU として見えるもの | SwiftShader(Vulkan 1.3) | なし |
+
+②でも、ページの絵と動画のデコードは CPU で処理していて、SwiftShader が受け持つのは合成と WebGL、2D の canvas だけです。③では、この 3 つも CPU の道に移ります。2D の canvas は CPU で描かれて表示され、WebGL だけが使えなくなります。
+
+部品がなくなったときに起きることは次のとおりです。
+
+| 状態 | 起きること |
+|---|---|
+| GPU あり、SwiftShader なし | 図の①。SwiftShader はもともと使われない |
+| GPU なし、SwiftShader あり | 図の②。WebGL も動くが、GPU の処理を CPU で模擬するので重い。削減版の YouTube 1080p60 で、コマ落ちは約 3 割だった(③では 0。logs/421、422) |
+| GPU なし、SwiftShader なし(マルチプロセス) | GPU プロセスが GL の初期化に失敗して終了する。ブラウザは GL を無効にして GPU プロセスを起動し直し、図の③になる(logs/422、515b) |
+| GPU なし、SwiftShader なし(`--single-process`) | GPU の処理がブラウザの中にあるので起動し直せない。SwiftShader を使う起動フラグを付けていると落ちた。`--disable-gpu` を付けると、最初から図の③で動く(次の節) |
+| GPU あり、ドライバの初期化に失敗 | マルチプロセスなら②(SwiftShader があれば)か③に切り替わる。`--single-process` や `--in-process-gpu` では落ちる(「実機で GPU を使う場合」) |
+
+②が③より重い理由は確かめていません。SwiftShader は GPU の処理の手順(シェーダの実行など)を CPU で再現するので、Skia が CPU で直接まとめる③より手間が多いためと考えられます。
 
 ## SwiftShader なしで `--single-process` を使う条件
 
