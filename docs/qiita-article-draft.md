@@ -613,24 +613,24 @@ CEF 既定の値は「結果」の節と同じ測定です(CEF 既定は SwiftSh
 
 ### CEF 既定と比べると
 
-削減版 + UPX を 3 フラグで動かした場合を、CEF 既定と比べました。
+削減版 + UPX を 3 フラグで動かした場合を、CEF 既定、および UPX をかける前の削減版と比べました。削減版は、UPX 用の 2 つの変更を入れた圧縮前のものです。
 
-| 項目 | CEF 既定、起動フラグなし | CEF 既定、3 フラグ | 削減版 + UPX、3 フラグ |
-|---|---|---|---|
-| ROM(配布物) | 366.3MB | 366.3MB | 95.3MB |
-| 起動直後の PSS(A + B) | 387.6MiB | 266.1MiB | 188.5MiB |
-| 起動直後の A | 159.2MiB | 58.0MiB | 162.9MiB |
-| 起動直後の B | 228.7MiB | 208.2MiB | 25.6MiB |
-| 起動直後の回収できない RAM(cgroup) | 160.5MiB | 65.7MiB | 210.0MiB |
-| 再生中の PSS(A + B) | 1,045.5MiB | 912.2MiB | 681.5MiB |
-| 再生中の A | 789.8MiB | 660.7MiB | 649.6MiB |
-| 再生中の B | 255.8MiB | 251.4MiB | 31.9MiB |
-| 再生中の回収できない RAM(cgroup) | 790.0MiB | 661.9MiB | 679.0MiB |
-| 再生中の cgroup + B | 1,045.8MiB | 913.3MiB | 710.9MiB |
+| 項目 | CEF 既定、起動フラグなし | CEF 既定、3 フラグ | 削減版、3 フラグ | 削減版 + UPX、3 フラグ |
+|---|---|---|---|---|
+| ROM(配布物) | 366.3MB | 366.3MB | 196.0MB | 95.3MB |
+| 起動直後の PSS(A + B) | 387.6MiB | 266.1MiB | 188.5MiB | 188.5MiB |
+| 起動直後の A | 159.2MiB | 58.0MiB | 48.8MiB | 162.9MiB |
+| 起動直後の B | 228.7MiB | 208.2MiB | 139.7MiB | 25.6MiB |
+| 起動直後の回収できない RAM(cgroup) | 160.5MiB | 65.7MiB | 56.7MiB | 210.0MiB |
+| 再生中の PSS(A + B) | 1,045.5MiB | 912.2MiB | 694.0MiB | 681.5MiB |
+| 再生中の A | 789.8MiB | 660.7MiB | 528.9MiB | 649.6MiB |
+| 再生中の B | 255.8MiB | 251.4MiB | 165.2MiB | 31.9MiB |
+| 再生中の回収できない RAM(cgroup) | 790.0MiB | 661.9MiB | 537.7MiB | 679.0MiB |
+| 再生中の cgroup + B | 1,045.8MiB | 913.3MiB | 702.9MiB | 710.9MiB |
 
-![CEF 既定と削減版 + UPX(3 フラグ)の比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig17-upx-vs-default.png?v=20261114b)
+![CEF 既定、削減版、削減版 + UPX(3 フラグ)の比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig17-upx-vs-default.png?v=20261114c)
 
-CEF 既定を同じ 3 フラグで動かした場合と比べても、再生中の回収できない RAM(cgroup)は +17MiB で、ほぼ同じです。プロセスが触ったページ(A)では −11MiB、PSS では −231MiB です。UPX で増える分(+141MiB)を、ROM の削減で減った分(CEF 既定 → 削減版で −124MiB)がほぼ打ち消しています。起動直後は動画のバッファなどがなく、UPX の展開コピー(約 153MiB)の割合が大きいので、+144MiB の差が残ります。CEF 既定と削減版では GPU の条件(SwiftShader と `--disable-gpu`)が違うので、差のすべてが ROM の削減と UPX によるものではありません。
+CEF 既定を同じ 3 フラグで動かした場合と比べても、再生中の回収できない RAM(cgroup)は +17MiB で、ほぼ同じです。プロセスが触ったページ(A)では −11MiB、PSS では −231MiB です。3 フラグで並べると、再生中の回収できない RAM は、ROM の削減で 661.9 → 537.7MiB(−124)に減り、UPX で 679.0MiB(+141)に戻ります。UPX で増える分を、ROM の削減で減った分がほぼ打ち消しています。起動直後は動画のバッファなどがなく、UPX の展開コピー(約 153MiB)の割合が大きいので、+144MiB の差が残ります。CEF 既定と削減版では GPU の条件(SwiftShader と `--disable-gpu`)が違うので、差のすべてが ROM の削減と UPX によるものではありません。
 
 ## 回収できない RAM が増える仕組み
 
