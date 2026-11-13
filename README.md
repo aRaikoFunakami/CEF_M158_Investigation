@@ -13,6 +13,7 @@ CEF(Chromium Embedded Framework)8127 ブランチ / Chromium 158.0.8127.18 を�
 | arm64 | CEF 既定(G0) | 275.1MB | 366.3MB |
 | arm64 | 削減後(G2-dist) | 186.7MB(−32.1%) | 219.6MB(−40.0%) |
 | arm64 | 削減後、SwiftShader なし(G2-tv) | 186.7MB(−32.1%) | 196.0MB(−46.5%) |
+| arm64 | 削減後、SwiftShader なし + UPX(G2-tv-ni-upx) | 86.1MB(−68.7%) | 95.3MB(−74.0%) |
 
 YouTube 再生中の RAM(arm64、全プロセスの PSS、S/W デコード):
 
@@ -20,6 +21,8 @@ YouTube 再生中の RAM(arm64、全プロセスの PSS、S/W デコード):
 |---|---|---|
 | H.264 1080p60 | 1,045.5MiB | 684.4MiB(−35%) |
 | AV1 4K60 | 1,509.5MiB | 1,005.5MiB(−33%) |
+
+UPX で圧縮した G2-tv(H.264 1080p60、3 フラグ): PSS 681.5MiB、回収できない RAM(cgroup)679.0MiB(CEF 既定 + 3 フラグは 661.9MiB、G2-tv + 3 フラグは 531.2MiB)。PSS には UPX の負担が出ない(後述の「UPX で圧縮する場合」)。
 
 ## 対象のソース
 
