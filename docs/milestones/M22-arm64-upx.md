@@ -48,3 +48,9 @@
 - logs/513: 同じ配布物(ja、en-US の性別違いを含むロケール、合計 194.6MB)を squashfs に入れたサイズ: xz 1MiB ブロック 60.7MB、zstd 19 1MiB 69.5MB、gzip 128KiB 85.6MB、lz4hc 1MiB 94.0MB。RAM と起動時間は未計測。
 - GPU のソース調査(Chromium 158.0.8127.18): プロセス内の GPU は `GpuInit::InitializeInProcess()`(gpu_init.cc:1086)で初期化し、GL の初期化に失敗しても戻るだけで、ブラウザ側の描画方式の切り替え(gpu_data_manager_impl_private.cc:1635)は GPU プロセスの起動し直しなのでできない。ブロックリストに当たると SwiftShader に切り替える(gpu_util.cc:973)が、`--use-gl` の明示か `--disable-software-rasterizer` で止まる。X11 は ANGLE のみ、Wayland は ANGLE の GL / GLES / SwiftShader / Vulkan、DRM は ANGLE と SwiftShader。ANGLE は libcef.so に静的リンク(use_static_angle=true)。GPU プロセスはサンドボックスなしの zygote から fork(gpu_process_host.cc:466)。
 - 記事: UPX の章を「圧縮する手順(readelf で確認する 2 点)」「起動しないときの切り分け」「フラグで増え方が 4 倍違う理由(図 11)」「参考記事より増え方が小さい理由(図 12)」「execve を減らす(図 14)」「使うべきか(所見と根拠)」に書き直し、ROM の内訳(図 13)を追加。「実機で GPU を使う場合」を RAM の章に追加。図は tools/figs_upx2.py で生成。
+
+### 所見の見直し(2026-11-14 08:05 JST、ユーザー指摘)
+
+- 指摘: 「UPX が候補に残るのは」は一方的。ROM と RAM のどちらを優先するかで使い分ける所見のほうがよい。実行コードのページを RAM から削らないといけないほど厳しい状態は、いつ OOM が起きてもおかしくないので、余裕を見る必要がある。
+- 既存の値から、ファイル由来の RAM も含めた増加を計算: 3 フラグ 起動直後 196.4 → 235.6(+39)、再生中 702.9 → 710.9(+8)。2 execve 起動直後 216.7 → 409.4(+193)。フラグなし 起動直後 243.5 → 742.5(+499)、再生中 765.6 → 1,398.7(+633)。
+- 記事の「UPX を使うべきか」を、2 通りの見方の表、RAM の余裕の考え方(上限の試験: 回収不可 + 約 100MB で強制終了の条件あり、+約 200MB で全条件再生)、機器の条件ごとの使い分けの表に書き直した。
