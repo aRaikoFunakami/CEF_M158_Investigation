@@ -1,0 +1,107 @@
+# figs_upx2.py <出力ディレクトリ>: 記事の UPX 節の図 11〜14 を SVG で書き出す(M22 追補、logs/510〜512)。
+import sys, os
+OUT = sys.argv[1]
+FONT = 'Hiragino Sans, Hiragino Kaku Gothic ProN, sans-serif'
+RED, YEL, BLUE, GRN, GRY, DARK, SUB = '#d93025', '#fbbc04', '#1a73e8', '#34a853', '#9aa0a6', '#202124', '#5f6368'
+
+def svg(w, h, body):
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" font-family="{FONT}">'
+            f'<rect width="{w}" height="{h}" fill="#fff"/>' + ''.join(body) + '</svg>')
+
+def t(x, y, s, size=14, anchor='start', fill=DARK, bold=False):
+    b = ' font-weight="bold"' if bold else ''
+    return f'<text x="{x}" y="{y}" font-size="{size}" text-anchor="{anchor}" fill="{fill}"{b}>{s}</text>'
+
+def r(x, y, w, h, fill, stroke='none', rx=0, sw=1, dash=''):
+    d = f' stroke-dasharray="{dash}"' if dash else ''
+    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"{d}/>'
+
+def line(x1, y1, x2, y2, col=SUB, sw=1.5):
+    return f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{col}" stroke-width="{sw}"/>'
+
+def save(name, s):
+    open(os.path.join(OUT, name), 'w').write(s); print(name)
+
+# ---- 図 11: プロセスと展開コピー(起動フラグなし / 3 フラグ)
+def proc(x, y, w, label, sub, copy):
+    fill = '#fce8e6' if copy else '#f1f3f4'; st = RED if copy else GRY
+    o = [r(x, y, w, 46, fill, st, 6, 2 if copy else 1), t(x + w / 2, y + 20, label, 14, 'middle', bold=bool(copy)), t(x + w / 2, y + 38, sub, 11.5, 'middle', SUB)]
+    if copy:
+        o += [r(x + w - 70, y - 13, 82, 22, RED, rx=11), t(x + w - 29, y + 3, copy, 12, 'middle', '#fff', True)]
+    return o
+
+b = [t(30, 36, 'UPX 版で libcef.so の展開コピーがいくつ作られるか(起動直後、arm64、削減版)', 19, bold=True)]
+b += [t(30, 62, '赤枠 = 自分で起動し直す(execve)ので、自分専用の展開コピー(約 153MiB、カーネルが捨てられない)を作るプロセス。灰色 = fork で作られ、親のコピーを共有する', 12.5, fill=SUB)]
+# 左: フラグなし
+b += [t(265, 98, '起動フラグなし: 8 プロセス、コピー 4 個 → +613MiB', 16, 'middle', bold=True)]
+b += proc(175, 116, 180, 'ブラウザ', 'execve(cefsimple)', 'コピー 1')
+ys = 206
+for i, (lab, sub, cp) in enumerate([('zygote 1', 'サンドボックスなし・execve', 'コピー 2'), ('zygote 2', 'サンドボックスあり・execve', 'コピー 3'), ('ネットワーク', 'サービス・execve', 'コピー 4')]):
+    x = 20 + i * 170
+    b += [line(265, 162, x + 80, ys)]
+    b += proc(x, ys, 160, lab, sub, cp)
+b += [line(100, 252, 100, 300)] + proc(20, 300, 160, 'GPU', 'fork(コピー 2 を共有)', None)
+b += [line(205, 252, 205, 300 + 2 * 58 + 23)]
+for j, lab in enumerate(['レンダラ', 'レンダラ', 'ストレージ']):
+    y = 300 + j * 58
+    b += [line(205, y + 23, 220, y + 23)] + proc(220, y, 160, lab, 'fork(コピー 3 を共有)', None)
+# 右: 3 フラグ
+X = 560
+b += [line(530, 90, 530, 480, '#dadce0', 1)]
+b += [t(X + 200, 98, '3 フラグ: 1 プロセス、コピー 1 個 → +153MiB', 16, 'middle', bold=True)]
+b += [r(X + 40, 116, 330, 200, '#fce8e6', RED, 8, 2), r(X + 300, 103, 82, 22, RED, rx=11), t(X + 341, 119, 'コピー 1', 12, 'middle', '#fff', True)]
+b += [t(X + 205, 142, 'ブラウザ(execve)', 15, 'middle', bold=True)]
+for k, lab in enumerate(['ブラウザの処理', 'レンダラ(スレッド)', 'GPU(スレッド)', 'ネットワーク・ストレージ(スレッド)']):
+    b += [r(X + 70, 158 + k * 37, 270, 30, '#fff', GRY, 5), t(X + 205, 178 + k * 37, lab, 13, 'middle')]
+b += [t(X + 205, 345, '--single-process: 全部を 1 プロセスのスレッドにする', 12.5, 'middle', SUB),
+      t(X + 205, 365, '--no-zygote: zygote を起動しない', 12.5, 'middle', SUB)]
+b += [t(30, 490, 'logs/510: /proc/&lt;pid&gt;/maps の memfd:upx の inode を数えた。cgroup の shmem は、フラグなしで +613.4MiB(4 個)、3 フラグで +153.3MiB(1 個)増えた。', 12, fill=SUB)]
+save('fig11-upx-copies.svg', svg(1000, 505, b))
+
+# ---- 図 12: 参考記事との比較(コピーの大きさ × 個数)
+b = [t(30, 36, 'UPX で増える回収できない RAM: 参考記事の Chromium と今回の CEF(arm64、単位 MiB)', 19, bold=True)]
+rows = [('起動フラグなし(コピー 4 個)', 1124, 613), ('--single-process --no-zygote(コピー 1 個)', 283, 153)]
+sc = 0.5; X0 = 360
+b += [r(360, 52, 14, 14, GRY), t(380, 64, '参考記事: Chromium 156(実行ファイル 294MiB)', 13, fill=SUB),
+      r(690, 52, 14, 14, RED), t(710, 64, '今回: 削減版 CEF(libcef.so 186.2MB)', 13, fill=SUB)]
+for i, (lab, ref, me) in enumerate(rows):
+    y = 100 + i * 110
+    b += [t(X0 - 12, y + 34, lab, 14, 'end', bold=True)]
+    b += [r(X0, y, ref * sc, 28, GRY), t(X0 + ref * sc + 8, y + 19, f'+{ref:,}', 13)]
+    b += [r(X0, y + 34, me * sc, 28, RED), t(X0 + me * sc + 8, y + 53, f'+{me:,}', 13, bold=True)]
+b += [t(30, 330, '1 コピーあたり: 参考記事 約 282MiB(コード 約 238MiB + 読み取り専用データの複製 約 45MiB)、今回 約 153MiB(コードと読み取り専用データ)。', 13),
+      t(30, 352, '別起動のプロセスの数(4 個)はどちらも同じ。差はコピー 1 個の大きさで決まっている。', 13),
+      t(30, 380, '参考記事の値は https://qiita.com/rairaii/items/d5a5c3da56dbc7063a19(arm64、1 タブ、cgroup の anon + shmem の増加)。今回は logs/483、510。', 11.5, fill=SUB)]
+save('fig12-upx-vs-reference.svg', svg(1000, 395, b))
+
+# ---- 図 13: ROM(配布物の内訳)
+b = [t(30, 36, '配布物のサイズ(arm64、ロケールは ja と en-US、単位 MB)', 19, bold=True)]
+b += [r(330, 52, 14, 14, BLUE), t(350, 64, 'libcef.so', 13, fill=SUB), r(450, 52, 14, 14, GRN), t(470, 64, 'cefsimple', 13, fill=SUB),
+      r(570, 52, 14, 14, GRY), t(590, 64, 'そのほか(.pak、ICU、V8 の起動データ、ANGLE、ロケール)', 13, fill=SUB)]
+data = [('CEF 既定', 275.1, 0, 91.2, '366.3'), ('削減版、SwiftShader なし', 186.2, 0.6, 9.2, '196.0'), ('削減版、SwiftShader なし + UPX', 86.0, 0.1, 9.2, '95.3(−51.4%)')]
+sc = 1.75; X0 = 290
+for i, (lab, a, c, o, tot) in enumerate(data):
+    y = 95 + i * 62
+    b += [t(X0 - 12, y + 22, lab, 14.5, 'end', bold=(i == 2))]
+    b += [r(X0, y, a * sc, 34, BLUE), (r(X0 + a * sc, y, max(c * sc, 1.5), 34, GRN) if c else ''), r(X0 + (a + c) * sc, y, o * sc, 34, GRY)]
+    b += [t(X0 + a * sc / 2, y + 22, f'{a}', 13, 'middle', '#fff', True), t(X0 + (a + c + o) * sc + 10, y + 22, tot, 14, bold=True)]
+b += [t(30, 300, 'UPX が縮めるのは libcef.so(186.2 → 86.0MB)と cefsimple(0.6 → 0.1MB)だけ。そのほか 9.2MB は変わらない。', 13),
+      t(30, 322, 'CEF 既定の青は libcef.so と cefsimple の合計(275.1MB)。UPX 版の配布物は CEF 既定の 26% になる。', 13)]
+save('fig13-upx-rom.svg', svg(1000, 340, b))
+
+# ---- 図 14: execve するプロセスの数と回収できない RAM(起動直後)
+b = [t(30, 36, 'execve するプロセスの数と、起動直後の回収できない RAM(arm64、削減版、単位 MiB)', 19, bold=True)]
+b += [r(330, 52, 14, 14, GRY), t(350, 64, '圧縮前', 13, fill=SUB), r(430, 52, 14, 14, RED), t(450, 64, 'UPX', 13, fill=SUB)]
+rows = [('起動フラグなし', 'execve 4、8 プロセス', 102.1, 715.4, 'サンドボックスあり / GPU は別プロセス(失敗時に切り替えられる)'),
+        ('execve を 2 にするフラグ', 'execve 2、5 プロセス', 76.0, 382.9, 'サンドボックスあり / GPU はブラウザ内(切り替えなし)'),
+        ('3 フラグ', 'execve 1、1 プロセス', 56.7, 210.0, 'サンドボックスなし / GPU はブラウザ内(切り替えなし)')]
+sc = 0.85; X0 = 270
+for i, (lab, sub, a, u, note) in enumerate(rows):
+    y = 92 + i * 110
+    b += [t(X0 - 12, y + 24, lab, 15, 'end', bold=True), t(X0 - 12, y + 44, sub, 12, 'end', SUB)]
+    b += [r(X0, y, a * sc, 24, GRY), t(X0 + a * sc + 8, y + 17, f'{a}', 12.5)]
+    b += [r(X0, y + 28, u * sc, 24, RED), t(X0 + u * sc + 8, y + 45, f'{u}(+{u - a:.0f})', 12.5, bold=True)]
+    b += [t(X0, y + 74, note, 12, fill=SUB)]
+b += [t(30, 420, 'execve を 2 にするフラグ: --in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2。', 11.5, fill=SUB),
+      t(30, 440, 'GPU デバイスがないので 2 つ目と 3 つ目は --disable-gpu 付き。3 回の中央値。logs/483、512。', 11.5, fill=SUB)]
+save('fig14-upx-execve.svg', svg(1000, 455, b))

@@ -45,7 +45,7 @@ scripts/measure/                        計測スクリプト(サイズ、起動
 scripts/patch/pakstrip.py               resources.pak を許可したリソースだけで作り直す
 scripts/patch/g2_patch.py               g2.patch を当てるスクリプト
 data/x64, data/arm64                    計測結果(JSON)。data/arm64/ytmem-summary.tsv は YouTube 計測の要約
-docs/                                   調査の記録(docs/milestones/M0〜M21、ROM 削減の一覧、削除した機能の一覧、起動時 RAM)
+docs/                                   調査の記録(docs/milestones/M0〜M22、ROM 削減の一覧、削除した機能の一覧、起動時 RAM)
 docs/images/                            記事の図
 ```
 
@@ -106,12 +106,24 @@ arm64(G2)は、手順 2 のあとに `patches/chromium/g2.patch` を当て、`ar
 
 ## UPX で圧縮する場合(arm64、G2-tv)
 
-`libcef.so` は、そのままでは UPX で圧縮すると読み込み時に落ちる。次の 2 つを入れてから圧縮する(`docs/milestones/M22-arm64-upx.md`)。
+圧縮前の `libcef.so` で次の 2 点を確認し、当てはまれば直してから圧縮する(`docs/milestones/M22-arm64-upx.md`)。
 
-1. `patches/chromium/upx-noifunc.patch`(または `scripts/patch/upx_noifunc_patch.py`)で、PartitionAlloc の IFUNC を普通の関数に置き換える
-2. `libcef.so` のリンクに `-Wl,--no-rosegment` を足す(調査では out/G1/obj/cef/libcef.ninja の ldflags を手で書き換えた)
+| 確認 | 当てはまる場合 | 対処 |
+|---|---|---|
+| `readelf -lW libcef.so` の `LOAD` に `R`(実行権限なし)のセグメントがある | lld の既定の `--rosegment` | `-Wl,--no-rosegment` を付けてリンクし直す(調査では out/G1/obj/cef/libcef.ninja の ldflags を手で書き換えた) |
+| `readelf -rW libcef.so \| grep -c IRELATIVE` が 1 以上 | IFUNC(PartitionAlloc の MTE 用) | `patches/chromium/upx-noifunc.patch`(または `scripts/patch/upx_noifunc_patch.py`) |
 
-その後 `strip` してから `upx libcef.so cefsimple`(UPX 5.3.0、既定のオプション)。配布物 196.0MB → 95.3MB。回収できない RAM は増える(H.264 1080p 再生中、起動フラグなし 598.3 → 1,366.2MiB、3 フラグ 537.7 → 679.0MiB)。
+その後 `strip` してから `upx libcef.so cefsimple`(UPX 5.3.0、既定のオプション)。配布物 196.0MB → 95.3MB。
+
+回収できない RAM は、execve で起動するプロセス 1 つにつき約 153MiB 増える(展開したコードを memfd に置くため)。
+
+| 起動フラグ | execve | 起動直後(圧縮前 → UPX) |
+|---|---|---|
+| なし | 4 | 102.1 → 715.4MiB |
+| `--in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2` | 2 | 76.0 → 382.9MiB |
+| `--single-process --no-zygote --enable-low-end-device-mode` | 1 | 56.7 → 210.0MiB |
+
+同じ配布物を squashfs(xz、1MiB ブロック)に入れると 60.7MB(RAM は未計測)。図は `scripts/figs_upx2.py` で生成。
 
 ## 計測の前提
 

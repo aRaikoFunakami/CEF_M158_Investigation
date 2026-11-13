@@ -36,3 +36,15 @@
 - PSS では UPX の影響が見えにくい(3 フラグで −12.5MiB)。cgroup の回収できない RAM には触っていないページも含めて memfd 全体が入る。
 - メモリの上限をかけた再生の確認はしていない。
 - obj/cef/libcef.ninja の ldflags を手で書き換えた(次の `gn gen` で元に戻る)。out/G1 の libcef.so は IFUNC 置き換え + `--no-rosegment` の状態になっている(G2 は a64/fp/builds/G2 と /root/fp/builds/G2 に保存済み)。PartitionAlloc の 2 ファイルの変更はツリーに残っている。
+
+## 追補(2026-11-14 07:10〜07:40 JST、logs/510〜513)
+
+ユーザーの質問(フラグで増え方が違う理由、参考記事との差、ROM の比較、使うべきか、GPU を使う場合の対策)に答えるための追加計測とソース調査。
+
+- logs/510: memfd:upx の inode をプロセスごとに数えた。起動フラグなしは 8 プロセス中、execve で起動した 4 つ(ブラウザ、zygote 2 つ、ネットワークサービス)がそれぞれ自分の展開コピーを持ち、GPU・レンダラ 2・ストレージは zygote から fork されて共有。cgroup の shmem は +613.4MiB(4 個)、3 フラグは +153.3MiB(1 個)。1 コピー約 153MiB。anon は 3 フラグで 37.0 → 35.9MiB(増えない)。
+- 参考記事(Chromium 156、arm64、1 タブ)は +1,124MiB / +283MiB。execve の数は同じ 4 で、1 コピーが約 282MiB(コード memfd 約 238 + 読み取り専用データの匿名メモリ約 45)。今回の 1 コピーが小さいのは、コードのセグメントが 166.7MiB と小さいことと、`--no-rosegment` で読み取り専用データも memfd に入り匿名メモリに二重に載らないこと。
+- logs/511: `readelf` での事前確認。元の削減版は LOAD が R / R E / RW / RW、IRELATIVE 3。UPX 用に直したものは R E / RW / RW、IRELATIVE 0。RELR はどちらもあり。
+- logs/512: `--in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2 --disable-gpu` で execve 2、5 プロセス、動作確認 7/7。回収できない RAM 76.0 → 382.9MiB(+307、コピー 2 個)。UPX なしでも 102.1 → 76.0MiB に減る。
+- logs/513: 同じ配布物(ja、en-US の性別違いを含むロケール、合計 194.6MB)を squashfs に入れたサイズ: xz 1MiB ブロック 60.7MB、zstd 19 1MiB 69.5MB、gzip 128KiB 85.6MB、lz4hc 1MiB 94.0MB。RAM と起動時間は未計測。
+- GPU のソース調査(Chromium 158.0.8127.18): プロセス内の GPU は `GpuInit::InitializeInProcess()`(gpu_init.cc:1086)で初期化し、GL の初期化に失敗しても戻るだけで、ブラウザ側の描画方式の切り替え(gpu_data_manager_impl_private.cc:1635)は GPU プロセスの起動し直しなのでできない。ブロックリストに当たると SwiftShader に切り替える(gpu_util.cc:973)が、`--use-gl` の明示か `--disable-software-rasterizer` で止まる。X11 は ANGLE のみ、Wayland は ANGLE の GL / GLES / SwiftShader / Vulkan、DRM は ANGLE と SwiftShader。ANGLE は libcef.so に静的リンク(use_static_angle=true)。GPU プロセスはサンドボックスなしの zygote から fork(gpu_process_host.cc:466)。
+- 記事: UPX の章を「圧縮する手順(readelf で確認する 2 点)」「起動しないときの切り分け」「フラグで増え方が 4 倍違う理由(図 11)」「参考記事より増え方が小さい理由(図 12)」「execve を減らす(図 14)」「使うべきか(所見と根拠)」に書き直し、ROM の内訳(図 13)を追加。「実機で GPU を使う場合」を RAM の章に追加。図は tools/figs_upx2.py で生成。
