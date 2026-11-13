@@ -565,6 +565,8 @@ Ubuntu のシステムのライブラリ(GNU ld でリンク)は、同じ UPX �
 | 3 フラグ | 圧縮前 | 188.5MiB | 48.8MiB | 139.7MiB | 56.7MiB |
 | 3 フラグ | UPX | 188.5MiB(±0) | 162.9MiB(+114) | 25.6MiB | 210.0MiB(+153) |
 
+![UPX の有無と起動直後の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig16-upx-startup.png?v=20261114b)
+
 「圧縮前」と「UPX」は削減版(SwiftShader なし、UPX 用の 2 つの変更入り)で、括弧内は圧縮前との差です。CEF 既定の 3 フラグは logs/514 で測り、削減版と同じく `--disable-gpu` を付けました。
 
 H.264 1080p の再生中(最後まで再生できた 2 回の中央値):
@@ -598,6 +600,8 @@ CEF 既定の値は「結果」の節と同じ測定です(CEF 既定は SwiftSh
 | 再生中の B | 255.8MiB | 251.4MiB | 31.9MiB |
 | 再生中の回収できない RAM(cgroup) | 790.0MiB | 661.9MiB | 679.0MiB |
 | 再生中の cgroup + B | 1,045.8MiB | 913.3MiB | 710.9MiB |
+
+![CEF 既定と削減版 + UPX(3 フラグ)の比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig17-upx-vs-default.png?v=20261114b)
 
 CEF 既定を同じ 3 フラグで動かした場合と比べても、再生中の回収できない RAM(cgroup)は +17MiB で、ほぼ同じです。プロセスが触ったページ(A)では −11MiB、PSS では −231MiB です。UPX で増える分(+141MiB)を、ROM の削減で減った分(CEF 既定 → 削減版で −124MiB)がほぼ打ち消しています。起動直後は動画のバッファなどがなく、UPX の展開コピー(約 153MiB)の割合が大きいので、+144MiB の差が残ります。CEF 既定と削減版では GPU の条件(SwiftShader と `--disable-gpu`)が違うので、差のすべてが ROM の削減と UPX によるものではありません。
 

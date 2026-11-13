@@ -184,3 +184,38 @@ b += [t(30, 662, 'CEF 既定は②、今回の「削減版、SwiftShader なし�
       t(30, 682, 'コマ落ちは YouTube 1080p60、AV1、ソフトウェアデコード、マルチプロセス(logs/421、422)。①は実機で確かめていない。', 11.5, fill=SUB),
       t(30, 702, 'GPU がない、または初期化に失敗すると、マルチプロセスでは ②(SwiftShader があれば)か ③ に切り替わる。--single-process では切り替えられない。', 11.5, fill=SUB)]
 save('fig15-render-paths.svg', svg(1000, 718, b))
+
+# ---- 図 16: UPX の章の起動直後の RAM(CEF 既定 / 圧縮前 / UPX × 起動フラグ)
+ab_fig('fig16-upx-startup.svg', 'UPX の有無と起動直後の RAM(arm64、単位 MiB)',
+       [('起動フラグなし', [('CEF 既定', 159.2, 228.7, 160.5, 387.6), ('削減版(圧縮前)', 93.7, 141.4, 102.1, 235.3), ('削減版 + UPX', 309.4, 27.1, 715.4, 336.5)]),
+        ('3 フラグ(--disable-gpu 付き)', [('CEF 既定', 58.0, 208.2, 65.7, 266.1), ('削減版(圧縮前)', 48.8, 139.7, 56.7, 188.5), ('削減版 + UPX', 162.9, 25.6, 210.0, 188.5)])], 0.85,
+       ['UPX では B(ファイル由来)が A(回収できない分)に移り、触っていない展開コードが cgroup にだけ入る。', '削減版は SwiftShader なしで UPX 用の 2 つの変更入り。3 回の中央値。logs/428、483、514。'])
+
+# ---- 図 17: CEF 既定と、削減版 + UPX(3 フラグ)の比較(ROM と RAM)
+b = [t(30, 38, 'CEF 既定と、削減版 + UPX(3 フラグ)の比較(arm64)', 20, bold=True)]
+cfg = [('CEF 既定、起動フラグなし', 366.3, (159.2, 228.7, 160.5, 387.6), (789.8, 255.8, 790.0, 1045.5)),
+       ('CEF 既定、3 フラグ', 366.3, (58.0, 208.2, 65.7, 266.1), (660.7, 251.4, 661.9, 912.2)),
+       ('削減版 + UPX、3 フラグ', 95.3, (162.9, 25.6, 210.0, 188.5), (649.6, 31.9, 679.0, 681.5))]
+X0 = 260; y = 66
+b += [t(30, y + 14, 'ROM(配布物、MB)', 15, bold=True)]; y += 26
+for lab, rom, _, _ in cfg:
+    b += [t(X0 - 12, y + 16, lab, 13.5, 'end', bold=('UPX' in lab)), r(X0, y, rom * 1.6, 22, BLUE), t(X0 + rom * 1.6 + 8, y + 16, f'{rom}MB', 12.5, bold=('UPX' in lab))]
+    y += 30
+y += 14
+b += [r(160, y, 14, 14, RED), t(180, y + 12, 'A: 回収できない分のうちプロセスが触ったページ', 13, fill=SUB),
+      r(530, y, 14, 14, YEL), t(550, y + 12, 'B: ファイル由来', 13, fill=SUB),
+      r(690, y, 14, 14, '#fff', DRK, 0, 2), t(710, y + 12, '回収できない RAM(cgroup)', 13, fill=SUB)]
+y += 30
+for gi, (gl, sc) in enumerate([('起動直後の RAM(MiB)', 0.85), ('H.264 1080p 再生中の RAM(MiB)', 0.44)]):
+    b += [t(30, y + 14, gl, 15, bold=True)]; y += 24
+    for lab, _, st, pl in cfg:
+        A, B, C, P = st if gi == 0 else pl
+        b += [t(X0 - 12, y + 24, lab, 13.5, 'end', bold=('UPX' in lab))]
+        b += [r(X0, y, A * sc, 22, RED), r(X0 + A * sc, y, B * sc, 22, YEL), t(X0 + (A + B) * sc + 8, y + 16, f'PSS {P:,.1f}(A {A:,.1f} + B {B:,.1f})', 12, fill=DARK)]
+        b += [r(X0, y + 26, C * sc, 14, '#fff', DRK, 0, 2), t(X0 + C * sc + 8, y + 38, f'cgroup {C:,.1f}', 12, fill=DRK, bold=True)]
+        y += 54
+    y += 10
+for k, f in enumerate(['ROM は 26% になる。再生中の cgroup は CEF 既定(3 フラグ)とほぼ同じ(661.9 → 679.0)で、PSS と cgroup + B は小さい。',
+                       '起動直後は UPX の展開コピー(約 153MiB)の分だけ cgroup が大きい。CEF 既定は SwiftShader で描画(再生中)、3 フラグの起動直後は --disable-gpu。']):
+    b += [t(30, y + 10 + k * 20, f, 11.5, fill=SUB)]
+save('fig17-upx-vs-default.svg', svg(1000, int(y + 50), b))
