@@ -117,15 +117,22 @@ arm64(G2)は、手順 2 のあとに `patches/chromium/g2.patch` を当て、`ar
 
 回収できない RAM は、execve で起動するプロセス 1 つにつき約 153MiB 増える(展開したコードを memfd に置くため)。
 
-| 起動フラグ | execve | 起動直後の PSS 合計(CEF 既定 / G2-tv / G2-tv + UPX) | 起動直後の回収できない RAM(CEF 既定 / G2-tv / G2-tv + UPX) |
-|---|---|---|---|
-| なし | 4 | 387.6 / 235.3 / 336.5MiB | 160.5 / 102.1 / 715.4MiB |
-| `--in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2` | 2 | 289.1 / 208.8 / 250.7MiB | 88.0 / 76.0 / 382.9MiB |
-| `--single-process --no-zygote --enable-low-end-device-mode` | 1 | 266.1 / 188.5 / 188.5MiB | 65.7 / 56.7 / 210.0MiB |
+起動直後(単位 MiB)。PSS = A + B。A は回収できない分のうちプロセスが触ったページ(Pss_Anon + Pss_Shmem)、B はファイル由来(Pss_File)、cgroup は memory.stat の anon + shmem(触っていないページも含む)。
+
+| 起動フラグ | execve | 構成 | PSS | A | B | cgroup |
+|---|---|---|---|---|---|---|
+| なし | 4 | CEF 既定 | 387.6 | 159.2 | 228.7 | 160.5 |
+| なし | 4 | G2-tv | 235.3 | 93.7 | 141.4 | 102.1 |
+| なし | 4 | G2-tv + UPX | 336.5 | 309.4 | 27.1 | 715.4 |
+| `--in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2` | 2 | CEF 既定 | 289.1 | 80.2 | 208.9 | 88.0 |
+| 同上 | 2 | G2-tv | 208.8 | 68.0 | 140.7 | 76.0 |
+| 同上 | 2 | G2-tv + UPX | 250.7 | 224.2 | 26.5 | 382.9 |
+| `--single-process --no-zygote --enable-low-end-device-mode` | 1 | CEF 既定 | 266.1 | 58.0 | 208.2 | 65.7 |
+| 同上 | 1 | G2-tv | 188.5 | 48.8 | 139.7 | 56.7 |
+| 同上 | 1 | G2-tv + UPX | 188.5 | 162.9 | 25.6 | 210.0 |
 
 H.264 1080p 再生中の回収できない RAM(3 フラグ): CEF 既定 661.9、G2-tv 537.7、G2-tv + UPX 679.0MiB。
 
-PSS は触ったページだけを数えるので、展開した memfd の触っていない部分は入らない。
 
 同じ配布物を squashfs(xz、1MiB ブロック)に入れると 60.7MB(RAM は未計測)。図は `scripts/figs_upx2.py` で生成。
 

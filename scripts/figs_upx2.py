@@ -107,20 +107,31 @@ b += [t(30, 500, 'execve を 2 にするフラグ: --in-process-gpu --no-unsandb
       t(30, 520, 'GPU デバイスがないので 2 つ目と 3 つ目は --disable-gpu 付き。3 回の中央値。logs/428、483、512、514。CEF 既定は UPX で圧縮していない。', 11.5, fill=SUB)]
 save('fig14-upx-execve.svg', svg(1000, 535, b))
 
-# ---- 図 10: 再生中の RAM(CEF 既定、削減版、削減版 + UPX)
-b = [t(30, 38, 'H.264 1080p 再生中の RAM(arm64、単位 MiB)', 20, bold=True)]
-b += [r(300, 56, 14, 14, RED), t(320, 68, '回収できない RAM', 13, fill=SUB), r(480, 56, 14, 14, YEL), t(500, 68, 'ファイル由来の RAM', 13, fill=SUB)]
-rows = [('起動フラグなし', [('CEF 既定', 790.0, 255.8), ('削減版', 598.3, 167.3), ('削減版 + UPX', 1366.2, 32.5)]),
-        ('3 フラグ', [('CEF 既定', 661.9, 251.4), ('削減版', 537.7, 165.2), ('削減版 + UPX', 679.0, 31.9)])]
-sc = 0.42; X0 = 260; y = 92
-for gl, items in rows:
-    b += [t(30, y + 14, gl, 15, bold=True)]; y += 24
-    for lab, u, f in items:
-        b += [t(X0 - 12, y + 19, lab, 14, 'end', bold=('UPX' in lab))]
-        b += [r(X0, y, u * sc, 28, RED), r(X0 + u * sc, y, f * sc, 28, YEL)]
-        b += [t(X0 + u * sc / 2, y + 19, f'{u:,.1f}', 12.5, 'middle', '#fff', True), t(X0 + (u + f) * sc + 8, y + 19, f'+{f}(合計 {u + f:,.1f})', 12.5, fill=SUB)]
-        y += 38
-    y += 14
-b += [t(30, y + 10, '最後まで再生できた 2 回の中央値。削減版は SwiftShader なし(UPX 用の変更入り)。CEF 既定は SwiftShader で描画、削減版の 3 フラグは --disable-gpu。', 11.5, fill=SUB),
-      t(30, y + 30, 'M18(CEF 既定)、logs/484(削減版、UPX)。', 11.5, fill=SUB)]
-save('fig10-upx-ram.svg', svg(1000, int(y + 45), b))
+# ---- 図 6 / 図 10 共通: PSS(A + B の積み上げ)と、回収できない RAM(cgroup)を別の棒で並べる
+DRK = '#a50e0e'
+def ab_fig(name, title, groups, sc, foot):
+    b = [t(30, 38, title, 20, bold=True)]
+    b += [r(160, 56, 14, 14, RED), t(180, 68, 'A: 回収できない分のうちプロセスが触ったページ', 13, fill=SUB),
+          r(530, 56, 14, 14, YEL), t(550, 68, 'B: ファイル由来', 13, fill=SUB),
+          r(690, 56, 14, 14, '#fff', DRK, 0, 2), t(710, 68, '回収できない RAM(cgroup)', 13, fill=SUB)]
+    X0 = 250; y = 92
+    for gl, items in groups:
+        if gl: b += [t(30, y + 14, gl, 15, bold=True)]; y += 24
+        for lab, A, B, C, P in items:
+            b += [t(X0 - 12, y + 24, lab, 14, 'end', bold=('UPX' in lab))]
+            b += [r(X0, y, A * sc, 22, RED), r(X0 + A * sc, y, B * sc, 22, YEL),
+                  t(X0 + (A + B) * sc + 8, y + 16, f'PSS {P:,.1f}(A {A:,.1f} + B {B:,.1f})', 12, fill=DARK)]
+            b += [r(X0, y + 26, C * sc, 14, '#fff', DRK, 0, 2), t(X0 + C * sc + 8, y + 38, f'cgroup {C:,.1f}', 12, fill=DRK, bold=True)]
+            y += 54
+        y += 10
+    for k, f in enumerate(foot): b += [t(30, y + 10 + k * 20, f, 11.5, fill=SUB)]
+    save(name, svg(1000, int(y + 20 + 20 * len(foot)), b))
+
+ab_fig('fig6-startup-ram.svg', '起動直後の RAM(arm64、テストページを開いて 30 秒後、単位 MiB)',
+       [(None, [('CEF 既定', 159.2, 228.7, 160.5, 387.6), ('削減版', 127.5, 159.4, 128.8, 286.7), ('削減版、SwiftShader なし', 93.8, 141.0, 101.8, 234.7)])], 1.2,
+       ['PSS = A + B(smaps_rollup。中央値を別々に取るので 0.3MiB ほどずれる)。cgroup は memory.stat の anon + shmem で、どのプロセスも触っていないページも含む。', '8 CPU / 8GB の arm64 コンテナ、3 回の中央値。'])
+
+ab_fig('fig10-upx-ram.svg', 'H.264 1080p 再生中の RAM(arm64、単位 MiB)',
+       [('起動フラグなし', [('CEF 既定', 789.8, 255.8, 790.0, 1045.5), ('削減版', 590.3, 167.3, 598.3, 757.7), ('削減版 + UPX', 855.0, 32.5, 1366.2, 887.6)]),
+        ('3 フラグ', [('CEF 既定', 660.7, 251.4, 661.9, 912.2), ('削減版', 528.9, 165.2, 537.7, 694.0), ('削減版 + UPX', 649.6, 31.9, 679.0, 681.5)])], 0.42,
+       ['UPX では、展開したコードのうちプロセスが触っていない部分が cgroup にだけ入るので、cgroup が PSS を超える。', '最後まで再生できた 2 回の中央値。CEF 既定は SwiftShader で描画、削減版の 3 フラグは --disable-gpu。M18、logs/484。'])
