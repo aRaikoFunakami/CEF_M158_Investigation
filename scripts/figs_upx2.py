@@ -89,19 +89,38 @@ b += [t(30, 300, 'UPX が縮めるのは libcef.so(186.2 → 86.0MB)と cefsimpl
       t(30, 322, 'CEF 既定の青は libcef.so と cefsimple の合計(275.1MB)。UPX 版の配布物は CEF 既定の 26% になる。', 13)]
 save('fig13-upx-rom.svg', svg(1000, 340, b))
 
-# ---- 図 14: execve するプロセスの数と回収できない RAM(起動直後)
-b = [t(30, 36, 'execve するプロセスの数と、起動直後の回収できない RAM(arm64、削減版、単位 MiB)', 19, bold=True)]
-b += [r(330, 52, 14, 14, GRY), t(350, 64, '圧縮前', 13, fill=SUB), r(430, 52, 14, 14, RED), t(450, 64, 'UPX', 13, fill=SUB)]
-rows = [('起動フラグなし', 'execve 4、8 プロセス', 102.1, 715.4, 'サンドボックスあり / GPU は別プロセス(失敗時に切り替えられる)'),
-        ('execve を 2 にするフラグ', 'execve 2、5 プロセス', 76.0, 382.9, 'サンドボックスあり / GPU はブラウザ内(切り替えなし)'),
-        ('3 フラグ', 'execve 1、1 プロセス', 56.7, 210.0, 'サンドボックスなし / GPU はブラウザ内(切り替えなし)')]
+# ---- 図 14: execve するプロセスの数と回収できない RAM(起動直後)。CEF 既定も並べる
+b = [t(30, 36, 'execve するプロセスの数と、起動直後の回収できない RAM(arm64、単位 MiB)', 19, bold=True)]
+b += [r(250, 52, 14, 14, BLUE), t(270, 64, 'CEF 既定', 13, fill=SUB), r(380, 52, 14, 14, GRY), t(400, 64, '削減版(圧縮前)', 13, fill=SUB), r(560, 52, 14, 14, RED), t(580, 64, '削減版 + UPX', 13, fill=SUB)]
+rows = [('起動フラグなし', 'execve 4、8 プロセス', 160.5, 102.1, 715.4, 'サンドボックスあり / GPU は別プロセス(失敗時に切り替えられる)'),
+        ('execve を 2 にするフラグ', 'execve 2、5 プロセス', 88.0, 76.0, 382.9, 'サンドボックスあり / GPU はブラウザ内(切り替えなし)'),
+        ('3 フラグ', 'execve 1、1 プロセス', 65.7, 56.7, 210.0, 'サンドボックスなし / GPU はブラウザ内(切り替えなし)')]
 sc = 0.85; X0 = 270
-for i, (lab, sub, a, u, note) in enumerate(rows):
-    y = 92 + i * 110
-    b += [t(X0 - 12, y + 24, lab, 15, 'end', bold=True), t(X0 - 12, y + 44, sub, 12, 'end', SUB)]
-    b += [r(X0, y, a * sc, 24, GRY), t(X0 + a * sc + 8, y + 17, f'{a}', 12.5)]
-    b += [r(X0, y + 28, u * sc, 24, RED), t(X0 + u * sc + 8, y + 45, f'{u}(+{u - a:.0f})', 12.5, bold=True)]
-    b += [t(X0, y + 74, note, 12, fill=SUB)]
-b += [t(30, 420, 'execve を 2 にするフラグ: --in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2。', 11.5, fill=SUB),
-      t(30, 440, 'GPU デバイスがないので 2 つ目と 3 つ目は --disable-gpu 付き。3 回の中央値。logs/483、512。', 11.5, fill=SUB)]
-save('fig14-upx-execve.svg', svg(1000, 455, b))
+for i, (lab, sub, g, a, u, note) in enumerate(rows):
+    y = 92 + i * 135
+    b += [t(X0 - 12, y + 34, lab, 15, 'end', bold=True), t(X0 - 12, y + 54, sub, 12, 'end', SUB)]
+    b += [r(X0, y, g * sc, 22, BLUE), t(X0 + g * sc + 8, y + 16, f'{g}', 12.5)]
+    b += [r(X0, y + 26, a * sc, 22, GRY), t(X0 + a * sc + 8, y + 42, f'{a}', 12.5)]
+    b += [r(X0, y + 52, u * sc, 22, RED), t(X0 + u * sc + 8, y + 68, f'{u}(圧縮前から +{u - a:.0f})', 12.5, bold=True)]
+    b += [t(X0, y + 96, note, 12, fill=SUB)]
+b += [t(30, 500, 'execve を 2 にするフラグ: --in-process-gpu --no-unsandboxed-zygote --enable-features=NetworkServiceInProcess2。', 11.5, fill=SUB),
+      t(30, 520, 'GPU デバイスがないので 2 つ目と 3 つ目は --disable-gpu 付き。3 回の中央値。logs/428、483、512、514。CEF 既定は UPX で圧縮していない。', 11.5, fill=SUB)]
+save('fig14-upx-execve.svg', svg(1000, 535, b))
+
+# ---- 図 10: 再生中の RAM(CEF 既定、削減版、削減版 + UPX)
+b = [t(30, 38, 'H.264 1080p 再生中の RAM(arm64、単位 MiB)', 20, bold=True)]
+b += [r(300, 56, 14, 14, RED), t(320, 68, '回収できない RAM', 13, fill=SUB), r(480, 56, 14, 14, YEL), t(500, 68, 'ファイル由来の RAM', 13, fill=SUB)]
+rows = [('起動フラグなし', [('CEF 既定', 790.0, 255.8), ('削減版', 598.3, 167.3), ('削減版 + UPX', 1366.2, 32.5)]),
+        ('3 フラグ', [('CEF 既定', 661.9, 251.4), ('削減版', 537.7, 165.2), ('削減版 + UPX', 679.0, 31.9)])]
+sc = 0.42; X0 = 260; y = 92
+for gl, items in rows:
+    b += [t(30, y + 14, gl, 15, bold=True)]; y += 24
+    for lab, u, f in items:
+        b += [t(X0 - 12, y + 19, lab, 14, 'end', bold=('UPX' in lab))]
+        b += [r(X0, y, u * sc, 28, RED), r(X0 + u * sc, y, f * sc, 28, YEL)]
+        b += [t(X0 + u * sc / 2, y + 19, f'{u:,.1f}', 12.5, 'middle', '#fff', True), t(X0 + (u + f) * sc + 8, y + 19, f'+{f}(合計 {u + f:,.1f})', 12.5, fill=SUB)]
+        y += 38
+    y += 14
+b += [t(30, y + 10, '最後まで再生できた 2 回の中央値。削減版は SwiftShader なし(UPX 用の変更入り)。CEF 既定は SwiftShader で描画、削減版の 3 フラグは --disable-gpu。', 11.5, fill=SUB),
+      t(30, y + 30, 'M18(CEF 既定)、logs/484(削減版、UPX)。', 11.5, fill=SUB)]
+save('fig10-upx-ram.svg', svg(1000, int(y + 45), b))
