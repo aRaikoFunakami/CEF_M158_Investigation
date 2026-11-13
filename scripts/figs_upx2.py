@@ -127,9 +127,10 @@ def ab_fig(name, title, groups, sc, foot):
     for k, f in enumerate(foot): b += [t(30, y + 10 + k * 20, f, 11.5, fill=SUB)]
     save(name, svg(1000, int(y + 20 + 20 * len(foot)), b))
 
-ab_fig('fig6-startup-ram.svg', '起動直後の RAM(arm64、起動フラグなし、テストページを開いて 30 秒後、単位 MiB)',
-       [(None, [('CEF 既定', 159.2, 228.7, 160.5, 387.6), ('削減版', 127.5, 159.4, 128.8, 286.7), ('削減版、SwiftShader なし', 93.8, 141.0, 101.8, 234.7), ('削減版、SwiftShader なし + UPX', 309.4, 27.1, 715.4, 336.5)])], 0.85,
-       ['PSS = A + B(smaps_rollup。中央値を別々に取るので 0.3MiB ほどずれる)。cgroup は memory.stat の anon + shmem で、どのプロセスも触っていないページも含む。', '8 CPU / 8GB の arm64 コンテナ、3 回の中央値。'])
+ab_fig('fig6-startup-ram.svg', '起動直後の RAM(arm64、テストページを開いて 30 秒後、単位 MiB)',
+       [('起動フラグなし', [('CEF 既定', 159.2, 228.7, 160.5, 387.6), ('削減版', 127.5, 159.4, 128.8, 286.7), ('削減版、SwiftShader なし', 93.8, 141.0, 101.8, 234.7), ('削減版、SwiftShader なし + UPX', 309.4, 27.1, 715.4, 336.5)]),
+        ('3 フラグ(--disable-gpu 付き)', [('CEF 既定', 58.0, 208.2, 65.7, 266.1), ('削減版、SwiftShader なし', 48.8, 139.7, 56.7, 188.5), ('削減版、SwiftShader なし + UPX', 162.9, 25.6, 210.0, 188.5)])], 0.85,
+       ['PSS = A + B(smaps_rollup。中央値を別々に取るので 0.3MiB ほどずれる)。cgroup は memory.stat の anon + shmem で、どのプロセスも触っていないページも含む。', '8 CPU / 8GB の arm64 コンテナ、3 回の中央値。logs/428、483、514。'])
 
 ab_fig('fig10-upx-ram.svg', 'H.264 1080p 再生中の RAM(arm64、単位 MiB)',
        [('起動フラグなし', [('CEF 既定', 789.8, 255.8, 790.0, 1045.5), ('削減版', 590.3, 167.3, 598.3, 757.7), ('削減版 + UPX', 855.0, 32.5, 1366.2, 887.6)]),
