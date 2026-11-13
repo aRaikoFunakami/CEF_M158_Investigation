@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600" font-family="Hiragino Sans, Hiragino Kaku Gothic ProN, sans-serif">
 <rect width="1000" height="600" fill="#fff"/>
 <text x="30" y="38" font-size="20" font-weight="bold" fill="#202124">YouTube 再生中の RAM(arm64、全プロセスの PSS、単位 MiB)</text>
-<rect x="30" y="56" width="14" height="14" fill="#9aa0a6"/><text x="50" y="68" font-size="13" fill="#3c4043">通常ビルド</text>
-<rect x="265" y="56" width="14" height="14" fill="#5f6368"/><text x="285" y="68" font-size="13" fill="#3c4043">通常 + 起動フラグ</text>
-<rect x="500" y="56" width="14" height="14" fill="#8ab4f8"/><text x="520" y="68" font-size="13" fill="#3c4043">削減ビルド</text>
-<rect x="735" y="56" width="14" height="14" fill="#1a73e8"/><text x="755" y="68" font-size="13" fill="#3c4043">削減ビルド + 起動フラグ</text>
+<rect x="30" y="56" width="14" height="14" fill="#9aa0a6"/><text x="50" y="68" font-size="13" fill="#3c4043">CEF 既定</text>
+<rect x="265" y="56" width="14" height="14" fill="#5f6368"/><text x="285" y="68" font-size="13" fill="#3c4043">CEF 既定 + 起動フラグ</text>
+<rect x="500" y="56" width="14" height="14" fill="#8ab4f8"/><text x="520" y="68" font-size="13" fill="#3c4043">削減版</text>
+<rect x="735" y="56" width="14" height="14" fill="#1a73e8"/><text x="755" y="68" font-size="13" fill="#3c4043">削減版 + 起動フラグ</text>
 <line x1="80" y1="505.0" x2="970" y2="505.0" stroke="#e8eaed"/><text x="72" y="509.0" font-size="12" text-anchor="end" fill="#5f6368">0</text>
 <line x1="80" y1="405.0" x2="970" y2="405.0" stroke="#e8eaed"/><text x="72" y="409.0" font-size="12" text-anchor="end" fill="#5f6368">400</text>
 <line x1="80" y1="305.0" x2="970" y2="305.0" stroke="#e8eaed"/><text x="72" y="309.0" font-size="12" text-anchor="end" fill="#5f6368">800</text>
@@ -29,5 +29,5 @@
 <text x="875" y="247.6" font-size="13" text-anchor="middle" fill="#202124">1,005.5</text>
 <text x="740" y="533" font-size="16" font-weight="bold" text-anchor="middle" fill="#202124">AV1 4K60</text>
 <text x="740" y="555" font-size="13" text-anchor="middle" fill="#d93025">-504.0MiB(-33%)</text>
-<text x="30" y="588" font-size="12.5" fill="#5f6368">起動フラグ = --single-process --no-zygote --enable-low-end-device-mode。8 CPU / 8GB の arm64 コンテナ、S/W デコード、有効 2 回の中央値。</text>
+<text x="30" y="588" font-size="12.5" fill="#5f6368">起動フラグ = --single-process --no-zygote --enable-low-end-device-mode。削減版は SwiftShader なし。8 CPU / 8GB の arm64 コンテナ、CPU でデコード。</text>
 </svg>
