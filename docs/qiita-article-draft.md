@@ -5,7 +5,7 @@ tags: CEF Chromium 組み込み メモリ削減 Linux
 
 # はじめに
 
-![削減版の CEF で YouTube を再生している様子](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig0-youtube-playing.gif?v=20261114b)
+![削減版の CEF で YouTube を再生している様子](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig0-youtube-playing.gif?v=20261114d)
 
 今回作った削減版の CEF(arm64、サンプルアプリ `cefsimple`)で YouTube の動画を再生している画面です。GPU のない環境で、SwiftShader も外した版なので、描画もデコードも CPU で行っています。
 
@@ -34,7 +34,7 @@ Chromium のブラウザは複数のプロセスで動きます。画面とタ�
 
 `content_shell` は、content 層だけで作られた最小のブラウザで、Chromium のソースに含まれています(主にテスト用)。
 
-![プロセスの分かれ方](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig5-processes.png?v=20261114b)
+![プロセスの分かれ方](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig5-processes.png?v=20261114d)
 
 ## CEF が大きくなった理由
 
@@ -47,7 +47,7 @@ CEF は長く、content 層の上に直接載っていて、//chrome 層は使�
 | 2024-04-17 | `dca0435d2` | Chrome ランタイムの上で、Alloy スタイル(後述)のブラウザとウィンドウに対応 |
 | 2024-06-25 | `a461a8972` | Alloy ランタイムの起動経路を削除。CEF の 6613 ブランチ(Chromium 128)以降に含まれる |
 
-![CEF の構成](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig1-cef-architecture.png?v=20261114b)
+![CEF の構成](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig1-cef-architecture.png?v=20261114d)
 
 その結果、現在の CEF は必ず //chrome 層の上で動きます。CEF 本体(`libcef.so`)は、`ChromeMainDelegate`、`ChromeContentBrowserClient`、`ChromeContentRendererClient` など //chrome のクラスを継承して作られています。設定や Cookie を保持する単位も Chrome のプロファイル(`Profile`)です。CEF 本体の 76 ファイルが `chrome/` 以下のヘッダを計 172 回 include しています。こうして、自動入力、同期、パスワード管理、拡張機能、PDF ビューア、印刷、ブラウザの UI など、組み込み用途で使わない機能もまとめてリンクされます。
 
@@ -96,9 +96,9 @@ CEF は長く、content 層の上に直接載っていて、//chrome 層は使�
 - SwiftShader は、GPU の処理を CPU で行うソフトウェア実装です。GPU のない環境でも GPU 向けの処理(GPU での合成や WebGL)を動かすために CEF に同梱されています。GPU のある機器では要らないので、外した場合の値も示しました。SwiftShader を外しても、GPU のない計測環境で画面は描けます。使えなくなるのは WebGL です(理由は「SwiftShader がなくても描画できる理由」の節)。
 - UPX は、実行ファイルを圧縮しておき、起動時にメモリ上で展開するツールです。`libcef.so` と `cefsimple` を圧縮しました。ROM は減りますが、展開したコードは回収できない RAM になります(下の RAM の表と「UPX で圧縮する」の章)。
 
-![ROM の推移](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig2-rom-x64.png?v=20261114b)
+![ROM の推移](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig2-rom-x64.png?v=20261114d)
 
-![arm64 の配布物のサイズ](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig13-upx-rom.png?v=20261114b)
+![arm64 の配布物のサイズ](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig13-upx-rom.png?v=20261114d)
 
 ## RAM(arm64)
 
@@ -133,7 +133,7 @@ RAM の値は 2 種類を使っています。詳しくは「計測方法」に�
 
 UPX では、PSS はあまり変わらないのに、回収できない RAM(cgroup)が大きく増えます。展開したコードが、ファイル由来の RAM(B)から、カーネルが捨てられない共有メモリ(A と cgroup)に移るためです。プロセスが触っていないコードも cgroup にだけ入るので、cgroup が PSS を超えます(「UPX で圧縮する」の章)。
 
-![起動直後の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig6-startup-ram.png?v=20261114b)
+![起動直後の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig6-startup-ram.png?v=20261114d)
 
 YouTube の動画を再生している間(全プロセスの PSS、最後まで再生できた 2 回の中央値):
 
@@ -142,7 +142,7 @@ YouTube の動画を再生している間(全プロセスの PSS、最後まで�
 | H.264 1080p60 | 1,045.5MiB | 912.2MiB(−13%) | 759.3MiB(−27%) | **684.4MiB(−35%)** | 887.6MiB(−15%) | 681.5MiB(−35%) |
 | AV1 4K60 | 1,509.5MiB | 1,348.7MiB(−11%) | 1,131.9MiB(−25%) | **1,005.5MiB(−33%)** | 未計測 | 未計測 |
 
-![動画再生中の RAM(PSS)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig3-ram-video.png?v=20261114c)
+![動画再生中の RAM(PSS)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig3-ram-video.png?v=20261114d)
 
 この表の削減版は SwiftShader なしのものです。表の「起動フラグ」は 3 フラグです。PSS には UPX の負担が一部しか出ないので、H.264 1080p60 の再生中について、回収できない RAM(cgroup)も示します。
 
@@ -150,7 +150,7 @@ YouTube の動画を再生している間(全プロセスの PSS、最後まで�
 |---|---|---|---|---|---|---|
 | H.264 1080p60 | 790.0MiB | 661.9MiB(−16%) | 601.6MiB(−24%) | 531.2MiB(−33%) | **1,366.2MiB(+73%)** | 679.0MiB(−14%) |
 
-![再生中の RAM(PSS の内訳と cgroup)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig10-upx-ram.png?v=20261114b)
+![再生中の RAM(PSS の内訳と cgroup)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig10-upx-ram.png?v=20261114d)
 
 UPX の 2 列は、UPX 用の 2 つの変更を入れた削減版を圧縮したもので、圧縮前の値は削減版とほぼ同じです(PSS 757.7 と 694.0MiB)。上の図の「削減版」はこの圧縮前の値です。
 
@@ -161,7 +161,7 @@ UPX の 2 列は、UPX 用の 2 つの変更を入れた削減版を圧縮した
 | H.264 1080p60 | 880MiB で再生できた(780MiB では強制終了) | 640MiB で再生できた | 未確認 |
 | AV1 4K60 | 1,320MiB で再生できた | 980MiB で再生できた | 未確認 |
 
-![メモリの上限をかけて再生できた値](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig7-memory-limit.png?v=20261114b)
+![メモリの上限をかけて再生できた値](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig7-memory-limit.png?v=20261114d)
 
 これは「この上限で再生できた」という確認で、再生できる最小値ではありません。上限はブラウザだけに割り当てた量で、機器の搭載 RAM ではありません。
 
@@ -270,7 +270,7 @@ YouTube の再生中の RAM は `ytmem.py` で、Big Buck Bunny 60fps(https://ww
 
 値は配布物の削減量で、段階どうしの差から求めています(実行ファイルの削減量の行はそう書いた)。
 
-![削減項目ごとの効果](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig4-reduction-items.png?v=20261114b)
+![削減項目ごとの効果](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig4-reduction-items.png?v=20261114d)
 
 | 削減の内容 | 手段 | 効果 | 失うもの |
 |---|---|---|---|
@@ -375,7 +375,7 @@ arm64 版では、YouTube の TV 向けアプリ Cobalt のビルド設定から
 
 //chrome 層と CEF 本体は、削減版でも約 45〜55MB 残っています。2 通りの方法で見積もりました。
 
-![削減版に残っているコード](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig8-remaining-code.png?v=20261114b)
+![削減版に残っているコード](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig8-remaining-code.png?v=20261114d)
 
 | 方法 | 見積もり |
 |---|---|
@@ -472,7 +472,7 @@ Chromium は cgroup の上限を見ていません。上限に近づいても自
 
 Chromium には、画面を作る道が 2 本あります。GPU を使う道と、最初から CPU だけで済ませる道です。SwiftShader は、GPU を使う道を GPU のない機器でも通すための「GPU のふりをする CPU のプログラム」です。SwiftShader も GPU もないと、Chromium は CPU だけの道に切り替えます。CPU だけの道はもともと GPU の命令を使わないので、SwiftShader がなくても画面を描けます。
 
-![Chromium の描画の経路](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig15-render-paths.png?v=20261114b)
+![Chromium の描画の経路](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig15-render-paths.png?v=20261114d)
 
 図に出てくる部品は次のとおりです。
 
@@ -548,7 +548,7 @@ UPX は、実行ファイルを圧縮しておき、起動時にメモリ上で�
 
 ## ROM
 
-![配布物のサイズ](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig13-upx-rom.png?v=20261114b)
+![配布物のサイズ](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig13-upx-rom.png?v=20261114d)
 
 | ファイル | CEF 既定 | 削減版 | 削減版 + UPX |
 |---|---|---|---|
@@ -603,7 +603,7 @@ Ubuntu のシステムのライブラリ(GNU ld でリンク)は、同じ UPX �
 | 3 フラグ | 圧縮前 | 188.5MiB | 48.8MiB | 139.7MiB | 56.7MiB |
 | 3 フラグ | UPX | 188.5MiB(±0) | 162.9MiB(+114) | 25.6MiB | 210.0MiB(+153) |
 
-![UPX の有無と起動直後の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig16-upx-startup.png?v=20261114b)
+![UPX の有無と起動直後の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig16-upx-startup.png?v=20261114d)
 
 「圧縮前」と「UPX」は削減版(SwiftShader なし、UPX 用の 2 つの変更入り)で、括弧内は圧縮前との差です。CEF 既定の 3 フラグは、削減版と同じく `--disable-gpu` を付けました。
 
@@ -618,7 +618,7 @@ H.264 1080p の再生中(最後まで再生できた 2 回の中央値):
 | 3 フラグ | 圧縮前 | 694.0MiB | 528.9MiB | 165.2MiB | 537.7MiB |
 | 3 フラグ | UPX | 681.5MiB(−12.5) | 649.6MiB(+121) | 31.9MiB | 679.0MiB(+141) |
 
-![CEF 既定、削減版、UPX の再生中の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig10-upx-ram.png?v=20261114b)
+![CEF 既定、削減版、UPX の再生中の RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig10-upx-ram.png?v=20261114d)
 
 CEF 既定の値は「結果」の節と同じ測定です(CEF 既定は SwiftShader で描画、削減版の 3 フラグは `--disable-gpu`)。
 
@@ -639,13 +639,13 @@ CEF 既定の値は「結果」の節と同じ測定です(CEF 既定は SwiftSh
 | 再生中の回収できない RAM(cgroup) | 790.0MiB | 661.9MiB | 537.7MiB | 679.0MiB |
 | 再生中の cgroup + B | 1,045.8MiB | 913.3MiB | 702.9MiB | 710.9MiB |
 
-![CEF 既定、削減版、削減版 + UPX(3 フラグ)の比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig17-upx-vs-default.png?v=20261114c)
+![CEF 既定、削減版、削減版 + UPX(3 フラグ)の比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig17-upx-vs-default.png?v=20261114d)
 
 CEF 既定を同じ 3 フラグで動かした場合と比べても、再生中の回収できない RAM(cgroup)は +17MiB で、ほぼ同じです。プロセスが触ったページ(A)では −11MiB、PSS では −231MiB です。3 フラグで並べると、再生中の回収できない RAM は、ROM の削減で 661.9 → 537.7MiB(−124)に減り、UPX で 679.0MiB(+141)に戻ります。UPX で増える分を、ROM の削減で減った分がほぼ打ち消しています。起動直後は動画のバッファなどがなく、UPX の展開コピー(約 153MiB)の割合が大きいので、+144MiB の差が残ります。GPU の条件は、起動直後の 3 フラグはどれも `--disable-gpu`、再生中は CEF 既定が SwiftShader、削減版と削減版 + UPX が `--disable-gpu` です。再生中の CEF 既定と削減版では条件が違うので、差のすべてが ROM の削減と UPX によるものではありません。
 
 ## 回収できない RAM が増える仕組み
 
-![UPX で圧縮したときのメモリの載り方](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig9-upx-mechanism.png?v=20261114b)
+![UPX で圧縮したときのメモリの載り方](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig9-upx-mechanism.png?v=20261114d)
 
 圧縮前は、`libcef.so` のコードはファイルから読み込まれたページ(ファイル由来の RAM)で、全プロセスで共有され、メモリが足りなくなればカーネルが捨てて読み直せます。UPX で圧縮すると、`libcef.so` を読み込むときに、展開したコードを共有メモリ(memfd)に置きます。ディスクに元のデータがないので、カーネルはこのメモリを捨てられません。
 
@@ -658,7 +658,7 @@ PSS が回収できない RAM(cgroup)より小さくなるのは、このため�
 
 ## 起動フラグで増え方が 4 倍違う理由
 
-![UPX 版で作られる展開コピーの数](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig11-upx-copies.png?v=20261114b)
+![UPX 版で作られる展開コピーの数](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig11-upx-copies.png?v=20261114d)
 
 展開したコードの memfd は、`libcef.so` を読み込んだプロセスごとに作られます。fork で作られた子プロセスは親の memfd をそのまま共有しますが、自分を起動し直す(execve する)プロセスは、読み込みからやり直すので自分の memfd を作ります。
 
@@ -673,7 +673,7 @@ PSS が回収できない RAM(cgroup)より小さくなるのは、このため�
 
 ## 参考記事より増え方が小さい理由
 
-![参考記事との比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig12-upx-vs-reference.png?v=20261114b)
+![参考記事との比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig12-upx-vs-reference.png?v=20261114d)
 
 参考記事(arm64、Chromium 156、1 タブ)の回収できない RAM の増加は、起動フラグなしで +1,124MiB、`--single-process --no-zygote` で +283MiB でした。今回は +613MiB と +153MiB で、どちらも参考記事の約 55% です。
 
@@ -710,7 +710,7 @@ PSS が回収できない RAM(cgroup)より小さくなるのは、このため�
 
 プロセス削減フラグの内容と、UPX を使わない場合の効果は「RAM の削り方」の「プロセスの数を減らす起動フラグ」に書きました。
 
-![execve するプロセスの数と回収できない RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig14-upx-execve.png?v=20261114b)
+![execve するプロセスの数と回収できない RAM](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig14-upx-execve.png?v=20261114d)
 
 展開コピーは 2 個(ブラウザと、サンドボックスありの zygote)で、削減版の圧縮前からの増加(+307MiB)は 3 フラグ(+153MiB)の 2 倍です。この組み合わせでは、レンダラは別プロセスのままで、サンドボックスも残ります。`--single-process` は Chromium がサポートしていない動作モードで、サンドボックスがなく、レンダラが落ちるとブラウザごと落ちます。UPX を使う場合でも、3 フラグを使えない製品ではこちらが候補になります。GPU デバイスがないので、どちらも `--disable-gpu` を付けて測りました。
 
