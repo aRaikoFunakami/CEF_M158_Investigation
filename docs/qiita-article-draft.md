@@ -45,7 +45,7 @@ Chromium のソースは、役割ごとの層に分かれています。この�
 |---|---|---|
 | Blink、V8 など | `third_party/blink`、`v8` など | Blink は HTML と CSS を処理して画面を組み立てる部分(レンダリングエンジン)、V8 は JavaScript の実行エンジン。ほかにネットワーク、描画、動画の再生などの部品がある |
 | content 層 | `content/` | ブラウザの土台。ページごとにプロセスを分けて動かす仕組みや、ページ遷移の管理を受け持つ |
-| //chrome 層 | `chrome/` | Chrome のブラウザ機能。設定やブックマークを持つプロファイル、自動入力、同期、拡張機能、PDF ビューア、印刷、タブやツールバーなどの UI |
+| chrome 層 | `chrome/` | Chrome のブラウザ機能。設定やブックマークを持つプロファイル、自動入力、同期、拡張機能、PDF ビューア、印刷、タブやツールバーなどの UI |
 
 Chromium のブラウザは複数のプロセスで動きます。画面とタブを管理するブラウザプロセス、ページを処理するレンダラプロセス、描画を受け持つ GPU プロセス、ネットワークなどのユーティリティプロセスです。
 
@@ -55,18 +55,18 @@ Chromium のブラウザは複数のプロセスで動きます。画面とタ�
 
 ## CEF が大きくなった理由
 
-CEF は長く、content 層の上に直接載っていて、//chrome 層は使っていませんでした。CEF のコミット履歴では、この構成が次のように変わっています。
+CEF は長く、content 層の上に直接載っていて、chrome 層は使っていませんでした。CEF のコミット履歴では、この構成が次のように変わっています。
 
 | 日付 | コミット | 内容 |
 |---|---|---|
-| 2020-06-24 | `117499421` | 「Chrome ランタイム」(//chrome 層の上で動く方式)の初期対応 |
+| 2020-06-24 | `117499421` | 「Chrome ランタイム」(chrome 層の上で動く方式)の初期対応 |
 | 2020-06-28 | `84f3ff2af` | 従来の方式を「Alloy ランタイム」と改名 |
 | 2024-04-17 | `dca0435d2` | Chrome ランタイムの上で、Alloy スタイル(後述)のブラウザとウィンドウに対応 |
 | 2024-06-25 | `a461a8972` | Alloy ランタイムの起動経路を削除。CEF の 6613 ブランチ(Chromium 128)以降に含まれる |
 
-![CEF の構成](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig1-cef-architecture.png?v=20261114d)
+![CEF の構成](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig1-cef-architecture.png?v=20261114e)
 
-その結果、現在の CEF は必ず //chrome 層の上で動きます。CEF 本体(`libcef.so`)は、`ChromeMainDelegate`、`ChromeContentBrowserClient`、`ChromeContentRendererClient` など //chrome のクラスを継承して作られています。設定や Cookie を保持する単位も Chrome のプロファイル(`Profile`)です。CEF 本体の 76 ファイルが `chrome/` 以下のヘッダを計 172 回 include しています。こうして、自動入力、同期、パスワード管理、拡張機能、PDF ビューア、印刷、ブラウザの UI など、組み込み用途で使わない機能もまとめてリンクされます。
+その結果、現在の CEF は必ず chrome 層の上で動きます。CEF 本体(`libcef.so`)は、`ChromeMainDelegate`、`ChromeContentBrowserClient`、`ChromeContentRendererClient` など chrome 層のクラスを継承して作られています。設定や Cookie を保持する単位も Chrome のプロファイル(`Profile`)です。CEF 本体の 76 ファイルが `chrome/` 以下のヘッダを計 172 回 include しています。こうして、自動入力、同期、パスワード管理、拡張機能、PDF ビューア、印刷、ブラウザの UI など、組み込み用途で使わない機能もまとめてリンクされます。
 
 ## Alloy スタイルと Chrome スタイル
 
@@ -333,7 +333,7 @@ YouTube の再生中の RAM は `ytmem.py` で、Big Buck Bunny 60fps(https://ww
 
 ## GN 引数で外す
 
-最初の手段は GN 引数です。ただし //chrome 層の主な機能(PDF、印刷、拡張機能など)は、GN 引数を false にしただけではビルドが通りません。//chrome や CEF のコードに「この機能は必須」という検査(`assert`)や、条件なしの依存があるためです。また、GN の設定生成(`gn gen`)が通っても、コンパイル、起動、動作確認で失敗する引数がありました(例: `enable_chrome_notifications=false` は起動時の内部検査で落ちる)。最終的な設定は、リポジトリの `args/F4b.args.gn`(x64)と `args/G2.args.gn`(arm64)にあります。
+最初の手段は GN 引数です。ただし chrome 層の主な機能(PDF、印刷、拡張機能など)は、GN 引数を false にしただけではビルドが通りません。chrome 層や CEF のコードに「この機能は必須」という検査(`assert`)や、条件なしの依存があるためです。また、GN の設定生成(`gn gen`)が通っても、コンパイル、起動、動作確認で失敗する引数がありました(例: `enable_chrome_notifications=false` は起動時の内部検査で落ちる)。最終的な設定は、リポジトリの `args/F4b.args.gn`(x64)と `args/G2.args.gn`(arm64)にあります。
 
 ## RELR 形式の再配置
 
@@ -382,7 +382,7 @@ Blink の Web API はモジュール単位で分かれています。`third_part
 
 ## PDF、印刷、拡張機能を外す
 
-この 3 つには GN 引数(`enable_pdf`、`enable_printing`、`enable_extensions` など)がありますが、false にすると //chrome と CEF のコードがコンパイルできなくなります。参照している箇所を条件コンパイル(`#if BUILDFLAG(...)`)で囲むパッチを書きました。拡張機能は参照箇所が多く、Chromium 側で 342 ファイルを変更しています(PDF と印刷の分を含む)。
+この 3 つには GN 引数(`enable_pdf`、`enable_printing`、`enable_extensions` など)がありますが、false にすると chrome 層と CEF のコードがコンパイルできなくなります。参照している箇所を条件コンパイル(`#if BUILDFLAG(...)`)で囲むパッチを書きました。拡張機能は参照箇所が多く、Chromium 側で 342 ファイルを変更しています(PDF と印刷の分を含む)。
 
 x64 では、拡張機能を外すと起動直後の回収できない RAM も 40MiB 減りました。手順 7 の段階では、内蔵の拡張機能(Service Worker)のためにレンダラプロセスが 1 つ常駐していて(PSS 約 45MiB)、拡張機能を外すとこのプロセスが起動しなくなったためです。
 
@@ -394,22 +394,22 @@ arm64 版では、YouTube の TV 向けアプリ Cobalt のビルド設定から
 
 ## 削れなかったもの
 
-//chrome 層と CEF 本体は、削減版でも約 45〜55MB 残っています。2 通りの方法で見積もりました。
+chrome 層と CEF 本体は、削減版でも約 45〜55MB 残っています。2 通りの方法で見積もりました。
 
-![削減版に残っているコード](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig8-remaining-code.png?v=20261114d)
+![削減版に残っているコード](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig8-remaining-code.png?v=20261114e)
 
 | 方法 | 見積もり |
 |---|---|
-| リンク時に出力したマップファイル(どのソースのコードが何バイト入ったかの一覧)で、`chrome/`(17.5MB)、CEF 本体(1.9MB)、//chrome から使われる `components/`(約 18MB)と `third_party/`(約 4MB)を積み上げる(arm64 の削減版) | 約 47MB(積み上げた `.text` は約 41MB。読み取り専用データなどを同じ割合で足した) |
+| リンク時に出力したマップファイル(どのソースのコードが何バイト入ったかの一覧)で、`chrome/`(17.5MB)、CEF 本体(1.9MB)、chrome 層から使われる `components/`(約 18MB)と `third_party/`(約 4MB)を積み上げる(arm64 の削減版) | 約 47MB(積み上げた `.text` は約 41MB。読み取り専用データなどを同じ割合で足した) |
 | 同じ削減を入れた `content_shell`(Chromium 159、x64、160.4MB)に、RELR(実測 −12.8MB)と `-Os`(推定 約 −10MB)を当てた見込み(約 138MB)と、x64 の削減版の実行ファイル(191.2MB)の差 | 約 53MB(推定) |
 
 残っているのは、自動入力(`components/autofill` だけで 3.1MB)、パスワード管理、同期、アドレスバーの補完、危険なサイトの警告(Safe Browsing)、企業向けのポリシー、履歴、Chrome スタイルの UI などです。外せなかった理由は次のとおりです。
 
-- CEF は //chrome のクラスを継承して動くので、//chrome 層そのものは外せない
-- これらの機能は、//chrome の中央の登録箇所(プロファイルごとのサービスの一括登録など)から直接参照されている。機能ごとの GN 引数がなく、個々の参照を消すパッチでは別の参照が残ってリンクされる
+- CEF は chrome 層のクラスを継承して動くので、chrome 層そのものは外せない
+- これらの機能は、chrome 層の中央の登録箇所(プロファイルごとのサービスの一括登録など)から直接参照されている。機能ごとの GN 引数がなく、個々の参照を消すパッチでは別の参照が残ってリンクされる
 - Alloy スタイル専用にしても −0.6MB だった。Chrome スタイルの UI のクラスは、生成する箇所以外にも数千か所から参照されている
 
-比較として、同じ Chromium で `chrome` を `content_shell` に替えると、実行ファイルは 309.8MB から 211.9MB(−97.9MB。どちらも削減なし)になりました。CEF は //chrome 層を前提に作られているので、この方法を使えません。
+比較として、同じ Chromium で `chrome` を `content_shell` に替えると、実行ファイルは 309.8MB から 211.9MB(−97.9MB。どちらも削減なし)になりました。CEF は chrome 層を前提に作られているので、この方法を使えません。
 
 # RAM の削り方
 
@@ -726,7 +726,7 @@ PSS が回収できない RAM(cgroup)より小さくなるのは、このため�
 
 プロセスの数は同じで、差は 1 コピーの大きさです。理由は 2 つあります。
 
-- 展開するコードが小さい。削減版の `libcef.so` の実行コードのセグメントは 166.7MiB(`readelf` の値。このうち約 14MiB は、UPX の展開処理を含めてファイルからそのまま読み込まれるので、memfd の 1 コピーは約 153MiB になる)で、参考記事の `chromium` のコードのマッピング(237.3MiB)の約 70%。ROM の削減(Blink のモジュールや //chrome 層の機能を外したこと)が、そのまま 1 コピーの大きさに効いている
+- 展開するコードが小さい。削減版の `libcef.so` の実行コードのセグメントは 166.7MiB(`readelf` の値。このうち約 14MiB は、UPX の展開処理を含めてファイルからそのまま読み込まれるので、memfd の 1 コピーは約 153MiB になる)で、参考記事の `chromium` のコードのマッピング(237.3MiB)の約 70%。ROM の削減(Blink のモジュールや chrome 層の機能を外したこと)が、そのまま 1 コピーの大きさに効いている
 - 読み取り専用データが二重にならない。参考記事の `chromium` は読み取り専用データが別のセグメントにあり、UPX はそれを匿名メモリに展開していた(約 45MiB)。今回は `--no-rosegment` でコードと同じセグメントにしたので、memfd の中に入る。3 フラグで anon(匿名メモリ)は 37.0 → 35.9MiB で、増えていない
 
 ## マルチプロセスのまま UPX 版の RAM を抑える
@@ -849,7 +849,7 @@ https://github.com/aRaikoFunakami/CEF_M158_Investigation
 - Chromium の Linux 向けリリースビルドで既定で有効になっている、実行時のプロファイルを使う最適化(PGO、`chrome_pgo_phase=2`)がサイズに与える影響
 - 実機の GPU での描画(`--use-gl=angle --use-angle=gles` など、「実機で GPU を使う場合」の対策)
 - UPX 版にメモリの上限をかけた再生、squashfs に置いた場合の RAM と起動時間
-- //chrome 層をさらに外すパッチの効果(CEF のままで −15〜25MB の見込み。Blink のバインディングの除外、V8 と ICU の設定、コンパイラの設定の見直しを合わせた推定で、検証していない)
+- chrome 層をさらに外すパッチの効果(CEF のままで −15〜25MB の見込み。Blink のバインディングの除外、V8 と ICU の設定、コンパイラの設定の見直しを合わせた推定で、検証していない)
 
 # Appendix: 途中で起きた問題
 

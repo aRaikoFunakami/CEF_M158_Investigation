@@ -25,7 +25,7 @@
 
   <!-- 右: 現在 -->
   <text x="765" y="40" font-size="20" font-weight="bold" text-anchor="middle" fill="#202124">Chrome ランタイム(現在の CEF)</text>
-  <text x="765" y="64" font-size="14" text-anchor="middle" fill="#5f6368">CEF が Chrome のブラウザ層(//chrome)の上に載る</text>
+  <text x="765" y="64" font-size="14" text-anchor="middle" fill="#5f6368">CEF が chrome 層(Chrome のブラウザ機能)の上に載る</text>
 
   <rect x="590" y="85" width="350" height="54" rx="8" fill="#f1f3f4" stroke="#9aa0a6"/>
   <text x="765" y="118" font-size="17" text-anchor="middle" fill="#202124">アプリ(CEF を埋め込む側)</text>
@@ -40,7 +40,7 @@
   <text x="855" y="305" font-size="15" text-anchor="middle" fill="#202124">Chrome スタイル</text>
 
   <rect x="590" y="331" width="350" height="52" rx="8" fill="#fce8e6" stroke="#d93025" stroke-width="2.5"/>
-  <text x="765" y="353" font-size="17" text-anchor="middle" fill="#202124">//chrome 層(Chrome のブラウザ機能)</text>
+  <text x="765" y="353" font-size="17" text-anchor="middle" fill="#202124">chrome 層(Chrome のブラウザ機能)</text>
   <text x="765" y="374" font-size="12" text-anchor="middle" fill="#5f6368">プロファイル、自動入力、同期、拡張機能、PDF、UI など</text>
 
   <rect x="590" y="393" width="350" height="64" rx="8" fill="#e8f0fe" stroke="#1a73e8"/>
