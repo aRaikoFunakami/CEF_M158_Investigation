@@ -5,7 +5,7 @@ tags: CEF Chromium 組み込み メモリ削減 Linux
 
 # はじめに
 
-CEF(Chromium 158)を、YouTube の再生と CEF の API が動く状態のまま、次のところまで削りました(arm64)。
+CEF(Chromium 158)の ROM 使用量と RAM 使用量の削減について検証しました。YouTube の再生と CEF の API が動く状態のまま、次のところまで削りました(arm64)。
 
 **ROM**(配布物のサイズ)
 
