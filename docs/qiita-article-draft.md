@@ -160,7 +160,7 @@ YouTube の動画を再生している間(全プロセスの PSS、最後まで�
 | H.264 1080p60 | 1,045.5MiB | 912.2MiB(−13%) | 759.3MiB(−27%) | **684.4MiB(−35%)** | 887.6MiB(−15%) | 681.5MiB(−35%) |
 | AV1 4K60 | 1,509.5MiB | 1,348.7MiB(−11%) | 1,131.9MiB(−25%) | **1,005.5MiB(−33%)** | 1,287.1MiB(−15%) | 999.5MiB(−34%) |
 
-![動画再生中の RAM(PSS)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig3-ram-video.png?v=20261114d)
+![動画再生中の RAM(PSS)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig3-ram-video.png?v=20261114e)
 
 この表の削減版は SwiftShader なしのものです。表の「起動フラグ」は 3 フラグです。PSS には UPX の負担が一部しか出ないので、回収できない RAM(cgroup)も示します。
 
@@ -171,7 +171,7 @@ YouTube の動画を再生している間(全プロセスの PSS、最後まで�
 
 ![再生中の RAM(PSS の内訳と cgroup)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig10-upx-ram.png?v=20261114d)
 
-![AV1 4K60 再生中の RAM(PSS の内訳と cgroup)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig18-upx-ram-av1.png?v=20261114d)
+![AV1 4K60 再生中の RAM(PSS の内訳と cgroup)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig18-upx-ram-av1.png?v=20261114e)
 
 UPX の 2 列は、UPX 用の 2 つの変更を入れた削減版を圧縮したもので、圧縮前の値は削減版とほぼ同じです(PSS は H.264 で 757.7 と 694.0MiB、AV1 4K で 1,160.1 と 1,023.7MiB)。上の 2 つの図の「削減版」はこの圧縮前の値です。
 
@@ -652,7 +652,7 @@ AV1 4K60 の再生中(最後まで再生できた 2 回の中央値):
 | 3 フラグ | 圧縮前 | 1,023.7MiB | 859.4MiB | 164.2MiB | 868.2MiB |
 | 3 フラグ | UPX | 999.5MiB(−24.2) | 970.4MiB(+111) | 29.1MiB | 997.1MiB(+129) |
 
-![AV1 4K60 再生中の RAM(PSS の内訳と cgroup)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig18-upx-ram-av1.png?v=20261114d)
+![AV1 4K60 再生中の RAM(PSS の内訳と cgroup)](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig18-upx-ram-av1.png?v=20261114e)
 
 UPX で増える回収できない RAM は、H.264 と同じ大きさでした(起動フラグなしで +760 と +768MiB、3 フラグで +129 と +141MiB)。UPX の負担は展開したコードのコピーの数で決まり、動画の種類にはほとんどよらないと見られます。
 
@@ -680,7 +680,7 @@ CEF 既定の値は「結果」の節と同じ測定です(CEF 既定は SwiftSh
 | AV1 4K 再生中の回収できない RAM(cgroup) | 1,252.6MiB | 1,094.5MiB | 868.2MiB | 997.1MiB |
 | AV1 4K 再生中の cgroup + B | 1,509.7MiB | 1,349.8MiB | 1,032.4MiB | 1,026.2MiB |
 
-![CEF 既定、削減版、削減版 + UPX(3 フラグ)の比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig17-upx-vs-default.png?v=20261114d)
+![CEF 既定、削減版、削減版 + UPX(3 フラグ)の比較](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig17-upx-vs-default.png?v=20261114e)
 
 CEF 既定を同じ 3 フラグで動かした場合と比べても、再生中の回収できない RAM(cgroup)は H.264 で +17MiB とほぼ同じ、AV1 4K で −97MiB です。PSS では H.264 で −231MiB、AV1 4K で −349MiB です。3 フラグで並べると、再生中の回収できない RAM は、ROM の削減で H.264 は 661.9 → 537.7MiB(−124)、AV1 4K は 1,094.5 → 868.2MiB(−226)に減り、UPX でそれぞれ +141、+129MiB 増えます。H.264 では UPX で増える分を ROM の削減で減った分がほぼ打ち消し、AV1 4K では ROM の削減で減った分のほうが大きくなりました。起動直後は動画のバッファなどがなく、UPX の展開コピー(約 153MiB)の割合が大きいので、+144MiB の差が残ります。GPU の条件は、起動直後の 3 フラグはどれも `--disable-gpu`、再生中は CEF 既定が SwiftShader、削減版と削減版 + UPX が `--disable-gpu` です。再生中の CEF 既定と削減版では条件が違うので、差のすべてが ROM の削減と UPX によるものではありません。
 
