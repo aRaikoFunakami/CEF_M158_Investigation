@@ -22,7 +22,7 @@ YouTube 再生中の RAM(arm64、全プロセスの PSS、S/W デコード):
 | H.264 1080p60 | 1,045.5MiB | 684.4MiB(−35%) |
 | AV1 4K60 | 1,509.5MiB | 1,005.5MiB(−33%) |
 
-UPX で圧縮した G2-tv(H.264 1080p60、3 フラグ): PSS 681.5MiB、回収できない RAM(cgroup)679.0MiB(CEF 既定 + 3 フラグは 661.9MiB、G2-tv + 3 フラグは 531.2MiB)。PSS には UPX の負担が出ない(後述の「UPX で圧縮する場合」)。
+UPX で圧縮した G2-tv(3 フラグ): H.264 1080p60 で PSS 681.5MiB、回収できない RAM(cgroup)679.0MiB(CEF 既定 + 3 フラグは 661.9MiB、G2-tv + 3 フラグは 531.2MiB)。AV1 4K60 で PSS 999.5MiB、cgroup 997.1MiB(CEF 既定 + 3 フラグは 1,094.5MiB、G2-tv + 3 フラグは 850.2MiB)。PSS には UPX の負担が出ない(後述の「UPX で圧縮する場合」)。
 
 ## 対象のソース
 
@@ -134,7 +134,7 @@ arm64(G2)は、手順 2 のあとに `patches/chromium/g2.patch` を当て、`ar
 | 同上 | 1 | G2-tv | 188.5 | 48.8 | 139.7 | 56.7 |
 | 同上 | 1 | G2-tv + UPX | 188.5 | 162.9 | 25.6 | 210.0 |
 
-H.264 1080p 再生中の回収できない RAM(3 フラグ): CEF 既定 661.9、G2-tv 537.7、G2-tv + UPX 679.0MiB。
+再生中の回収できない RAM(3 フラグ): H.264 1080p60 で CEF 既定 661.9、G2-tv 537.7、G2-tv + UPX 679.0MiB。AV1 4K60 で CEF 既定 1,094.5、G2-tv 868.2、G2-tv + UPX 997.1MiB。
 
 
 同じ配布物を squashfs(xz、1MiB ブロック)に入れると 60.7MB(RAM は未計測)。図は `scripts/figs_upx2.py` で生成。
