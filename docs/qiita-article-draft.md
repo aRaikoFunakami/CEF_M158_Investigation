@@ -5,6 +5,11 @@ tags: CEF Chromium 組み込み メモリ削減 Linux
 
 # はじめに
 
+CEF(Chromium 158)を、YouTube の再生と CEF の API が動く状態のまま、次のところまで削りました(arm64)。
+
+- ROM(配布物): 366.3MB → 196.0MB(−46.5%)。実行ファイルの圧縮(UPX)も使うと 95.3MB(−74.0%)
+- YouTube(H.264 1080p60)再生中の RAM: 1,045.5MiB → 684.4MiB(−35%、起動フラグの併用時)
+
 ![削減版の CEF で YouTube を再生している様子](https://raw.githubusercontent.com/aRaikoFunakami/CEF_M158_Investigation/main/docs/images/fig0-youtube-playing.gif?v=20261114d)
 
 今回作った削減版の CEF(arm64、サンプルアプリ `cefsimple`)で YouTube の動画を再生している画面です。GPU のない環境で、SwiftShader も外した版なので、描画もデコードも CPU で行っています。
