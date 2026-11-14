@@ -70,7 +70,7 @@ CEF は長く、content 層の上に直接載っていて、chrome 層は使っ�
 
 ## Alloy スタイルと Chrome スタイル
 
-現在の CEF では、ウィンドウ(ブラウザ)ごとに 2 つのスタイルのどちらかを選びます。CEF のヘッダ `include/internal/cef_types_runtime.h` の説明は次のとおりです。
+現在の CEF では、ウィンドウ(ブラウザ)ごとに 2 つのスタイルのどちらかを選びます。2 つのスタイルは、CEF のヘッダ `include/internal/cef_types_runtime.h` で次のように説明されています。
 
 | スタイル | 内容 |
 |---|---|
