@@ -30,12 +30,16 @@ KEEP_PDF = [
     r'^gen/mojo/', r'^gen/bufbuild\.grdp$',
 ]
 DROP_NAMES = [r'^IDR_INTRO_SOUND_']
+# 生成元の grd では落とす側でも、Web ページの表示中に読まれるので名前で残すもの(M24、logs/cef-milestones/M24-hang-percentage-heights-013.md)。
+#   IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS(gen/ui/webui/resources、約 0.9KB): webui::GetI18nTemplateHtml() が CHECK で要求する。
+#   ないと、どのプラグインにも当たらない <embed>/<object>、PDF の <embed> でレンダラが、file:// のディレクトリ一覧でブラウザが落ちる。
+KEEP_NAMES = [r'^IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS$']
 
 def main():
     a = [x for x in sys.argv[1:] if not x.startswith('--')]
     inp, info, out = a[0], a[1], a[2]
     keep = KEEP + (KEEP_PDF if '--with-pdf' in sys.argv else [])
-    keep_re = [re.compile(k) for k in keep]; drop_re = [re.compile(k) for k in DROP_NAMES]
+    keep_re = [re.compile(k) for k in keep]; drop_re = [re.compile(k) for k in DROP_NAMES]; name_re = [re.compile(k) for k in KEEP_NAMES]
     names = {}
     for l in open(info):
         f = l.rstrip('\n').split(',')
@@ -44,7 +48,7 @@ def main():
     res = {}; kept = collections.Counter(); dropped = collections.Counter()
     for i, b in d.resources.items():
         n, g = names.get(i, ('', '(unknown)'))
-        ok = any(r.search(g) for r in keep_re) and not any(r.search(n) for r in drop_re)
+        ok = (any(r.search(g) for r in keep_re) and not any(r.search(n) for r in drop_re)) or any(r.search(n) for r in name_re)
         if ok: res[i] = b; kept[g] += len(b)
         else: dropped[g if not any(r.search(n) for r in drop_re) else g + ' [' + DROP_NAMES[0] + ']'] += len(b)
     data_pack.WriteDataPack(res, out, d.encoding)

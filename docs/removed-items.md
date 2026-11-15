@@ -264,6 +264,14 @@ F2 では `pdf_enable_xfa=false` も入れていた(PDFium の XFA、1.6MB)。F4
 | `snapshot_blob.bin` | 0.36MB | `v8_context_snapshot.bin` を使うので読まれない | なし |
 | `libVkICD_mock_icd.so` | 0.63MB | テスト用の Vulkan ドライバ | なし |
 
+2026-11-15 追記(不具合の修正): `resources.pak` を絞ったときに、WebUI の共有部品と一緒に `IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS`(`ui/webui/resources/js/load_time_data_deprecated.js`、約 0.9KB)も落ちていた。この資源は、`chrome://` ページだけでなく、Web ページの表示中にも `webui::GetI18nTemplateHtml()` が読み、ないと `CHECK` で落ちる。落ちる場面は次の 3 つ。
+
+- どのプラグインにも当たらない MIME の `<embed>` / `<object>`: レンダラが落ちる(プラグインの代替表示を作るとき)
+- PDF の `<embed>`(PDF ビューアを外した構成): レンダラが落ちる
+- `file://` のディレクトリ一覧: ブラウザ本体が落ちる
+
+`scripts/patch/pakstrip.py` に、名前で残す許可リスト `KEEP_NAMES` を足して、この資源を残すようにした。`resources.pak` は 768,748 → 769,643 バイト(+895 バイト)で、配布物の大きさの表の値(MB の小数第 2 位)は変わらない。WPT(web-platform-tests)で既定の CEF と比べる試験で見つかった。
+
 ### 5.5 第 2 期でも残したもの
 
 - コーデック(H.264 / AAC / VP9 / AV1 / Opus、FFmpeg、libvpx、dav1d)、Widevine(`enable_widevine`、`enable_library_cdms`)、MSE / EME、Service Worker、WebSocket、WebGL(ANGLE)、SwiftShader、WebAssembly、DevTools のバックエンド(リモートデバッグ)。
