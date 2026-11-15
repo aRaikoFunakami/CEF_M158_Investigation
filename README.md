@@ -41,8 +41,10 @@ patches/cef/f4b-cef.patch               CEF 6ee3fb965 からの差分(F4b)
 patches/new-files/                      パッチに含まれない新規ファイル(chromium/ と cef/ の下に、置く場所のパスで配置)
 patches/chromium/{e3b,f3a,f3b,f4a}.patch, patches/cef/{f3a,f3b,f4a}-cef.patch
                                         途中の段階のパッチ(参考)
+patches/chromium/m23.patch              G2(+ upx-noifunc.patch)を当てた状態からの差分。//chrome 層を Alloy スタイル専用に削る(M23-40)
+patches/cef/m23-cef.patch               f4b-cef.patch を当てた状態からの差分(M23-40)
 patches/content_shell/                  比較に使った content_shell(Chromium 159.0.8143.0)の削減パッチ(参考)
-args/                                   各構成の args.gn(E1〜F4b は x64、G0〜G2-tv は arm64)
+args/                                   各構成の args.gn(E1〜F4b は x64、G0〜G2-tv と M23 は arm64)
 scripts/build/fpbuild.py                停止検知つきのビルドラッパー(300 秒進まなければ止めて再実行)
 scripts/measure/                        計測スクリプト(サイズ、起動直後の RAM、YouTube 再生中の RAM、動作確認)
 scripts/patch/pakstrip.py               resources.pak を許可したリソースだけで作り直す
@@ -64,6 +66,7 @@ docs/images/                            記事の図
 | G0 | CEF 既定の arm64 | `args/G0.args.gn` |
 | G1 / G2 | F4b の arm64 / G1 + Cobalt 由来の GN 引数 4 個 | `args/G1.args.gn`、`args/G2.args.gn` |
 | G2-dist / G2-tv | G2 の配布物を整理 / さらに SwiftShader 一式を除去(ビルドは G2 と同じ) | `args/G2.args.gn` |
+| M23-40 | G2 の //chrome 層を Alloy スタイル専用に削った版(GN 引数 `fp_alloy_lean=true`)。配布物の整理は G2-tv と同じ | `args/M23.args.gn` |
 
 ## 再現手順(F4b / G2)
 
@@ -138,6 +141,34 @@ arm64(G2)は、手順 2 のあとに `patches/chromium/g2.patch` を当て、`ar
 
 
 同じ配布物を squashfs(xz、1MiB ブロック)に入れると 60.7MB(RAM は未計測)。図は `scripts/figs_upx2.py` で生成。
+
+## //chrome 層を Alloy スタイル専用に削る場合(arm64、M23-40)
+
+G2 の //chrome 層から、Alloy スタイルで使わない部分を削った版です。`patches/chromium/m23.patch` が足す GN 引数 `fp_alloy_lean`(BUILDFLAG `FP_ALLOY_LEAN`)で切り替えます。M23-40 は、M23-38 に Alloy のタブでポップアップの阻止の補助(`PopupBlockerTabHelper`)を作る修正(`patches/cef/m23-cef.patch` の `alloy_tab_interface.cc` / `.h`)を入れた版です。`resources.pak` から資源 52342 が抜けていた件の修正は `scripts/patch/pakstrip.py` に入っています。
+
+再現手順の 2 のあと、フックを実行する前に次を当てます。新規ファイルは G2 と同じです(`patches/new-files/`)。
+
+```bash
+git apply $REPO/patches/chromium/g2.patch
+git apply $REPO/patches/chromium/upx-noifunc.patch
+git apply $REPO/patches/chromium/m23.patch
+git -C cef apply $REPO/patches/cef/m23-cef.patch
+mkdir -p out/M23 && cp $REPO/args/M23.args.gn out/M23/args.gn
+```
+
+確認済みなのは次の 2 点までです。新しいツリーでこの手順を最初から通してビルドしたことはありません。
+
+- タグ + `e3b-final-clean.patch` + `f4b.patch` + `g2.patch` + `upx-noifunc.patch` の状態が、M23 を始める前の調査用ツリーの状態と同じ(一時インデックスに当てて作ったツリーのハッシュが一致)。CEF 側は `f4b-cef.patch` で一致。
+- M23 を始める前の状態に `m23.patch` を当てると、M23-40 をビルドした作業ツリーと同じ内容になる(別のワークツリーに当て、変更のあるファイルを `cmp` で比較)。`m23-cef.patch` は、同じ作業ツリーの CEF 側を、`f4b-cef.patch` を当てた状態と比べて書き出したもの。
+
+UPX で圧縮する版は、上の「UPX で圧縮する場合」と同じく `-Wl,--no-rosegment` でリンクし直してから圧縮しました。
+
+| 版 | `libcef.so`(strip 後) | 配布物(ja + en-US) | CEF 既定比 |
+|---|---|---|---|
+| G2-tv | 186,191,080 B | 195,997,077 B | −46.5% |
+| G2-tv + UPX | 85,954,597 B | 95,339,130 B | −74.0% |
+| M23-40 | 156,240,600 B | 166,047,100 B | −54.7% |
+| M23-40 + UPX | 70,996,005 B | 80,381,245 B | −78.1% |
 
 ## 計測の前提
 
