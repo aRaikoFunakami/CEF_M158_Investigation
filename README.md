@@ -145,7 +145,7 @@ arm64(G2)は、手順 2 のあとに `patches/chromium/g2.patch` を当て、`ar
 
 ## chrome 層を Alloy スタイル専用に削る場合(arm64、M23-40)
 
-G2 の chrome 層から、Alloy スタイルで使わない部分を削った版です。`patches/chromium/m23.patch` が足す GN 引数 `fp_alloy_lean`(BUILDFLAG `FP_ALLOY_LEAN`)で切り替えます。M23-40 は、M23-38 に Alloy のタブでポップアップの阻止の補助(`PopupBlockerTabHelper`)を作る修正(`patches/cef/m23-cef.patch` の `alloy_tab_interface.cc` / `.h`)を入れた版です。`resources.pak` から資源 52342 が抜けていた件の修正は `scripts/patch/pakstrip.py` に入っています。
+G2 の chrome 層から、Alloy スタイルで使わない部分を削った版です。`patches/chromium/m23.patch` が足す GN 引数 `fp_alloy_lean`(BUILDFLAG `FP_ALLOY_LEAN`)で切り替えます。M23-40 は、M23-38 に Alloy のタブでポップアップの阻止の補助(`PopupBlockerTabHelper`)を作る修正(`patches/cef/m23-cef.patch` の `alloy_tab_interface.cc` / `.h`)を入れた版です。`resources.pak` からリソース ID 52342 が抜けていた件の修正は `scripts/patch/pakstrip.py` に入っています。
 
 再現手順の 2 のあと、フックを実行する前に次を当てます。新規ファイルは G2 と同じです(`patches/new-files/`)。
 

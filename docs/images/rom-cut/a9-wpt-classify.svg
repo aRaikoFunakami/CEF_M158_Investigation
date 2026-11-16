@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Noto Sans CJK JP',sans-serif" font-size="13" fill="#1f2328">
+<rect width="1000" height="680" fill="#ffffff"/>
+<text x="40.0" y="34.0" font-size="16" text-anchor="start" fill="#1f2328" font-weight="bold">WPT の結果の分類(8,290 URL。A = CEF 既定、B = 前回の削減版 + UPX、C = 今回の版 M23-38 + UPX)</text>
+<text x="40.0" y="58.0" font-size="12.5" text-anchor="start" fill="#59636e" font-weight="normal">全 URL を 2 回(一部は 3 回)流して A と比べた。フレーキー = 同じ条件でも回によって結果が変わる。予定外の差の候補 69 URL は、さらに 3 回流し直して再現を確かめた</text>
+<rect x="40.0" y="292.0" width="110.0" height="56.0" fill="#eef1f4" rx="6"/>
+<text x="50.0" y="317.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">8,290 URL</text>
+<text x="50.0" y="333.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">testharness.js</text>
+<rect x="180.0" y="140.0" width="150.0" height="50.0" fill="#eef1f4" rx="6"/>
+<text x="190.0" y="162.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">7,663</text>
+<text x="190.0" y="178.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">どの回も A と同じ</text>
+<rect x="180.0" y="292.0" width="150.0" height="56.0" fill="#eef1f4" rx="6"/>
+<text x="190.0" y="317.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">627</text>
+<text x="190.0" y="333.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">どれかの回で A と違う</text>
+<path d="M150.0,320.0 H165.0 V165.0 H180.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<path d="M150.0,320.0 H165.0 V320.0 H180.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="360.0" y="292.0" width="170.0" height="56.0" fill="#eef1f4" rx="6"/>
+<text x="370.0" y="317.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">556 判定する</text>
+<text x="370.0" y="333.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">常に違う、または片方だけ</text>
+<rect x="360.0" y="560.0" width="170.0" height="72.0" fill="#eef1f4" rx="6"/>
+<text x="370.0" y="585.0" font-size="13" text-anchor="start" fill="#59636e" font-weight="bold">71 判定から外す</text>
+<text x="370.0" y="601.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">A でフレーキー 41</text>
+<text x="370.0" y="617.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">B・C でフレーキー 30</text>
+<path d="M330.0,320.0 H345.0 V320.0 H360.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<path d="M330.0,320.0 H345.0 V596.0 H360.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="565.0" y="105.0" width="175.0" height="48.0" fill="#eef1f4" rx="6"/>
+<text x="575.0" y="126.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">358</text>
+<text x="575.0" y="142.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">B・C とも違う</text>
+<path d="M530.0,320.0 H547.5 V129.0 H565.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="565.0" y="245.0" width="175.0" height="48.0" fill="#eef1f4" rx="6"/>
+<text x="575.0" y="266.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">158</text>
+<text x="575.0" y="282.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">C だけ違い、C が通る</text>
+<path d="M530.0,320.0 H547.5 V269.0 H565.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="565.0" y="390.0" width="175.0" height="48.0" fill="#eef1f4" rx="6"/>
+<text x="575.0" y="411.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">32</text>
+<text x="575.0" y="427.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">C だけ違い、C が悪い</text>
+<path d="M530.0,320.0 H547.5 V414.0 H565.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="565.0" y="520.0" width="175.0" height="64.0" fill="#eef1f4" rx="6"/>
+<text x="575.0" y="541.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">8</text>
+<text x="575.0" y="557.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">片方だけ違い、</text>
+<text x="575.0" y="573.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">もう一方はフレーキー</text>
+<path d="M530.0,320.0 H547.5 V552.0 H565.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="770.0" y="80.0" width="210.0" height="42.0" fill="#d7efec" rx="6"/>
+<text x="780.0" y="98.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">357 削った機能による差</text>
+<text x="780.0" y="114.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">WebRTC 217、WebUSB 23 など</text>
+<path d="M740.0,129.0 H755.0 V101.0 H770.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="770.0" y="130.0" width="210.0" height="42.0" fill="#f6d5d9" rx="6"/>
+<text x="780.0" y="148.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">1 不具合②</text>
+<text x="780.0" y="164.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">resources.pak のリソースの欠落</text>
+<path d="M740.0,129.0 H755.0 V151.0 H770.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="770.0" y="248.0" width="210.0" height="42.0" fill="#f6d5d9" rx="6"/>
+<text x="780.0" y="266.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">158 不具合①</text>
+<text x="780.0" y="282.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">ポップアップの阻止の欠落</text>
+<path d="M740.0,269.0 H755.0 V269.0 H770.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="770.0" y="334.0" width="210.0" height="42.0" fill="#d7efec" rx="6"/>
+<text x="780.0" y="352.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">2 削った機能による差</text>
+<text x="780.0" y="368.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">favicon の取得</text>
+<path d="M740.0,414.0 H755.0 V355.0 H770.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="770.0" y="384.0" width="210.0" height="42.0" fill="#f6d5d9" rx="6"/>
+<text x="780.0" y="402.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">3 不具合①</text>
+<text x="780.0" y="418.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">cookie のテスト</text>
+<path d="M740.0,414.0 H755.0 V405.0 H770.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="770.0" y="434.0" width="210.0" height="42.0" fill="#eef1f4" rx="6"/>
+<text x="780.0" y="452.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">27 流し直しでは再現しない、</text>
+<text x="780.0" y="468.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">または一部の回だけ</text>
+<path d="M740.0,414.0 H755.0 V455.0 H770.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="770.0" y="528.0" width="210.0" height="42.0" fill="#eef1f4" rx="6"/>
+<text x="780.0" y="546.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">8 流し直しでは再現しない、</text>
+<text x="780.0" y="562.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">または一部の回だけ</text>
+<path d="M740.0,552.0 H755.0 V549.0 H770.0" fill="none" stroke="#8c959f" stroke-width="1.4"/>
+<rect x="40.0" y="652.0" width="14.0" height="14.0" fill="#d7efec" />
+<text x="60.0" y="664.0" font-size="12" text-anchor="start" fill="#1f2328" font-weight="normal">予定どおりの差</text>
+<rect x="170.0" y="652.0" width="14.0" height="14.0" fill="#f6d5d9" />
+<text x="190.0" y="664.0" font-size="12" text-anchor="start" fill="#1f2328" font-weight="normal">予定外の差(不具合 2 件)</text>
+<text x="380.0" y="664.0" font-size="12.5" text-anchor="start" fill="#1f2328" font-weight="bold">不具合 2 件を直した M23-40 の流し直しで、予定外の差は B・C とも 0 件</text>
+</svg>
