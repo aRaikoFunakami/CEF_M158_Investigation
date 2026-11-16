@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Noto Sans CJK JP',sans-serif" font-size="13" fill="#1f2328">
 <rect width="1000" height="680" fill="#ffffff"/>
-<text x="40.0" y="34.0" font-size="16" text-anchor="start" fill="#1f2328" font-weight="bold">WPT の結果の分類(8,290 URL。A = CEF 既定、B = 前回の削減版 + UPX、C = 今回の版 M23-38 + UPX)</text>
+<text x="40.0" y="34.0" font-size="16" text-anchor="start" fill="#1f2328" font-weight="bold">WPT の結果の分類(8,290 URL。A = CEF 既定、B = 前回の削減版 + UPX、C = 修正前の今回の削減版 + UPX)</text>
 <text x="40.0" y="58.0" font-size="12.5" text-anchor="start" fill="#59636e" font-weight="normal">全 URL を 2 回(一部は 3 回)流して A と比べた。フレーキー = 同じ条件でも回によって結果が変わる。予定外の差の候補 69 URL は、さらに 3 回流し直して再現を確かめた</text>
 <rect x="40.0" y="292.0" width="110.0" height="56.0" fill="#eef1f4" rx="6"/>
 <text x="50.0" y="317.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">8,290 URL</text>
@@ -71,5 +71,5 @@
 <text x="60.0" y="664.0" font-size="12" text-anchor="start" fill="#1f2328" font-weight="normal">予定どおりの差</text>
 <rect x="170.0" y="652.0" width="14.0" height="14.0" fill="#f6d5d9" />
 <text x="190.0" y="664.0" font-size="12" text-anchor="start" fill="#1f2328" font-weight="normal">予定外の差(不具合 2 件)</text>
-<text x="380.0" y="664.0" font-size="12.5" text-anchor="start" fill="#1f2328" font-weight="bold">不具合 2 件を直した M23-40 の流し直しで、予定外の差は B・C とも 0 件</text>
+<text x="380.0" y="664.0" font-size="12.5" text-anchor="start" fill="#1f2328" font-weight="bold">不具合 2 件を直した今回の削減版の流し直しで、予定外の差は B・C とも 0 件</text>
 </svg>

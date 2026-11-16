@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" viewBox="0 0 1000 500" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Noto Sans CJK JP',sans-serif" font-size="13" fill="#1f2328">
 <rect width="1000" height="500" fill="#ffffff"/>
-<text x="40.0" y="34.0" font-size="16" text-anchor="start" fill="#1f2328" font-weight="bold">UPX 版を 3 フラグで動かした WPT の結果の分類(今回の削減版 M23-40 の UPX 版、8,290 URL)</text>
+<text x="40.0" y="34.0" font-size="16" text-anchor="start" fill="#1f2328" font-weight="bold">UPX 版を 3 フラグで動かした WPT の結果の分類(今回の削減版の UPX 版、8,290 URL)</text>
 <text x="40.0" y="58.0" font-size="12.5" text-anchor="start" fill="#59636e" font-weight="normal">同じ版のフラグなしと URL ごとに比べた。違った 15 URL は、CEF 既定(3 フラグ)、今回の削減版(3 フラグ、フラグなし)で 3 回ずつ流し直した</text>
 <rect x="40.0" y="222.0" width="120.0" height="56.0" fill="#eef1f4" rx="6"/>
 <text x="50.0" y="247.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">8,290 URL</text>

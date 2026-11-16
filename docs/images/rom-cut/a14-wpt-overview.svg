@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Noto Sans CJK JP',sans-serif" font-size="13" fill="#1f2328">
+<rect width="1000" height="650" fill="#ffffff"/>
+<text x="40.0" y="34.0" font-size="17" text-anchor="start" fill="#1f2328" font-weight="bold">WPT の testharness.js のテストを流す仕組み</text>
+<text x="40.0" y="58.0" font-size="12.5" text-anchor="start" fill="#59636e" font-weight="normal">1〜5 は Appendix の手順の番号。a〜d は 1 つの URL ごとに繰り返す</text>
+<text x="40.0" y="92.0" font-size="14" text-anchor="start" fill="#1f2328" font-weight="bold">準備(ホストで 1 回)</text>
+<rect x="40.0" y="104.0" width="200.0" height="66.0" fill="#eef1f4" rx="6" stroke="#c9d1d9"/>
+<text x="50.0" y="124.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">Chromium 158 のソース</text>
+<text x="50.0" y="140.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">WPT が同梱されている</text>
+<rect x="270.0" y="104.0" width="200.0" height="66.0" fill="#fff7e6" rx="6" stroke="#d4a72c"/>
+<text x="280.0" y="124.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">1. WPT を取り出す</text>
+<text x="280.0" y="140.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">テスト 571MB + 道具 7MB</text>
+<rect x="500.0" y="104.0" width="200.0" height="66.0" fill="#fff7e6" rx="6" stroke="#d4a72c"/>
+<text x="510.0" y="124.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">2. MANIFEST.json を作る</text>
+<text x="510.0" y="140.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">どのファイルがどの種類の</text>
+<text x="510.0" y="156.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">テストかの一覧</text>
+<rect x="730.0" y="104.0" width="200.0" height="66.0" fill="#fff7e6" rx="6" stroke="#d4a72c"/>
+<text x="740.0" y="124.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">3. URL の一覧を作る</text>
+<text x="740.0" y="140.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">8,290 URL(43 ディレクトリ)</text>
+<path d="M240.0,137.0 L270.0,137.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M270.0,137.0 L260.0,132.0 L260.0,142.0 z" fill="#57606a"/>
+<path d="M470.0,137.0 L500.0,137.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M500.0,137.0 L490.0,132.0 L490.0,142.0 z" fill="#57606a"/>
+<path d="M700.0,137.0 L730.0,137.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M730.0,137.0 L720.0,132.0 L720.0,142.0 z" fill="#57606a"/>
+<path d="M830.0,170.0 L830.0,196.0 L215.0,196.0 L215.0,266.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M215.0,266.0 L220.0,256.0 L210.0,256.0 z" fill="#57606a"/>
+<text x="480.0" y="190.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">URL の一覧を渡す</text>
+<text x="40.0" y="230.0" font-size="14" text-anchor="start" fill="#1f2328" font-weight="bold">実行(コンテナの中)</text>
+<rect x="40.0" y="266.0" width="210.0" height="110.0" fill="#e8f1fa" rx="6" stroke="#c9d1d9"/>
+<text x="50.0" y="286.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">実行ツール</text>
+<text x="50.0" y="302.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">一覧の URL を 1 つずつ</text>
+<text x="50.0" y="318.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">開かせ、結果を読み取る</text>
+<text x="50.0" y="334.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">(標準は wptrunner、</text>
+<text x="50.0" y="350.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">今回は自作の wptcdp.py)</text>
+<rect x="380.0" y="230.0" width="300.0" height="210.0" fill="#e8f1fa" rx="8" stroke="#8c959f"/>
+<text x="394.0" y="254.0" font-size="13.5" text-anchor="start" fill="#1f2328" font-weight="bold">5. ブラウザ(cefsimple)</text>
+<rect x="396.0" y="268.0" width="268.0" height="140.0" fill="#ffffff" rx="6" stroke="#c9d1d9"/>
+<text x="406.0" y="288.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">テストのページ</text>
+<text x="406.0" y="304.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">ページの中の testharness.js が</text>
+<text x="406.0" y="320.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">サブテストを順に実行し、</text>
+<text x="406.0" y="336.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">結果(OK / ERROR / TIMEOUT と</text>
+<text x="406.0" y="352.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">サブテストの PASS / FAIL)を</text>
+<text x="406.0" y="368.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">ページの中に持つ</text>
+<text x="530.0" y="430.0" font-size="11.5" text-anchor="middle" fill="#59636e" font-weight="normal">c. サブテストを実行</text>
+<rect x="760.0" y="266.0" width="200.0" height="92.0" fill="#e8f1fa" rx="6" stroke="#c9d1d9"/>
+<text x="770.0" y="286.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">4. wpt serve</text>
+<text x="770.0" y="302.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">テストのページと</text>
+<text x="770.0" y="318.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">testharness.js を配る</text>
+<text x="770.0" y="334.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">(http、https、WebSocket)</text>
+<path d="M250.0,300.0 L396.0,300.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M396.0,300.0 L386.0,295.0 L386.0,305.0 z" fill="#57606a"/>
+<text x="323.0" y="292.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">a. URL を開かせる</text>
+<path d="M664.0,300.0 L760.0,300.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M760.0,300.0 L750.0,295.0 L750.0,305.0 z" fill="#57606a"/>
+<text x="712.0" y="278.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">b. ページを</text>
+<text x="712.0" y="292.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">読む</text>
+<path d="M396.0,360.0 L250.0,360.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M250.0,360.0 L260.0,365.0 L260.0,355.0 z" fill="#57606a"/>
+<text x="323.0" y="378.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">d. 結果を読み取る</text>
+<rect x="40.0" y="404.0" width="210.0" height="52.0" fill="#eef1f4" rx="6" stroke="#c9d1d9"/>
+<text x="50.0" y="424.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">結果の JSON</text>
+<text x="50.0" y="440.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">URL ごとの判定とサブテスト</text>
+<path d="M145.0,376.0 L145.0,404.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M145.0,404.0 L150.0,394.0 L140.0,394.0 z" fill="#57606a"/>
+<rect x="40.0" y="476.0" width="210.0" height="52.0" fill="#eef1f4" rx="6" stroke="#c9d1d9"/>
+<text x="50.0" y="496.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">版どうしを比べる</text>
+<text x="50.0" y="512.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">CEF 既定と違う URL を出す</text>
+<path d="M145.0,456.0 L145.0,476.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M145.0,476.0 L150.0,466.0 L140.0,466.0 z" fill="#57606a"/>
+<text x="300.0" y="478.0" font-size="14" text-anchor="start" fill="#1f2328" font-weight="bold">実行ツールとブラウザのつなぎ方</text>
+<rect x="300.0" y="490.0" width="660.0" height="60.0" fill="#f6d5d9" rx="6" stroke="#c9d1d9"/>
+<text x="310.0" y="510.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">標準: wptrunner →(WebDriver)→ ChromeDriver →(CDP)→ ブラウザ</text>
+<text x="310.0" y="526.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">テストのたびに新しいタブを作る(CDP の Target.createTarget)。Alloy スタイルの CEF では使えない</text>
+<rect x="300.0" y="560.0" width="660.0" height="60.0" fill="#d7efec" rx="6" stroke="#c9d1d9"/>
+<text x="310.0" y="580.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="bold">今回: wptcdp.py →(CDP)→ cefsimple</text>
+<text x="310.0" y="596.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">最初からある 1 つのタブで、Page.navigate を繰り返してテストを開く。Alloy スタイルでも動く</text>
+</svg>

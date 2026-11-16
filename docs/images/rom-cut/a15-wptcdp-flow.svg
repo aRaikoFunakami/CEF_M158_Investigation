@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Noto Sans CJK JP',sans-serif" font-size="13" fill="#1f2328">
+<rect width="1000" height="620" fill="#ffffff"/>
+<text x="40.0" y="34.0" font-size="17" text-anchor="start" fill="#1f2328" font-weight="bold">実行ツール(wptcdp.py)の流れ</text>
+<text x="40.0" y="58.0" font-size="12.5" text-anchor="start" fill="#59636e" font-weight="normal">ブラウザの外から、CDP でページを開かせ、ページの中の結果を読み取る</text>
+<rect x="70.0" y="76.0" width="200.0" height="46.0" fill="#e8f1fa" rx="6" stroke="#8c959f"/>
+<text x="170.0" y="96.0" font-size="13.5" text-anchor="middle" fill="#1f2328" font-weight="bold">実行ツール</text>
+<text x="170.0" y="113.0" font-size="11.5" text-anchor="middle" fill="#59636e" font-weight="normal">wptcdp.py(Python)</text>
+<line x1="170.0" y1="122.0" x2="170.0" y2="528.0" stroke="#8c959f" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="420.0" y="76.0" width="200.0" height="46.0" fill="#e8f1fa" rx="6" stroke="#8c959f"/>
+<text x="520.0" y="96.0" font-size="13.5" text-anchor="middle" fill="#1f2328" font-weight="bold">ブラウザ</text>
+<text x="520.0" y="113.0" font-size="11.5" text-anchor="middle" fill="#59636e" font-weight="normal">cefsimple、タブ 1 つ</text>
+<line x1="520.0" y1="122.0" x2="520.0" y2="528.0" stroke="#8c959f" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="750.0" y="76.0" width="200.0" height="46.0" fill="#e8f1fa" rx="6" stroke="#8c959f"/>
+<text x="850.0" y="96.0" font-size="13.5" text-anchor="middle" fill="#1f2328" font-weight="bold">wpt serve</text>
+<text x="850.0" y="113.0" font-size="11.5" text-anchor="middle" fill="#59636e" font-weight="normal">同じコンテナ</text>
+<line x1="850.0" y1="122.0" x2="850.0" y2="528.0" stroke="#8c959f" stroke-width="1.2" stroke-dasharray="4 3"/>
+<path d="M176.0,150.0 L514.0,150.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M514.0,150.0 L504.0,145.0 L504.0,155.0 z" fill="#57606a"/>
+<text x="345.0" y="143.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">① 起動する(--remote-debugging-port=9222)</text>
+<path d="M176.0,186.0 L514.0,186.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M514.0,186.0 L504.0,181.0 L504.0,191.0 z" fill="#57606a"/>
+<text x="345.0" y="179.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">② CDP で最初のタブにつなぐ</text>
+<path d="M176.0,222.0 L514.0,222.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M514.0,222.0 L504.0,217.0 L504.0,227.0 z" fill="#57606a"/>
+<text x="345.0" y="215.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">③ 結果を受け取るスクリプトを登録(Page.addScriptToEvaluateOnNewDocument)</text>
+<rect x="40.0" y="270.0" width="920.0" height="250.0" fill="none" rx="8" stroke="#d4a72c" stroke-width="1.5"/>
+<text x="52.0" y="290.0" font-size="12.5" text-anchor="start" fill="#9a6700" font-weight="bold">URL ごとに繰り返す</text>
+<path d="M176.0,318.0 L514.0,318.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M514.0,318.0 L504.0,313.0 L504.0,323.0 z" fill="#57606a"/>
+<text x="345.0" y="311.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">④ テストの URL を開かせる(Page.navigate)</text>
+<path d="M526.0,352.0 L844.0,352.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M844.0,352.0 L834.0,347.0 L834.0,357.0 z" fill="#57606a"/>
+<text x="685.0" y="345.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">⑤ ページと testharness.js を読む</text>
+<rect x="360.0" y="368.0" width="320.0" height="64.0" fill="#fff" rx="6" stroke="#c9d1d9"/>
+<text x="520.0" y="388.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">⑥ ③のスクリプトが testharness.js の</text>
+<text x="520.0" y="404.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">完了の通知を受け、結果を</text>
+<text x="520.0" y="420.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">window.__wpt に置く</text>
+<path d="M176.0,458.0 L514.0,458.0" fill="none" stroke="#57606a" stroke-width="1.6"/>
+<path d="M514.0,458.0 L504.0,453.0 L504.0,463.0 z" fill="#57606a"/>
+<text x="345.0" y="451.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">⑦ 0.5 秒ごとに window.__wpt を読む(Runtime.evaluate)</text>
+<path d="M514.0,490.0 L176.0,490.0" fill="none" stroke="#57606a" stroke-width="1.6" stroke-dasharray="5 3"/>
+<path d="M176.0,490.0 L186.0,495.0 L186.0,485.0 z" fill="#57606a"/>
+<text x="345.0" y="483.0" font-size="11.5" text-anchor="middle" fill="#1f2328" font-weight="normal">結果(判定とサブテスト)</text>
+<text x="52.0" y="512.0" font-size="11.5" text-anchor="start" fill="#1f2328" font-weight="normal">⑧ 結果を JSON に書いて次の URL へ</text>
+<text x="40.0" y="546.0" font-size="12.5" text-anchor="start" fill="#1f2328" font-weight="bold">終わらないときと落ちたとき</text>
+<text x="40.0" y="566.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">・上限(testharness の時間切れ × 2 + 15 秒)を過ぎたら TIMEOUT と記録する。alert などのダイアログは 5 秒ごとに閉じる(Page.handleJavaScriptDialog)</text>
+<text x="40.0" y="584.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">・ブラウザが終了したら CRASH と記録して起動し直す。CDP が 120 秒応答しないときは HANG と記録して起動し直す</text>
+<text x="40.0" y="602.0" font-size="11.5" text-anchor="start" fill="#59636e" font-weight="normal">・ブラウザは、仕事(約 3 分のブロック)ごとに起動し直す</text>
+</svg>
