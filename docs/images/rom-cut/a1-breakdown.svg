@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="430" viewBox="0 0 1000 430" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Noto Sans CJK JP',sans-serif" font-size="13" fill="#1f2328">
+<rect width="1000" height="430" fill="#ffffff"/>
+<text x="40.0" y="34.0" font-size="17" text-anchor="start" fill="#1f2328" font-weight="bold">libcef.so の中身(参照グラフで到達可能なコードとデータ 184.14MB の内訳)</text>
+<text x="40.0" y="58.0" font-size="13" text-anchor="start" fill="#59636e" font-weight="normal">chrome 層 = chrome/ のコード + chrome/ からしか参照されない components/・third_party/ など。合わせて 51.5MB(28%)</text>
+<rect x="40.0" y="110.0" width="93.0" height="60.0" fill="#d1495b" stroke="#ffffff" stroke-width="1.5"/>
+<text x="86.5" y="136.0" font-size="14" text-anchor="middle" fill="#ffffff" font-weight="bold">18.6</text>
+<text x="86.5" y="154.0" font-size="11" text-anchor="middle" fill="#ffffff" font-weight="normal">MB</text>
+<rect x="133.0" y="110.0" width="164.3" height="60.0" fill="#ef8a62" stroke="#ffffff" stroke-width="1.5"/>
+<text x="215.2" y="136.0" font-size="14" text-anchor="middle" fill="#ffffff" font-weight="bold">32.9</text>
+<text x="215.2" y="154.0" font-size="11" text-anchor="middle" fill="#ffffff" font-weight="normal">MB</text>
+<rect x="297.3" y="110.0" width="178.3" height="60.0" fill="#4c78a8" stroke="#ffffff" stroke-width="1.5"/>
+<text x="386.5" y="136.0" font-size="14" text-anchor="middle" fill="#ffffff" font-weight="bold">35.7</text>
+<text x="386.5" y="154.0" font-size="11" text-anchor="middle" fill="#ffffff" font-weight="normal">MB</text>
+<rect x="475.6" y="110.0" width="119.3" height="60.0" fill="#5f8fbf" stroke="#ffffff" stroke-width="1.5"/>
+<text x="535.3" y="136.0" font-size="14" text-anchor="middle" fill="#ffffff" font-weight="bold">23.9</text>
+<text x="535.3" y="154.0" font-size="11" text-anchor="middle" fill="#ffffff" font-weight="normal">MB</text>
+<rect x="595.0" y="110.0" width="65.6" height="60.0" fill="#72a0c8" stroke="#ffffff" stroke-width="1.5"/>
+<text x="627.8" y="136.0" font-size="14" text-anchor="middle" fill="#1f2328" font-weight="bold">13.1</text>
+<text x="627.8" y="154.0" font-size="11" text-anchor="middle" fill="#1f2328" font-weight="normal">MB</text>
+<rect x="660.6" y="110.0" width="47.1" height="60.0" fill="#86b0d2" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="707.7" y="110.0" width="41.3" height="60.0" fill="#9bbfdc" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="748.9" y="110.0" width="35.0" height="60.0" fill="#afcde5" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="784.0" y="110.0" width="15.8" height="60.0" fill="#c2d9ec" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="799.8" y="110.0" width="15.9" height="60.0" fill="#d3e3f1" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="815.8" y="110.0" width="24.0" height="60.0" fill="#dfe5ea" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="839.7" y="110.0" width="120.3" height="60.0" fill="#eaeef2" stroke="#ffffff" stroke-width="1.5"/>
+<text x="899.9" y="136.0" font-size="14" text-anchor="middle" fill="#1f2328" font-weight="bold">24.1</text>
+<text x="899.9" y="154.0" font-size="11" text-anchor="middle" fill="#1f2328" font-weight="normal">MB</text>
+<line x1="40.0" y1="98.0" x2="297.3" y2="98.0" stroke="#d1495b" stroke-width="2"/>
+<line x1="40.0" y1="98.0" x2="40.0" y2="106.0" stroke="#d1495b" stroke-width="2"/>
+<line x1="297.3" y1="98.0" x2="297.3" y2="106.0" stroke="#d1495b" stroke-width="2"/>
+<text x="168.7" y="92.0" font-size="13" text-anchor="middle" fill="#d1495b" font-weight="bold">chrome 層 51.5MB(Alloy で削る候補)</text>
+<line x1="297.3" y1="182.0" x2="960.0" y2="182.0" stroke="#4c78a8" stroke-width="2"/>
+<line x1="297.3" y1="174.0" x2="297.3" y2="182.0" stroke="#4c78a8" stroke-width="2"/>
+<line x1="960.0" y1="174.0" x2="960.0" y2="182.0" stroke="#4c78a8" stroke-width="2"/>
+<text x="628.7" y="200.0" font-size="13" text-anchor="middle" fill="#4c78a8" font-weight="bold">エンジン本体と共通部品 132.6MB(chrome を全部消しても残る)</text>
+<rect x="40.0" y="234.0" width="14.0" height="14.0" fill="#d1495b" stroke="#d8dee4"/>
+<text x="62.0" y="246.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">chrome/ 自体  18.61MB</text>
+<rect x="360.0" y="234.0" width="14.0" height="14.0" fill="#ef8a62" stroke="#d8dee4"/>
+<text x="382.0" y="246.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">chrome/ からしか届かない部品  32.89MB</text>
+<rect x="680.0" y="234.0" width="14.0" height="14.0" fill="#4c78a8" stroke="#d8dee4"/>
+<text x="702.0" y="246.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">Blink  35.69MB</text>
+<rect x="40.0" y="260.0" width="14.0" height="14.0" fill="#5f8fbf" stroke="#d8dee4"/>
+<text x="62.0" y="272.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">V8  23.88MB</text>
+<rect x="360.0" y="260.0" width="14.0" height="14.0" fill="#72a0c8" stroke="#d8dee4"/>
+<text x="382.0" y="272.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">グラフィックス  13.13MB</text>
+<rect x="680.0" y="260.0" width="14.0" height="14.0" fill="#86b0d2" stroke="#d8dee4"/>
+<text x="702.0" y="272.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">content  9.43MB</text>
+<rect x="40.0" y="286.0" width="14.0" height="14.0" fill="#9bbfdc" stroke="#d8dee4"/>
+<text x="62.0" y="298.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">ネットワーク  8.26MB</text>
+<rect x="360.0" y="286.0" width="14.0" height="14.0" fill="#afcde5" stroke="#d8dee4"/>
+<text x="382.0" y="298.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">メディア  7.01MB</text>
+<rect x="680.0" y="286.0" width="14.0" height="14.0" fill="#c2d9ec" stroke="#d8dee4"/>
+<text x="702.0" y="298.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">ui / views  3.17MB</text>
+<rect x="40.0" y="312.0" width="14.0" height="14.0" fill="#d3e3f1" stroke="#d8dee4"/>
+<text x="62.0" y="324.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">CEF  3.19MB</text>
+<rect x="360.0" y="312.0" width="14.0" height="14.0" fill="#dfe5ea" stroke="#d8dee4"/>
+<text x="382.0" y="324.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">LTO 出力(出所不明)  4.80MB</text>
+<rect x="680.0" y="312.0" width="14.0" height="14.0" fill="#eaeef2" stroke="#d8dee4"/>
+<text x="702.0" y="324.0" font-size="13" text-anchor="start" fill="#1f2328" font-weight="normal">その他  24.07MB</text>
+<text x="40.0" y="396.0" font-size="12" text-anchor="start" fill="#59636e" font-weight="normal">前回の記事の削減版(arm64、strip 後 186.19MB)。差の約 2MB は ELF ヘッダや .dynsym など、参照グラフに乗らない部分。</text>
+</svg>

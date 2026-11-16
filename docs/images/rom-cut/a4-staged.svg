@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Noto Sans CJK JP',sans-serif" font-size="13" fill="#1f2328">
+<rect width="1000" height="520" fill="#ffffff"/>
+<text x="40.0" y="34.0" font-size="17" text-anchor="start" fill="#1f2328" font-weight="bold">まとめて切ったときのサイズ(累積)と、現実的に狙える範囲</text>
+<text x="40.0" y="58.0" font-size="13" text-anchor="start" fill="#59636e" font-weight="normal">濃い棒は実リンクで測った strip 後のサイズ。① は参照グラフの計算値(計算と実リンクの差は 1 割程度)</text>
+<rect x="90.0" y="176.1" width="870.0" height="51.7" fill="#e6f4f1" />
+<text x="954.0" y="192.1" font-size="13" text-anchor="end" fill="#2a9d8f" font-weight="bold">現実的な見込み 150〜165MB</text>
+<line x1="90.0" y1="400.0" x2="960.0" y2="400.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="404.0" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">100MB</text>
+<line x1="90.0" y1="365.6" x2="960.0" y2="365.6" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="369.6" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">110MB</text>
+<line x1="90.0" y1="331.1" x2="960.0" y2="331.1" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="335.1" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">120MB</text>
+<line x1="90.0" y1="296.7" x2="960.0" y2="296.7" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="300.7" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">130MB</text>
+<line x1="90.0" y1="262.2" x2="960.0" y2="262.2" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="266.2" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">140MB</text>
+<line x1="90.0" y1="227.8" x2="960.0" y2="227.8" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="231.8" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">150MB</text>
+<line x1="90.0" y1="193.3" x2="960.0" y2="193.3" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="197.3" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">160MB</text>
+<line x1="90.0" y1="158.9" x2="960.0" y2="158.9" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="162.9" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">170MB</text>
+<line x1="90.0" y1="124.4" x2="960.0" y2="124.4" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="128.4" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">180MB</text>
+<line x1="90.0" y1="90.0" x2="960.0" y2="90.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="82.0" y="94.0" font-size="11" text-anchor="end" fill="#59636e" font-weight="normal">190MB</text>
+<rect x="121.9" y="103.1" width="81.2" height="296.9" fill="#9aa5b1" />
+<text x="162.5" y="81.1" font-size="13" text-anchor="middle" fill="#1f2328" font-weight="bold">186.19MB</text>
+<text x="162.5" y="420.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">出発点</text>
+<text x="162.5" y="454.0" font-size="11" text-anchor="middle" fill="#59636e" font-weight="normal">前回の削減版</text>
+<rect x="266.9" y="123.9" width="81.2" height="276.1" fill="#2a9d8f" fill-opacity="0.45" stroke="#2a9d8f" stroke-dasharray="4 3"/>
+<text x="307.5" y="101.9" font-size="13" text-anchor="middle" fill="#1f2328" font-weight="bold">約 180MB</text>
+<text x="307.5" y="116.9" font-size="12" text-anchor="middle" fill="#d1495b" font-weight="normal">−6.0</text>
+<text x="307.5" y="420.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">① タブ機能と</text>
+<text x="307.5" y="436.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">Chrome スタイルの入口</text>
+<text x="307.5" y="454.0" font-size="11" text-anchor="middle" fill="#59636e" font-weight="normal">215 関数(計算)</text>
+<rect x="411.9" y="162.3" width="81.2" height="237.7" fill="#2a9d8f" />
+<text x="452.5" y="140.3" font-size="13" text-anchor="middle" fill="#1f2328" font-weight="bold">169.02MB</text>
+<text x="452.5" y="155.3" font-size="12" text-anchor="middle" fill="#d1495b" font-weight="normal">−17.2</text>
+<text x="452.5" y="420.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">② + KeyedService</text>
+<text x="452.5" y="436.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">約 350 個を作らない</text>
+<text x="452.5" y="454.0" font-size="11" text-anchor="middle" fill="#59636e" font-weight="normal">571 関数</text>
+<rect x="556.9" y="178.1" width="81.2" height="221.9" fill="#2a9d8f" />
+<text x="597.5" y="156.1" font-size="13" text-anchor="middle" fill="#1f2328" font-weight="bold">164.43MB</text>
+<text x="597.5" y="171.1" font-size="12" text-anchor="middle" fill="#d1495b" font-weight="normal">−21.8</text>
+<text x="597.5" y="420.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">③ + views / UI クラス</text>
+<text x="597.5" y="436.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">を作らない</text>
+<text x="597.5" y="454.0" font-size="11" text-anchor="middle" fill="#59636e" font-weight="normal">1,912 関数</text>
+<rect x="701.9" y="265.2" width="81.2" height="134.8" fill="#8fb8b2" />
+<text x="742.5" y="243.2" font-size="13" text-anchor="middle" fill="#1f2328" font-weight="bold">139.14MB</text>
+<text x="742.5" y="258.2" font-size="12" text-anchor="middle" fill="#d1495b" font-weight="normal">−47.1</text>
+<text x="742.5" y="420.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">④ + content の</text>
+<text x="742.5" y="436.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">委譲クラスを全部</text>
+<text x="742.5" y="454.0" font-size="11" text-anchor="middle" fill="#59636e" font-weight="normal">2,596 関数</text>
+<rect x="846.9" y="291.2" width="81.2" height="108.8" fill="#c9d3d1" />
+<text x="887.5" y="269.2" font-size="13" text-anchor="middle" fill="#1f2328" font-weight="bold">131.60MB</text>
+<text x="887.5" y="284.2" font-size="12" text-anchor="middle" fill="#d1495b" font-weight="normal">−54.6</text>
+<text x="887.5" y="420.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">下限: chrome/ の</text>
+<text x="887.5" y="436.0" font-size="12" text-anchor="middle" fill="#1f2328" font-weight="normal">関数をすべて空に</text>
+<text x="887.5" y="454.0" font-size="11" text-anchor="middle" fill="#59636e" font-weight="normal">91,201 関数</text>
+<text x="40.0" y="504.0" font-size="12" text-anchor="start" fill="#59636e" font-weight="normal">どれも関数を空にしたリンクでの計測で、起動はしていない。</text>
+</svg>

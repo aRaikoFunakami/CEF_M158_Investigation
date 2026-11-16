@@ -108,5 +108,5 @@ enable_media_remoting_rpc = false
 enable_hls_demuxer = false
 enable_hevc_parser_and_hw_decoder = false
 
-# --- M23: //chrome 層を Alloy スタイル専用に削る(patches/chromium/m23.patch の BUILDFLAG FP_ALLOY_LEAN)
+# --- M23: chrome 層を Alloy スタイル専用に削る(patches/chromium/m23.patch の BUILDFLAG FP_ALLOY_LEAN)
 fp_alloy_lean=true

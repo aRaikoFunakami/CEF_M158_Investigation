@@ -41,7 +41,7 @@ patches/cef/f4b-cef.patch               CEF 6ee3fb965 からの差分(F4b)
 patches/new-files/                      パッチに含まれない新規ファイル(chromium/ と cef/ の下に、置く場所のパスで配置)
 patches/chromium/{e3b,f3a,f3b,f4a}.patch, patches/cef/{f3a,f3b,f4a}-cef.patch
                                         途中の段階のパッチ(参考)
-patches/chromium/m23.patch              G2(+ upx-noifunc.patch)を当てた状態からの差分。//chrome 層を Alloy スタイル専用に削る(M23-40)
+patches/chromium/m23.patch              G2(+ upx-noifunc.patch)を当てた状態からの差分。chrome 層を Alloy スタイル専用に削る(M23-40)
 patches/cef/m23-cef.patch               f4b-cef.patch を当てた状態からの差分(M23-40)
 patches/content_shell/                  比較に使った content_shell(Chromium 159.0.8143.0)の削減パッチ(参考)
 args/                                   各構成の args.gn(E1〜F4b は x64、G0〜G2-tv と M23 は arm64)
@@ -52,6 +52,7 @@ scripts/patch/g2_patch.py               g2.patch を当てるスクリプト
 data/x64, data/arm64                    計測結果(JSON)。data/arm64/ytmem-summary.tsv は YouTube 計測の要約
 docs/                                   調査の記録(docs/milestones/M0〜M22、ROM 削減の一覧、削除した機能の一覧、起動時 RAM)
 docs/images/                            記事の図
+docs/images/rom-cut/                     2 本目の記事(chrome 層を Alloy スタイル専用に削る)の図
 ```
 
 ## 構成
@@ -66,7 +67,7 @@ docs/images/                            記事の図
 | G0 | CEF 既定の arm64 | `args/G0.args.gn` |
 | G1 / G2 | F4b の arm64 / G1 + Cobalt 由来の GN 引数 4 個 | `args/G1.args.gn`、`args/G2.args.gn` |
 | G2-dist / G2-tv | G2 の配布物を整理 / さらに SwiftShader 一式を除去(ビルドは G2 と同じ) | `args/G2.args.gn` |
-| M23-40 | G2 の //chrome 層を Alloy スタイル専用に削った版(GN 引数 `fp_alloy_lean=true`)。配布物の整理は G2-tv と同じ | `args/M23.args.gn` |
+| M23-40 | G2 の chrome 層を Alloy スタイル専用に削った版(GN 引数 `fp_alloy_lean=true`)。配布物の整理は G2-tv と同じ | `args/M23.args.gn` |
 
 ## 再現手順(F4b / G2)
 
@@ -142,9 +143,9 @@ arm64(G2)は、手順 2 のあとに `patches/chromium/g2.patch` を当て、`ar
 
 同じ配布物を squashfs(xz、1MiB ブロック)に入れると 60.7MB(RAM は未計測)。図は `scripts/figs_upx2.py` で生成。
 
-## //chrome 層を Alloy スタイル専用に削る場合(arm64、M23-40)
+## chrome 層を Alloy スタイル専用に削る場合(arm64、M23-40)
 
-G2 の //chrome 層から、Alloy スタイルで使わない部分を削った版です。`patches/chromium/m23.patch` が足す GN 引数 `fp_alloy_lean`(BUILDFLAG `FP_ALLOY_LEAN`)で切り替えます。M23-40 は、M23-38 に Alloy のタブでポップアップの阻止の補助(`PopupBlockerTabHelper`)を作る修正(`patches/cef/m23-cef.patch` の `alloy_tab_interface.cc` / `.h`)を入れた版です。`resources.pak` から資源 52342 が抜けていた件の修正は `scripts/patch/pakstrip.py` に入っています。
+G2 の chrome 層から、Alloy スタイルで使わない部分を削った版です。`patches/chromium/m23.patch` が足す GN 引数 `fp_alloy_lean`(BUILDFLAG `FP_ALLOY_LEAN`)で切り替えます。M23-40 は、M23-38 に Alloy のタブでポップアップの阻止の補助(`PopupBlockerTabHelper`)を作る修正(`patches/cef/m23-cef.patch` の `alloy_tab_interface.cc` / `.h`)を入れた版です。`resources.pak` から資源 52342 が抜けていた件の修正は `scripts/patch/pakstrip.py` に入っています。
 
 再現手順の 2 のあと、フックを実行する前に次を当てます。新規ファイルは G2 と同じです(`patches/new-files/`)。
 
